@@ -124,7 +124,7 @@ export default function BannerModal({ onClose }: BannerModalProps) {
         
         // If multiple files selected, inform user
         if (files.length > 1) {
-          toast.info(`Apenas a primeira imagem foi usada. ${files.length - 1} outra(s) foram ignorada(s).`);
+          toast(`Apenas a primeira imagem foi usada. ${files.length - 1} outra(s) foram ignorada(s).`);
         }
       } else {
         const errorMessage = data.error || `Erro ${res.status}: ${res.statusText}`;
