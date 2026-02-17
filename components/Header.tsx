@@ -50,14 +50,21 @@ export default function Header() {
           </button>
 
           <Link href="/" className="flex items-center gap-3">
-            {!logoError && (
-              <img 
-                src="/uploads/logo.jpeg" 
-                alt="Logo" 
-                className="h-12 md:h-14 w-auto object-contain"
-                onLoad={() => setLogoLoaded(true)}
-                onError={() => setLogoError(true)}
-              />
+            <img 
+              src="/logo.jpeg" 
+              alt="Logo" 
+              className="h-12 md:h-14 w-auto object-contain"
+              onLoad={() => setLogoLoaded(true)}
+              onError={(e) => {
+                setLogoError(true);
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
+            {logoError && (
+              <div className="h-12 md:h-14 w-12 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">DS</span>
+              </div>
             )}
             <span className="text-2xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
               Do Santos Market
