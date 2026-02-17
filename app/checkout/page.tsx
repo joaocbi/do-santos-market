@@ -109,7 +109,7 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     const orderItems = cartItems.map(item => 
-      `${item.quantity}x ${item.product.name} - ${formatPrice(item.product.price * item.quantity)}`
+      `${item.quantity}x ${item.product.name} (SKU: ${item.product.sku}) - ${formatPrice(item.product.price * item.quantity)}`
     ).join('\n');
 
     const address = `${formData.street}, ${formData.number}${formData.complement ? ', ' + formData.complement : ''}\n${formData.neighborhood}, ${formData.city} - ${formData.state}\nCEP: ${formData.zipCode}`;
