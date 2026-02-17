@@ -1,0 +1,56 @@
+export const translations = {
+  pt: {
+    // Common
+    manage: 'Gerenciar',
+    create: 'Criar',
+    update: 'Atualizar',
+    delete: 'Excluir',
+    cancel: 'Cancelar',
+    save: 'Salvar',
+    edit: 'Editar',
+    active: 'Ativo',
+    inactive: 'Inativo',
+    name: 'Nome',
+    title: 'Título',
+    description: 'Descrição',
+    price: 'Preço',
+    stock: 'Estoque',
+    category: 'Categoria',
+    subcategory: 'Subcategoria',
+    image: 'Imagem',
+    url: 'URL',
+    order: 'Ordem',
+    position: 'Posição',
+    type: 'Tipo',
+    email: 'E-mail',
+    phone: 'Telefone',
+    address: 'Endereço',
+    settings: 'Configurações',
+    
+    // Messages
+    loading: 'Carregando...',
+    noProducts: 'Nenhum produto encontrado nesta categoria',
+    outOfStock: 'Fora de estoque',
+    addToCart: 'Adicionar ao Carrinho',
+    available: 'disponíveis',
+    
+    // Admin
+    adminPanel: 'Painel Administrativo',
+    categories: 'Categorias',
+    products: 'Produtos',
+    customers: 'Clientes',
+    paymentMethods: 'Formas de Pagamento',
+    deliveryMethods: 'Formas de Entrega',
+    banners: 'Banners',
+    links: 'Links',
+    gallery: 'Galeria',
+    videos: 'Vídeos',
+    
+    // Success/Error messages
+    created: 'criado',
+    updated: 'atualizado',
+    deleted: 'excluído',
+    failed: 'Falha ao',
+    confirmDelete: 'Excluir este item?',
+  },
+};

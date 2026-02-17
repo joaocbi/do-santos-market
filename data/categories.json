@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1770756362394",
+    "name": "Bolsas ",
+    "slug": "bolsas-",
+    "parentId": "",
+    "image": "",
+    "order": 1
+  },
+  {
+    "id": "1770756493255",
+    "name": "Pastas",
+    "slug": "pastas",
+    "parentId": "",
+    "image": "",
+    "order": 0
+  },
+  {
+    "id": "1770756512657",
+    "name": "Acessorios",
+    "slug": "acessorios",
+    "parentId": "",
+    "image": "",
+    "order": 0
+  },
+  {
+    "id": "1770756553973",
+    "name": "Relogios",
+    "slug": "relogios",
+    "parentId": "",
+    "image": "",
+    "order": 0
+  },
+  {
+    "id": "1770756589204",
+    "name": "Moda",
+    "slug": "moda",
+    "parentId": "",
+    "image": "",
+    "order": 0
+  },
+  {
+    "id": "1771340263572",
+    "name": "Fitness",
+    "slug": "fitness",
+    "parentId": "1770756589204",
+    "image": "",
+    "order": 0
+  }
+]

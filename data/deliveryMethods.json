@@ -1,0 +1,10 @@
+[
+  {
+    "id": "1770826794407",
+    "name": "Correios",
+    "price": 20,
+    "estimatedDays": 10,
+    "active": true,
+    "freeShippingThreshold": 300
+  }
+]

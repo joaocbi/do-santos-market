@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1770826851697",
+    "name": "Cartão Cedito",
+    "type": "credit",
+    "active": true,
+    "installments": 4
+  },
+  {
+    "id": "1770826868953",
+    "name": "Pix",
+    "type": "pix",
+    "active": true,
+    "installments": 0
+  },
+  {
+    "id": "1770826888327",
+    "name": "Cartão Debito",
+    "type": "debit",
+    "active": true
+  }
+]
