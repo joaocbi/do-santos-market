@@ -148,15 +148,20 @@ export default function CheckoutPage() {
         return;
       }
       
-      // Force correct number - always use 42991628586
-      if (whatsappNumber !== '42991628586') {
+      // Force correct number - always use 5542991628586 (with country code 55)
+      const correctNumber = '5542991628586';
+      if (whatsappNumber !== correctNumber && whatsappNumber !== '42991628586') {
         console.error('ERROR: Wrong WhatsApp number detected!', {
-          expected: '42991628586',
+          expected: correctNumber,
           got: whatsappNumber,
           original: config.whatsappNumber
         });
-        console.warn('Using correct number 42991628586 instead');
-        whatsappNumber = '42991628586';
+        console.warn('Using correct number with country code:', correctNumber);
+        whatsappNumber = correctNumber;
+      } else if (whatsappNumber === '42991628586') {
+        // Add country code if missing
+        whatsappNumber = correctNumber;
+        console.log('Added country code 55 to WhatsApp number');
       }
       
       console.log('Enviando para WhatsApp:', whatsappNumber);

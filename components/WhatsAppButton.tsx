@@ -28,11 +28,17 @@ export default function WhatsAppButton() {
 
   const cleanNumber = config.whatsappNumber.replace(/\D/g, '');
   
-  // Force correct number
-  const whatsappNumber = cleanNumber === '42991628586' ? cleanNumber : '42991628586';
+  // Force correct number with country code 55
+  let whatsappNumber = '5542991628586';
   
-  if (cleanNumber !== '42991628586') {
-    console.error('WhatsAppButton - Using fallback number 42991628586 instead of:', cleanNumber);
+  if (cleanNumber === '5542991628586') {
+    whatsappNumber = cleanNumber;
+  } else if (cleanNumber === '42991628586') {
+    // Add country code if missing
+    whatsappNumber = '5542991628586';
+    console.log('WhatsAppButton - Added country code 55');
+  } else {
+    console.error('WhatsAppButton - Wrong number detected:', cleanNumber, '- Using correct number with country code');
   }
   
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
