@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Product } from '@/lib/types';
+import { autoCommit } from '@/lib/gitAutoCommit';
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,6 +46,10 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString(),
     };
     const created = db.products.create(product);
+    
+    // Auto-commit changes
+    autoCommit(`Add product: ${product.name}`, ['data/products.json']).catch(console.error);
+    
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
