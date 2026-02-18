@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { Product } from '@/lib/types';
 import { cartUtils } from '@/lib/cart';
+import { normalizeImageUrl } from '@/lib/imageUtils';
 
 export default function ProductPage() {
   const params = useParams();
@@ -28,14 +29,20 @@ export default function ProductPage() {
           
           // Add video first if exists and is not empty
           if (data.video && data.video.trim() !== '') {
-            items.push({ type: 'video', url: data.video });
+            const normalizedVideoUrl = normalizeImageUrl(data.video);
+            if (normalizedVideoUrl) {
+              items.push({ type: 'video', url: normalizedVideoUrl });
+            }
           }
           
           // Add images
           if (data.images && Array.isArray(data.images) && data.images.length > 0) {
             data.images.forEach((img: string) => {
               if (img && img.trim() !== '') {
-                items.push({ type: 'image', url: img });
+                const normalizedUrl = normalizeImageUrl(img);
+                if (normalizedUrl) {
+                  items.push({ type: 'image', url: normalizedUrl });
+                }
               }
             });
           }
@@ -102,7 +109,7 @@ export default function ProductPage() {
                   </video>
                 ) : (
                   <img
-                    src={mediaItems[selectedImage].url}
+                    src={normalizeImageUrl(mediaItems[selectedImage].url)}
                     alt={product.name}
                     className="rounded-lg"
                     style={{ 
@@ -113,6 +120,8 @@ export default function ProductPage() {
                     }}
                     loading="eager"
                     decoding="async"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
                   />
                 )
               ) : (
@@ -142,10 +151,12 @@ export default function ProductPage() {
                       />
                     ) : (
                       <img 
-                        src={item.url} 
+                        src={normalizeImageUrl(item.url)} 
                         alt={`${product.name} ${index + 1}`} 
                         className="w-full h-full object-contain rounded bg-gray-100 product-image-zoom" 
                         loading="lazy"
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
                       />
                     )}
                   </button>

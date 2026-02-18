@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { cartUtils, CartItem } from '@/lib/cart';
+import { normalizeImageUrl } from '@/lib/imageUtils';
 import { FiTrash2, FiPlus, FiMinus } from 'react-icons/fi';
 
 export default function CartPage() {
@@ -100,9 +101,11 @@ export default function CartPage() {
                 <div key={item.productId} className="flex gap-4 pb-6 mb-6 border-b last:border-b-0 last:pb-0 last:mb-0">
                   <Link href={`/product/${item.productId}`} className="flex-shrink-0">
                     <img
-                      src={item.product.images[0] || '/placeholder.jpg'}
+                      src={normalizeImageUrl(item.product.images[0])}
                       alt={item.product.name}
                       className="w-24 h-24 object-contain rounded bg-gray-100"
+                      crossOrigin="anonymous"
+                      referrerPolicy="no-referrer"
                     />
                   </Link>
                   <div className="flex-1">

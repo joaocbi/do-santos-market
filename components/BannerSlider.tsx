@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Banner } from '@/lib/types';
+import { normalizeImageUrl } from '@/lib/imageUtils';
 
 export default function BannerSlider() {
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -37,16 +38,20 @@ export default function BannerSlider() {
           {banner.link ? (
             <Link href={banner.link}>
               <img
-                src={banner.image}
+                src={normalizeImageUrl(banner.image)}
                 alt={banner.title}
                 className="w-full h-full object-contain"
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
               />
             </Link>
           ) : (
             <img
-              src={banner.image}
+              src={normalizeImageUrl(banner.image)}
               alt={banner.title}
               className="w-full h-full object-contain"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
             />
           )}
         </div>

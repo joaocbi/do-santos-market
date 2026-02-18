@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Product } from '@/lib/types';
+import { normalizeImageUrl } from '@/lib/imageUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -15,17 +16,22 @@ export default function ProductCard({ product }: ProductCardProps) {
     }).format(price);
   };
 
+  const imageUrl = normalizeImageUrl(product.images?.[0]);
+  const hasImage = imageUrl && imageUrl !== '/placeholder.jpg';
+
   return (
     <Link href={`/product/${product.id}`} className="group">
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
         <div className="relative w-full h-64 overflow-hidden bg-gray-100 flex items-center justify-center">
-          {product.images && product.images[0] ? (
+          {hasImage ? (
             <img
-              src={product.images[0]}
+              src={imageUrl}
               alt={product.name}
               className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
               style={{ imageRendering: 'auto' }}
               loading="lazy"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
