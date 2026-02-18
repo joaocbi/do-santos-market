@@ -2091,27 +2091,28 @@
     "id": "1771433638100",
     "name": "Bolsa Feminina Transversal Media Com Carteira Uselabelle",
     "description": "A Bolsa Castelo Uselabelle é ideal para mulheres que desejam carregar itens essenciais com estilo. Possui fechamento em zíper e alça removível, agregando versatilidade e segurança ao produto. Acompanha uma carteira elegante e versátil, adequada para todas as ocasiões. Recomendada para uso diário, no trabalho e no seu cotidiano. Bolsa moderna, elegante, rica nos detalhes, com excelente qualidade, forrada em cetim, com metais inoxidáveis.\n\nCARACTERÍSTICAS:\nMaterial: Couro Sintético\nFechamento: Com zíper\n\nMedidas da Bolsa:\nAltura: 26cm\nComprimento: 34cm\nLargura: 12cm\n\nMedidas da Carteira:\nComprimento: 20cm\nAltura: 10cm\n\nBela é a mulher que investi em si!",
-    "price": 179.99,
+    "price": "179.99",
     "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433628058-s5cdjr.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433627567-xdbjfs.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433627245-ud7hfp.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433625829-5qs5t3.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433628474-i11qht.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433623213-78l5t8.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433623780-bedaip.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433624135-h8yd8t.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433624485-uw6er9.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433625204-k2icz6.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433625829-5qs5t3.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433627245-ud7hfp.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433627567-xdbjfs.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433628058-s5cdjr.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433628474-i11qht.jpg"
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433624485-uw6er9.jpg"
     ],
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "BOLSA-FEMININA-TRANS-489603",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-18T16:53:58.100Z",
-    "updatedAt": "2026-02-18T16:53:58.100Z"
+    "updatedAt": "2026-02-18T18:22:00.908Z",
+    "originalPrice": "",
+    "video": ""
   },
   {
     "id": "1771433814547",
