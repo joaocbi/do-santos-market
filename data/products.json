@@ -2112,5 +2112,28 @@
     "featured": false,
     "createdAt": "2026-02-18T16:53:58.100Z",
     "updatedAt": "2026-02-18T16:53:58.100Z"
+  },
+  {
+    "id": "1771433814547",
+    "name": "Bolsa Feminina Uselabelle Com Carteira Elegante Lançamento",
+    "description": "Bolsa UseLabelle Original Marca Própria\n\nNo mercado há mais de anos, a nossa loja traz produtos originais, com preço justo e altíssima qualidade. Representamos elegância, luxo, moda, tendência e classe. Isso tudo em um único produto.\n\nNosso diferencial:\n- Garantimos a melhor qualidade que existe atualmente no mercado;\n\n- A bolsa é forrada por dentro com forro seda da marca;\n\n- As bolsas acompanham saco para melhor conservação;\n\n- As bolsas são enviadas dentro de uma caixa para melhor transporte;\n\n- Produto feito em Couro Ecológico\n\nDescrição do produto:\n\nBolsa Castelo tamanho médio em floather importado, possui um espaçoso compartimento interno. O desing e produção de cada peça é acompanhada diretamente com a diretora da Empresa, com toque especial de um modelista especialista em bolsas. Todos os nossos produtos são fabricados sob um rigoroso controle de qualidade, com profissionais treinados e capacitados em desenvolvimento, produção e acabamento.\n",
+    "price": 179.99,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433791073-ok04a6.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433804899-8i0vro.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433805500-y0kt83.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433806294-g8x0wi.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433807281-e92u3k.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433808414-n2v9na.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433808815-3nbczf.jpg"
+    ],
+    "categoryId": "1770756362394",
+    "subcategoryId": "",
+    "sku": "BOLSA-FEMININA-USELA-695434",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "createdAt": "2026-02-18T16:56:54.547Z",
+    "updatedAt": "2026-02-18T16:56:54.547Z"
   }
 ]
