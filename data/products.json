@@ -2002,29 +2002,6 @@
     "updatedAt": "2026-02-17T17:09:07.904Z"
   },
   {
-    "id": "1771348430860",
-    "name": "Outros Tipo de chapéu Bonés Gênero Sem gênero Temporada de lançamento Primavera/Verão Ano de lançamento 2025 Com fechamento ajustável Sim Com materiais reciclados Não",
-    "description": "Kit Bandinha + porta chapéu e laço retrovisor Traia de Minas é composto por:\n\n- Bandinha de chapeú, produto artesanal feito com tecido resistente, confortável e com ótimo acabamento.\n\n- Laço enfeite para retrovisor produto de decoração lindo artesanato, fabricado em couro com argola em latão.\n\nDimensões:\n\nDiâmetro 8cm;\nEspessura 4mm;\nComprimento da corda de fixação 15cm;\nPeso aproximado: 12g\n\n- Suporte de chapéu para todos os tipos de carros. Produto feito artesanalmente em couro com regulagem e ventosa para aplicação no vidro.\n\nDimensões:\n\nEspessura 4mm;\nComprimento 55cm;\nPeso aproximado: 11g",
-    "price": 168.99,
-    "images": [
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348405802-chcdal.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348420351-p4dcot.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348420383-xhbgg8.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348420414-51xtug.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348420480-77m0ha.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348420538-satfsy.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348420600-q12lli.jpg"
-    ],
-    "categoryId": "1770756512657",
-    "subcategoryId": "",
-    "sku": "OUTROS-TIPO-DE-CHAPE-211031",
-    "stock": 10,
-    "active": true,
-    "featured": false,
-    "createdAt": "2026-02-17T17:13:50.860Z",
-    "updatedAt": "2026-02-17T17:13:50.860Z"
-  },
-  {
     "id": "1771348564737",
     "name": "Cinto De Couro Fivela Americana Original Country Diversos",
     "description": "Cinto country rebaixado, produto confeccionado artesanalmente, com lindos detalhes nas costuras, fivela americana de metal e desenhos entalhados artesanalmente no couro.\nProduto desenvolvido visando muita qualidade e beleza, levendo estilo em seu passeio, cavalgada, festas e outros. além do ótimo preço.\n\n\nCinto de couro super resistente e macio, com detalhes nas costuras e linda fivela.\n\nFechamento da fivela e passador com botão de pressão, permitindo a alteração da fivela.\n\nTamanhos:\n\n100cm / Tam 36 e 38\n110cm / Tam 40 e 42\n120cm / Tam 44 e 46\n130cm / Tam 48 e 50\n\nOBS: Medidas dos cintos/número da calça do comprador",
@@ -2065,26 +2042,5 @@
     "featured": false,
     "createdAt": "2026-02-17T17:18:20.664Z",
     "updatedAt": "2026-02-17T17:18:20.664Z"
-  },
-  {
-    "id": "1771348966960",
-    "name": "Perneira Mangalarga Unissex Para Proteção Sintética",
-    "description": "Belíssimo par de Perneira mangalarga country.\n\nProduto feito artesanalmente com couro sintético, fechamento com velcro, bordado em alto relevo.\nTrás segurança ao cavaleiro contra picadas de animais, além de ser impermeável, não deixando passar suor e umidade.\nIdeal para uso no dia dia do campo e também festas e cavalgadas.\nDesenvolvido para se adaptar perfeitamente a perna e deixar com estilo country moderno.\n\nMaterial sintético, similar a vaqueta.\nDisponível nas cores: Preto e Marrom.\n\nDimensões:\n\n\nTamanho P:\nAltura: 32 cm;\nCircunferência panturrilha: 33 cm;\nCircunferência canela 27 cm.\n\n\nTamanho M:\nAltura: 38 cm;\nCircunferência panturrilha: 38 cm;\nCircunferência canela 29,5 cm.\n\nTamanho G:\nAltura: 41 cm;\nCircunferência panturrilha: 40 cm;\nCircunferência canela 31 cm.\n\nTamanho GG:\nAltura: 44 cm;\nCircunferência panturrilha: 42 cm;\nCircunferência canela 33 cm.",
-    "price": 105.99,
-    "images": [
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348956728-00j680.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348962010-o5wgnp.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348962052-r2ffmu.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348962082-me4ujh.jpg",
-      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771348962115-2lzl8v.jpg"
-    ],
-    "categoryId": "1770756512657",
-    "subcategoryId": "",
-    "sku": "PERNEIRA-MANGALARGA--901959",
-    "stock": 5,
-    "active": true,
-    "featured": false,
-    "createdAt": "2026-02-17T17:22:46.960Z",
-    "updatedAt": "2026-02-17T17:22:46.960Z"
   }
 ]
