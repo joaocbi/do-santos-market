@@ -126,7 +126,8 @@ export default function CheckoutPage() {
       `Frete: ${shippingFee > 0 ? formatPrice(shippingFee) : 'Grátis'}\n` +
       `*TOTAL: ${formatPrice(total)}*\n\n` +
       `${formData.notes ? `*OBSERVAÇÕES:*\n${formData.notes}\n\n` : ''}` +
-      `_Pedido realizado em ${new Date().toLocaleString('pt-BR')}_\n\n` +
+      `_Pedido realizado em ${new Date().toLocaleString('pt-BR')}_\n` +
+      `*Prazo de Entrega:* até 10 dias após confirmação do pagamento.\n\n` +
       `*INFORMAÇÕES DE PAGAMENTO:*\n` +
       `Em instantes você receberá link do Mercado Pago, em nome de João Batista dos Santos para realizar seu pagamento. Após a confirmação de seu pagamento seu produto será enviado.`;
 
