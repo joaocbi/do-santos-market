@@ -256,6 +256,20 @@ export default function ProductModal({ onClose }: ProductModalProps) {
     setFormData({ ...formData, images: formData.images.filter((_, i) => i !== index) });
   };
 
+  const moveImageLeft = (index: number) => {
+    if (index === 0) return; // Already at the leftmost position
+    const newImages = [...formData.images];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    setFormData({ ...formData, images: newImages });
+  };
+
+  const moveImageRight = (index: number) => {
+    if (index === formData.images.length - 1) return; // Already at the rightmost position
+    const newImages = [...formData.images];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    setFormData({ ...formData, images: newImages });
+  };
+
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -519,15 +533,47 @@ export default function ProductModal({ onClose }: ProductModalProps) {
                   </div>
                 )}
                 {formData.images.map((img, index) => (
-                  <div key={index} className="relative">
-                    <img src={img} alt={`Image ${index + 1}`} className="w-20 h-20 object-contain rounded bg-gray-100" />
+                  <div key={index} className="relative group">
+                    <img src={img} alt={`Image ${index + 1}`} className="w-20 h-20 object-contain rounded bg-gray-100 border-2 border-gray-200" />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity rounded flex items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => moveImageLeft(index)}
+                        disabled={index === 0}
+                        className={`bg-white rounded-full p-1.5 shadow-lg hover:bg-blue-50 hover:scale-110 transition-all ${
+                          index === 0 ? 'opacity-30 cursor-not-allowed' : 'opacity-100'
+                        }`}
+                        title="Mover para esquerda"
+                      >
+                        <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveImageRight(index)}
+                        disabled={index === formData.images.length - 1}
+                        className={`bg-white rounded-full p-1.5 shadow-lg hover:bg-blue-50 hover:scale-110 transition-all ${
+                          index === formData.images.length - 1 ? 'opacity-30 cursor-not-allowed' : 'opacity-100'
+                        }`}
+                        title="Mover para direita"
+                      >
+                        <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition z-10 shadow-md"
+                      title="Remover imagem"
                     >
                       ×
                     </button>
+                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white text-xs px-1.5 py-0.5 rounded font-semibold">
+                      {index + 1}
+                    </div>
                   </div>
                 ))}
               </div>
