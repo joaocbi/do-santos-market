@@ -2156,5 +2156,28 @@
     "featured": false,
     "createdAt": "2026-02-18T16:58:47.453Z",
     "updatedAt": "2026-02-18T16:58:47.453Z"
+  },
+  {
+    "id": "1771434051609",
+    "name": "Paris Bolsa Feminina Estilo Elegante Dourada Alça Mão/ombro",
+    "description": "A Paris Bolsa Feminina Estilo Elegante Dourada da marca USELABELLE é a escolha perfeita para mulheres que buscam sofisticação e praticidade. Com um design elegante, esta bolsa é ideal para diversas ocasiões, desde um dia de trabalho até um evento social. Seu material interno em cetim dourado confere um toque de luxo, enquanto a alça permite que seja usada tanto na mão quanto no ombro.\n\nCom dimensões de 28 cm de altura, 25 cm de largura e 11 cm de comprimento, a bolsa é espaçosa o suficiente para acomodar seus itens essenciais. O fecho garante segurança, e o forro interno proporciona um acabamento refinado. Embora não possua bolso interno com fecho, seu design clean e funcional é perfeito para quem aprecia a estética minimalista.\n\nA Paris Bolsa é uma peça versátil que complementa qualquer look, tornando-se um acessório indispensável no guarda-roupa feminino. Seu peso de 580 g a torna leve e fácil de transportar, ideal para o dia a dia. Invista em estilo e elegância com esta bolsa que reflete a essência da mulher moderna.",
+    "price": 154.99,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434034975-aj6uk5.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434044314-sz7bal.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434044844-8pbxh8.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434045187-9a5fyh.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434045953-fz08rn.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434046421-4vbt9a.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771434046814-rojzrg.jpg"
+    ],
+    "categoryId": "1770756362394",
+    "subcategoryId": "",
+    "sku": "PARIS-BOLSA-FEMININA-949422",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "createdAt": "2026-02-18T17:00:51.609Z",
+    "updatedAt": "2026-02-18T17:00:51.609Z"
   }
 ]
