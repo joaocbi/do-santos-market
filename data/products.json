@@ -2135,5 +2135,26 @@
     "featured": false,
     "createdAt": "2026-02-18T16:56:54.547Z",
     "updatedAt": "2026-02-18T16:56:54.547Z"
+  },
+  {
+    "id": "1771433927452",
+    "name": "Kit 3 Bolsas Feminina Transversal Ombro Moderna Elegante",
+    "description": "Kit 3 Bolsas Femininas de Ombro Modernas com Alça Grande Ajustável Removível Promoção\n\nA bolsa feminina transversal da marca Uselabelle é a escolha perfeita para a mulher moderna que busca estilo e funcionalidade. Com um design elegante, ela se adapta a diversas ocasiões, desde um passeio casual até um evento mais formal. Seu logo discreto adiciona um toque de sofisticação, tornando-a um acessório indispensável no guarda-roupa.\n\nO forro interno proporciona uma proteção extra para seus pertences, enquanto o mecanismo antirroubo garante segurança em qualquer situação. Embora não possua bolso interno com fecho, seu espaço amplo permite organizar itens essenciais de forma prática. Esta bolsa é ideal para quem valoriza a combinação de beleza e segurança no dia a dia.\n\nCom um modelo que se destaca pela versatilidade, a bolsa transversal é perfeita para mulheres que desejam expressar sua personalidade através de acessórios. Seja para o trabalho, um encontro ou um passeio, ela complementa qualquer look com elegância. Invista em um item que une estilo e praticidade, e leve sua experiência de moda a um novo patamar.",
+    "price": 149.99,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433905853-9p9hdq.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433920294-og0584.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433920816-mw09tl.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433921383-ub2p7t.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771433921966-uvff6h.jpg"
+    ],
+    "categoryId": "1770756362394",
+    "subcategoryId": "",
+    "sku": "KIT-3-BOLSAS-FEMININ-836792",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "createdAt": "2026-02-18T16:58:47.453Z",
+    "updatedAt": "2026-02-18T16:58:47.453Z"
   }
 ]
