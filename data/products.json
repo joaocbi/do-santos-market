@@ -2273,5 +2273,29 @@
     "featured": false,
     "createdAt": "2026-02-18T17:19:13.225Z",
     "updatedAt": "2026-02-18T17:19:13.225Z"
+  },
+  {
+    "id": "1771435319224",
+    "name": "Bolsa Tote De Mão Grande Com Alça Ombro Em Couro Moderna",
+    "description": "A Bolsa Tote De Mão Grande Com Alça Ombro Em Couro Moderna da marca Uselabelle é a escolha perfeita para mulheres que buscam estilo e funcionalidade. Com um design sofisticado, esta bolsa tipo doctor bag combina elegância e praticidade, ideal para o dia a dia ou ocasiões especiais. Seu material externo em couro proporciona durabilidade e um toque de classe, enquanto o interior em seda garante um acabamento luxuoso.\n\nAs alças, na mesma cor da bolsa, oferecem conforto ao carregar, permitindo que você a use tanto na mão quanto no ombro. Equipado com um mecanismo antirroubo, este modelo assegura a proteção dos seus pertences, tornando-se uma opção segura para mulheres modernas. Além disso, conta com um bolso interno com fecho, perfeito para organizar itens essenciais.\n\nA Bolsa Tote é ideal para adultos que valorizam a combinação de estilo e segurança. Seu design atemporal e a presença do logo da marca a tornam uma peça de destaque em qualquer guarda-roupa. Invista em uma bolsa que não apenas complementa seu visual, mas também atende às suas necessidades diárias com elegância.",
+    "price": 179.98,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435296956-c0927k.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435295638-02ef3m.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435296181-4lkgyt.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435297887-pj7ocz.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435298658-9jjqqx.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435299433-g3n479.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435299806-xdz8tc.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771435300531-0t1mpl.jpg"
+    ],
+    "categoryId": "1770756362394",
+    "subcategoryId": "",
+    "sku": "BOLSA-TOTE-DE-MAO-GR-172650",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "createdAt": "2026-02-18T17:21:59.224Z",
+    "updatedAt": "2026-02-18T17:21:59.224Z"
   }
 ]
