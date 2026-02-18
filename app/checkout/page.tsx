@@ -42,6 +42,14 @@ export default function CheckoutPage() {
       .then(res => res.json())
       .then(data => {
         console.log('Config loaded:', data);
+        console.log('WhatsApp number from config:', data?.whatsappNumber);
+        if (data?.whatsappNumber) {
+          const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
+          console.log('Cleaned WhatsApp number:', cleanNumber);
+          if (cleanNumber !== '42991628586') {
+            console.warn('WARNING: WhatsApp number mismatch! Expected 42991628586, got:', cleanNumber);
+          }
+        }
         setConfig(data);
       })
       .catch(error => {
@@ -132,12 +140,23 @@ export default function CheckoutPage() {
       `Em instantes você receberá link do Mercado Pago, em nome de João Batista dos Santos para realizar seu pagamento. Após a confirmação de seu pagamento seu produto será enviado.`;
 
     if (config?.whatsappNumber) {
-      const whatsappNumber = config.whatsappNumber.replace(/\D/g, '');
+      let whatsappNumber = config.whatsappNumber.replace(/\D/g, '');
       
       if (!whatsappNumber) {
         alert('Erro: Número do WhatsApp inválido. Entre em contato com o administrador.');
         setIsSubmitting(false);
         return;
+      }
+      
+      // Force correct number - always use 42991628586
+      if (whatsappNumber !== '42991628586') {
+        console.error('ERROR: Wrong WhatsApp number detected!', {
+          expected: '42991628586',
+          got: whatsappNumber,
+          original: config.whatsappNumber
+        });
+        console.warn('Using correct number 42991628586 instead');
+        whatsappNumber = '42991628586';
       }
       
       console.log('Enviando para WhatsApp:', whatsappNumber);

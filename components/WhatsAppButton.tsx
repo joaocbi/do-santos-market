@@ -10,13 +10,32 @@ export default function WhatsAppButton() {
   useEffect(() => {
     fetch('/api/config')
       .then(res => res.json())
-      .then(data => setConfig(data))
+      .then(data => {
+        console.log('WhatsAppButton - Config loaded:', data);
+        if (data?.whatsappNumber) {
+          const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
+          console.log('WhatsAppButton - Cleaned number:', cleanNumber);
+          if (cleanNumber !== '42991628586') {
+            console.error('WhatsAppButton - WRONG NUMBER! Expected 42991628586, got:', cleanNumber);
+          }
+        }
+        setConfig(data);
+      })
       .catch(console.error);
   }, []);
 
   if (!config?.whatsappNumber) return null;
 
-  const whatsappUrl = `https://wa.me/${config.whatsappNumber.replace(/\D/g, '')}`;
+  const cleanNumber = config.whatsappNumber.replace(/\D/g, '');
+  
+  // Force correct number
+  const whatsappNumber = cleanNumber === '42991628586' ? cleanNumber : '42991628586';
+  
+  if (cleanNumber !== '42991628586') {
+    console.error('WhatsAppButton - Using fallback number 42991628586 instead of:', cleanNumber);
+  }
+  
+  const whatsappUrl = `https://wa.me/${whatsappNumber}`;
 
   return (
     <a
