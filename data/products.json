@@ -2385,9 +2385,9 @@
   {
     "id": "1771526859091",
     "name": "Relógio Smartwatch Mondaine eCom Assistente de Voz Alexa®",
-    "description": "",
-    "price": 347.1,
-    "costPrice": 267,
+    "description": "Apresentamos o Smartwatch Mondaine que oferece a integração com Alexa, chamadas via Bluetooth, e um Modo de Economia de Bateria para prolongar a duração da carga. Um dispositivo completo com diversas funcionalidades. Ele oferece monitoramento de dados diários, monitor de sono, medição de frequência cardíaca, e suporte para múltiplos esportes, que você pode escolher pelo aplicativo. Também conta com monitoramento de SPO2, informações sobre o clima, notificações, disparador remoto de fotos, tocador de música, respiração guiada, cronômetro, alarmes, timer e lanterna.\n\nAlém disso, o smartwatch inclui ajustes gerais, funções de \"Me Encontre\" e \"Encontrar Telefone\", assistente de ciclo menstrual, mostrador personalizável, lembretes de sedentarismo e hidratação, ligação via Bluetooth, assistente Alexa, monitor de estresse e modo econômico. O Mondaine possui conectividade Bluetooth 5.3 e é compatível com iOS 12 e Android 8 ou superiores.\n\nEle vem com uma bateria de 300mAh, que proporciona uma duração de 5 a 7 dias com Bluetooth ativo. Possui classificação IP68, garantindo proteção contra poeira e imersão contínua em água até 3 metros de profundidade, sem exposição a calor ou forte pressão. A certificação IP é um padrão internacional, onde o primeiro dígito indica a proteção contra sólidos e o segundo contra líquidos.\nA caixa é feita de ABS+PC com dimensões de 37x45mm. A tela é uma TFT-LCD de 1.8 polegadas com resolução de 240x284 pixels e a pulseira é de silicone.",
+    "price": "347.1",
+    "costPrice": "267",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771526838018-mya51v.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771526842759-hwpq6e.jpg",
@@ -2398,11 +2398,13 @@
     "categoryId": "1770756553973",
     "subcategoryId": "",
     "sku": "RELOGIO-SMARTWATCH-M-759829",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "observations": "https://www.mercadolivre.com.br/relogio-smartwatch-mondaine-ecom-assistente-de-voz-alexa/p/MLB41918389?pdp_filters=item_id%3AMLB5400945922&matt_tool=38524122#origin=share&sid=share&wid=MLB5400945922",
     "createdAt": "2026-02-19T18:47:39.091Z",
-    "updatedAt": "2026-02-19T18:47:39.091Z"
+    "updatedAt": "2026-02-19T18:52:35.831Z",
+    "originalPrice": "",
+    "video": ""
   }
 ]
