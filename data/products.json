@@ -743,7 +743,7 @@
     "id": "1771008484451",
     "name": "Pasta Ccb Capanga Liso Marrom Ap - R1691",
     "description": "Pasta CCB Capanga Liso Marrom AP - R1691\nPasta Capanga CCB\nPasta com Repartição Dupla\nAlça de Plástico Preta\n\nCor: Marrom\nEstampa: Liso\nComprimento: 25 cm\nAltura: 20 cm\nLargura: 11 cm\n\nEsta pasta comporta hinário de música CCB, exceto o de violino e Viola que são um pouco maiores\nCabe Bíblia com máximo de 23 cm de Comprimento\nConfeccionada com Tecido Sintético de Qualidade\nParte Externa Revestida em Tecido Sintético\nParte Interna Revestida em TNT e Tecido Sintético\nBolso interno com zíper\nPorta Caneta\nPorta Azeiteira\nFechos Super Resistentes\nFechos e pinos Niquelados\n\n",
-    "price": 175.99,
+    "price": "174.81",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771008477449-ce2o0g.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771008477481-43jjjq.jpg"
@@ -751,11 +751,15 @@
     "categoryId": "1770756493255",
     "subcategoryId": "",
     "sku": "PASTA-CCB-CAPANGA-LI-444931",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T18:48:04.451Z",
-    "updatedAt": "2026-02-13T18:48:04.451Z"
+    "updatedAt": "2026-02-19T16:45:54.877Z",
+    "originalPrice": "",
+    "costPrice": "116.54",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/pasta-ccb-capanga-liso-marrom-ap-r1691/p/MLB37147553?pdp_filters=item_id%3AMLB5317855240&matt_tool=38524122#origin=share&sid=share&wid=MLB5317855240"
   },
   {
     "id": "1771010920636",
