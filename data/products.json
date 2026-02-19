@@ -163,7 +163,7 @@
     "id": "1771001165813",
     "name": "Bolsa Feminina Transversal Media Com Carteira Creme/preto",
     "description": "\nA Bolsa contém um design atemporal, que se encaixa em muitas ocasiões. Ela é espaçosa e muito útil para o dia a dia, estilo clean, com toque atual.\n\nCaracterísticas Especiais Bolsa Transversal:\n- Bolso interno sem fechamento\n- Um bolso interno com zíper\n- Alça transversal removível de 140 cm com regulagem\n\nCaracterísticas Especiais Bolsa Menor:\n- Bolso interno sem fechamento\n- Um bolso interno com zíper\n- Tampa com botão magnético\n- Alça transversal fixa de 1,40 cm com regulagem de tamanho.\n\nCaracterísticas dos produtos:\n\nMaterial Externo: Couro Ecológico\nMaterial Interno: Têxtil, forro acetinado\nTamanho: Único\nFecho: Zíper na bolsa e botão magnético\n\nMedidas:\n\nMedidas da bolsa transversal: (LxAxP): 26x21x11\nMedidas da carteira: (LXA): 9X19",
-    "price": 129.99,
+    "price": "120.01",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771001147062-bjozlh.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771001154228-s6iemp.jpg",
@@ -173,11 +173,15 @@
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "BOLSA-FEMININA-TRANS-037731",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": true,
     "createdAt": "2026-02-13T16:46:05.813Z",
-    "updatedAt": "2026-02-13T16:46:05.813Z"
+    "updatedAt": "2026-02-19T13:04:41.810Z",
+    "originalPrice": "",
+    "costPrice": "66.67",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/bolsa-feminina-transversal-media-com-carteira-cremepreto/p/MLB39163319?pdp_filters=item_id%3AMLB4980992562&matt_tool=38524122#origin=share&sid=share&wid=MLB4980992562"
   },
   {
     "id": "1771001448406",
