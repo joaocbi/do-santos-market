@@ -862,7 +862,7 @@
     "id": "1771012332521",
     "name": "Relógio Dumont Masculino Traveller Dourado - Du2035mpa/4a Fundo Azul",
     "description": "O Relógio Dumont Traveller Dourado une sofisticação e modernidade em um design exclusivo. Com caixa de 40mm, mostrador azul elegante e pulseira em aço dourado, é o acessório ideal para homens que valorizam estilo, presença e qualidade em todas as ocasiões – do dia a dia a eventos especiais.\n\nDiferenciais do Dumont Traveller:\n\n- Design sofisticado que transmite personalidade e confiança\n- Pulseira em aço inoxidável dourado de alta durabilidade\n- Movimento em quartzo para máxima precisão\n- Resistência à água até 50 metros\n- Produto 100% original com garantia de fábrica\n\nEspecificações Técnicas:\n\n- Tamanho da Caixa: 40mm\n- Cor do Mostrador: Azul\n- Material da Pulseira: Aço Inoxidável\n- Cor da Pulseira: Dourado\n- Movimento: Quartzo\n- Resistência à Água: Até 50 metros\n- Garantia: 12 meses",
-    "price": 359.99,
+    "price": "376.60",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771012313430-dg0c4c.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771012320116-g1ea3p.jpg",
@@ -873,11 +873,15 @@
     "categoryId": "1770756553973",
     "subcategoryId": "",
     "sku": "RELOGIO-DUMONT-MASCU-193666",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T19:52:12.522Z",
-    "updatedAt": "2026-02-13T19:52:12.522Z"
+    "updatedAt": "2026-02-19T16:58:02.504Z",
+    "originalPrice": "",
+    "costPrice": "269.00",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/relogio-dumont-masculino-traveller-dourado-du2035mpa4a-fundo-azul/p/MLB53546669?pdp_filters=item_id%3AMLB5550581488&matt_tool=38524122#origin=share&sid=share&wid=MLB5550581488"
   },
   {
     "id": "1771012502625",
