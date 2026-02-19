@@ -814,7 +814,7 @@
     "id": "1771011172346",
     "name": "Kit Relógio Feminino Dumont Dourado - Du2035moi/k4x Fundo Champagne",
     "description": "Chegar tarde aos seus compromissos não é mais uma opção, com este relógio de pulso cumpra com todos os horários e não perca nenhum evento importante. Adicione estilo ao seu outfit, é o complemento ideal.",
-    "price": "299.99",
+    "price": "297.83",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771011850971-poy2wq.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771011864720-1n308t.jpg",
@@ -827,9 +827,11 @@
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T19:32:52.346Z",
-    "updatedAt": "2026-02-13T19:44:35.933Z",
+    "updatedAt": "2026-02-19T16:55:51.065Z",
     "originalPrice": "",
-    "video": ""
+    "video": "",
+    "costPrice": "198.55",
+    "observations": "https://www.mercadolivre.com.br/kit-relogio-feminino-dumont-dourado-du2035moik4x-fundo-champagne/p/MLB44909827?pdp_filters=item_id%3AMLB3937351659&matt_tool=38524122#origin=share&sid=share&wid=MLB3937351659"
   },
   {
     "id": "1771011363076",
