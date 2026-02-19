@@ -701,7 +701,7 @@
     "id": "1771008173784",
     "name": "Pasta Ccb Capanga Matelasse Marrom Ap R1910",
     "description": "Pasta Modelo Capanga para Bíblia e Hinário CCB\nPasta com Repartição Interna Dupla\nAlça em ABS\nCor: Marrom\nEstampa: Matelasse\nLargura: 11 cm\nAltura: 20 cm\nComprimento: 25 cm\nEsta pasta comporta hinário de música CCB, exceto o de violino e viola que são um pouco maiores\nAcomoda Bíblia com até 23 cm de Comprimento\nConfeccionada com Tecido Sintético de Qualidade\nParte Externa Revestida em Tecido Sintético\nParte Interna Revestida em TNT e Tecido Sintético\nBolso interno com zíper\nPorta Caneta\nPorta Azeite de Unção\nFecho Super Resistente\nFecho Niquelado",
-    "price": 175.99,
+    "price": "175.99",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771008161090-uvnzxn.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771008161125-pah2ew.jpg",
@@ -711,11 +711,15 @@
     "categoryId": "1770756493255",
     "subcategoryId": "",
     "sku": "PASTA-CCB-CAPANGA-MA-095768",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": true,
     "createdAt": "2026-02-13T18:42:53.784Z",
-    "updatedAt": "2026-02-13T18:42:53.784Z"
+    "updatedAt": "2026-02-19T16:42:37.800Z",
+    "originalPrice": "",
+    "costPrice": "",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/pasta-ccb-capanga-matelasse-marrom-ap-r1910/p/MLB23058626?pdp_filters=item_id%3AMLB4265636027&matt_tool=38524122#origin=share&sid=share&wid=MLB4265636027"
   },
   {
     "id": "1771008358788",
