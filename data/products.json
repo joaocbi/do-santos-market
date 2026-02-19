@@ -508,7 +508,7 @@
     "id": "1771006357610",
     "name": "Pasta Executiva Ccb Bolsa Capanga Com Alça Cor Preto Liso AP",
     "description": "Pasta Para Bíblia e Hinário CCB Modelo Capanga\nCom Repartição Interna Dupla\n\nAlça Preta em ABS\n\nComprimento: 25 cm\nAltura: 20 cm\nLargura: 11 cm\n\nEsta pasta cabe hinário de música CCB, menos o de violino e viola que é um pouco maior.\nCabe Bíblia com máximo 23 cm de comprimento.\nConfeccionada com tecido sintético de qualidade.\nParte externa revestida em tecido sintético.\nParte interna revestida em TNT e tecido sintético.\n\nBolso interno com zíper.\nPorta caneta.\nPorta azeite de unção\nFecho de pressão resistente.\nFecho niquelado.\n\n",
-    "price": 178,
+    "price": "182.85",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771006340319-jswuoo.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771006344371-xym8su.jpg",
@@ -517,11 +517,15 @@
     "categoryId": "1770756493255",
     "subcategoryId": "",
     "sku": "PASTA-EXECUTIVA-CCB--245340",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T18:12:37.611Z",
-    "updatedAt": "2026-02-13T18:12:37.611Z"
+    "updatedAt": "2026-02-19T14:55:01.664Z",
+    "originalPrice": "",
+    "costPrice": "121.90",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/pasta-executiva-ccb-bolsa-capanga-com-alca-cor-preto-liso-ap/p/MLB24241584?pdp_filters=item_id%3AMLB5574849554&matt_tool=38524122#origin=share&sid=share&wid=MLB5574849554"
   },
   {
     "id": "1771006499341",
