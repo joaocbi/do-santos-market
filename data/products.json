@@ -887,7 +887,7 @@
     "id": "1771012502625",
     "name": "Relógio Dumont Masculino Traveller Prata - Du2035moy/4k",
     "description": "Chegar tarde aos seus compromissos não é mais uma opção, com este relógio de pulso cumpra com todos os horários e não perca nenhum evento importante. Adicione estilo ao seu outfit, é o complemento ideal.",
-    "price": 339.99,
+    "price": "334.60",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771012460112-jbmjsp.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771012460150-6vedzi.jpg",
@@ -898,11 +898,15 @@
     "categoryId": "1770756553973",
     "subcategoryId": "",
     "sku": "RELOGIO-DUMONT-MASCU-354735",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T19:55:02.625Z",
-    "updatedAt": "2026-02-13T19:55:02.625Z"
+    "updatedAt": "2026-02-19T16:59:18.036Z",
+    "originalPrice": "",
+    "costPrice": "239.00",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/relogio-dumont-masculino-traveller-prata-du2035moy4k/p/MLB53328373?pdp_filters=item_id%3AMLB4145752753&matt_tool=38524122#origin=share&sid=share&wid=MLB4145752753"
   },
   {
     "id": "1771013274931",
