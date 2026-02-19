@@ -2501,5 +2501,28 @@
     "observations": "https://www.mercadolivre.com.br/kit-relogio-mondaine-pequeno-misto-colar-cristal-32720lpmkbe-cor-da-correia-dourado-e-prateado-cor-do-bisel-prateado-e-dourado-cor-do-fundo-palha/p/MLB28180886?pdp_filters=item_id%3AMLB3593488539&matt_tool=38524122#origin=share&sid=share&wid=MLB3593488539",
     "createdAt": "2026-02-19T21:14:15.464Z",
     "updatedAt": "2026-02-19T21:14:15.464Z"
+  },
+  {
+    "id": "1771535810931",
+    "name": "Relógio Mondaine Feminino Quadrado Anadigi Prateado",
+    "description": "ESPECIFICAÇÕES TÉCNICAS\n- Marca: Mondaine\n- Referência: 32216L0MVNE3\n- Gênero: Feminino\n- Tipo de mostrador: Digital e analógico\n- Tipo de movimento: Quartz\n- Tipo de bateria: Óxido de Prata\n- Tipo de fecho: Dobrável\n- Funções: Calendário, alarme, cronômetro\n- Cor da caixa: Prata\n- Cor do mostrador: Prata\n- Cor da pulseira: Prata\n- Material da caixa: Aço\n- Material da pulseira: Aço\n- Largura da caixa: 3,2 cm\n- Espessura da caixa: 1,0 cm\n- Comprimento do relógio: 23 cm\n- Largura da pulseira: 1,8 cm\n- Resistência à água: 3 ATM (30m)",
+    "price": 303.1,
+    "costPrice": 216.5,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771535789429-kyq7x9.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771535803323-1otxy8.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771535803879-pfn5s5.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771535804345-v6qxeg.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771535804883-0qzw5y.jpg"
+    ],
+    "categoryId": "1770756553973",
+    "subcategoryId": "",
+    "sku": "RELOGIO-MONDAINE-FEM-703592",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "observations": "https://www.mercadolivre.com.br/relogio-mondaine-feminino-quadrado-anadigi-prateado/p/MLB23321215?pdp_filters=item_id%3AMLB3902343431&matt_tool=38524122#origin=share&sid=share&wid=MLB3902343431",
+    "createdAt": "2026-02-19T21:16:50.931Z",
+    "updatedAt": "2026-02-19T21:16:50.931Z"
   }
 ]
