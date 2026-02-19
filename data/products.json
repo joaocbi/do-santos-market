@@ -2430,5 +2430,30 @@
     "observations": "https://www.mercadolivre.com.br/relogio-mondaine-masculino-digital-32318g0mvnv2-com-brilha-no-escuro-com-calendario-cronmetro-prova-dagua-50-metros/p/MLB39072178?pdp_filters=item_id%3AMLB4008130611&matt_tool=38524122#origin=share&sid=share&wid=MLB4008130611",
     "createdAt": "2026-02-19T20:47:00.941Z",
     "updatedAt": "2026-02-19T20:47:00.941Z"
+  },
+  {
+    "id": "1771534559038",
+    "name": "Relogio Mondaine Feminino Quadrado 99487lpmvde1 Dourado",
+    "description": "Chegar tarde aos seus compromissos não é mais uma opção, com este relógio de pulso cumpra com todos os horários e não perca nenhum evento importante. Adicione estilo ao seu outfit, é o complemento ideal.",
+    "price": 323.04,
+    "costPrice": 215.36,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534540079-n2bt65.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534552082-w0435b.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534552756-epxz53.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534553207-xym50g.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534553980-p3r0pn.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534554487-m3y63b.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771534554852-h02d70.jpg"
+    ],
+    "categoryId": "1770756553973",
+    "subcategoryId": "",
+    "sku": "RELOGIO-MONDAINE-FEM-135648",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "observations": "https://www.mercadolivre.com.br/relogio-mondaine-feminino-quadrado-99487lpmvde1-dourado/p/MLB23085799?pdp_filters=item_id%3AMLB3847085147&matt_tool=38524122#origin=share&sid=share&wid=MLB3847085147",
+    "createdAt": "2026-02-19T20:55:59.038Z",
+    "updatedAt": "2026-02-19T20:55:59.038Z"
   }
 ]
