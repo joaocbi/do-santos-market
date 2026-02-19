@@ -2330,8 +2330,8 @@
     "id": "1771526541621",
     "name": "Kit Relógio Mondaine Dourado Feminino 32607lpmkde1k1",
     "description": "Informações Básicas\nMarca: Mondaine\nModelo: 32607LPMKDE1K1\nGênero: Feminino\nResistência à Água: 5atm – 50mts: Pode ser usado para nadar, praticar esportes e lavar as mãos\n\nMedidas do Relógio\nTamanho (DIÂMETRO): 2,8 cm (PEQUENO)\nCircunferência da pulseira e tamanho máximo de ajuste de punho: 18 cm\nEspessura: 0,9 cm\nLargura da Pulseira: 1,2 cm\nPeso: 53 gramas\n\nMateriais do Relógio\nComposição do Vidro: Cristal Mineral (RESISTENTE A RISCOS)\nMaterial da Caixa: Metal\nMaterial da Pulseira: Aço Inox\nMaterial da Tampa: Aço Inox\n\nCaracterísticas do Relógio\nMecanismo: Analógico\nAlimentação: Bateria\nDuração aproximada da bateria: 2 anos\nFecho: Fecho Dobrável com Botão (Folding Clasp with Push-Button)\nTampa Posterior: Rosca\n\nCores\nMostrador: Dourado\nCaixa: Dourado\nPulseira: Dourado\n\nObservação importante sobre o Kit Colar E Brincos: O relógio vai exatamente como nas fotos. O Colar e os Brincos são um brinde e podem variar de acordo com o lote do fabricante, não sendo possível escolhe-los.",
-    "price": 228.06,
-    "costPrice": 162.9,
+    "price": "228.06",
+    "costPrice": "162.9",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771526525042-adrm0w.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771526525750-gv831e.jpg",
@@ -2345,12 +2345,14 @@
     "categoryId": "1770756553973",
     "subcategoryId": "",
     "sku": "KIT-RELOGIO-MONDAINE-405723",
-    "stock": 0,
+    "stock": "10",
     "active": true,
     "featured": false,
     "observations": "https://www.mercadolivre.com.br/kit-relogio-mondaine-dourado-feminino-32607lpmkde1k1/p/MLB30337896?pdp_filters=item_id%3AMLB4080852535&matt_tool=38524122#origin=share&sid=share&wid=MLB4080852535",
     "createdAt": "2026-02-19T18:42:21.621Z",
-    "updatedAt": "2026-02-19T18:42:21.621Z"
+    "updatedAt": "2026-02-19T18:47:55.880Z",
+    "originalPrice": "",
+    "video": ""
   },
   {
     "id": "1771526736153",
