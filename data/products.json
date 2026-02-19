@@ -484,7 +484,7 @@
     "id": "1771006216108",
     "name": "Pasta Dupla Preta Musical Rava Para Bíblia e Hinário CCB Costurado",
     "description": "Pasta Maleta Modelo Dupla Para Bíblia E Hinário CCB\nIndicado Para Hinário e bíblia CCB\nEste modelo não é indicado para hinário de cordas\n\nComprimento 25 cm\nLargura 20 cm\nAltura 11 cm\nAcomoda o Hinário de Músico Grande 22 x 17 cm\nAcomoda Bíblia Grande 22 x 17 cm\nConfeccionada com Materiais de Primeira qualidade\nParte Externa Revestida em Tecido Sintético\nParte Interna revestida em TNT e Tecido Sintético\nBolso interno sem zíper\nFecho de Pressão Super Resistente\nAlça reforçada\nProduzida no Brasil",
-    "price": 122.99,
+    "price": "149.90",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771006094576-ik5f6a.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771006094648-mfs5ah.jpg",
@@ -494,11 +494,15 @@
     "categoryId": "1770756493255",
     "subcategoryId": "",
     "sku": "PASTA-DUPLA-PRETA-MU-018609",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T18:10:16.108Z",
-    "updatedAt": "2026-02-13T18:10:16.108Z"
+    "updatedAt": "2026-02-19T14:52:42.632Z",
+    "originalPrice": "",
+    "costPrice": "74.95",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/pasta-dupla-preta-musical-rava-para-biblia-e-hinario-ccb-costurado/p/MLB24241537?pdp_filters=item_id%3AMLB4342589405&matt_tool=38524122#origin=share&sid=share&wid=MLB4342589405"
   },
   {
     "id": "1771006357610",
