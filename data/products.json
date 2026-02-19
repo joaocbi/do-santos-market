@@ -3,7 +3,7 @@
     "id": "1770928081260",
     "name": "Bolsa Feminina Transversal Lateral Alça de Corrente Matelasse Clutch Cor Creme",
     "description": "A bolsa Helena é uma clutch elegante, com bordados em matelassê e bordas lisas. Os metais são todos na cor dourada, e a alça é em corrente com protetor de ombro. O interior é forrado, contendo uma divisória sem zíper e a logo estampada. O fecho é feito com dois botões magnéticos, um em cada lado da tampa, permitindo uso lateral ou transversal.\n\nMaterial Externo: Sintético\nMaterial Interno: Têxtil\nFecho: Botão Magnético\n\nMedidas Aproximadas da Peça:\nAltura: 14 cm\nComprimento: 20 cm\nProfundidade: 8 cm\n\n",
-    "price": 98.99,
+    "price": "96.47",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1770927990548-q5ffgv.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1770927990594-mbhr6c.jpg",
@@ -13,11 +13,14 @@
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "BOLSA-FEMININA-TRANS-849995",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-12T20:28:01.260Z",
-    "updatedAt": "2026-02-12T20:28:01.260Z"
+    "updatedAt": "2026-02-19T11:58:41.887Z",
+    "originalPrice": "",
+    "costPrice": "50.77",
+    "observations": "https://mercadolivre.com/sec/2JvGfpE"
   },
   {
     "id": "1770928377118",
