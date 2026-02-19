@@ -187,7 +187,7 @@
     "id": "1771001448406",
     "name": "Bolsa Feminina Tote de Lado Alça De Mão E Transversal Selten Cor Creme",
     "description": "A Bolsa Aurora é a definição de estilo e praticidade para o seu dia a dia. Com tamanho médio, ela oferece o equilíbrio perfeito entre elegância e funcionalidade. Seu design cuidadosamente elaborado a torna uma escolha especialmente perfeita para acompanhar sua rotina, seja no trabalho ou nos momentos de lazer.\nEquipada com uma alça transversal ajustável, proporciona conforto e privacidade, permitindo que você a use de maneira prática e descontraída. Além disso, a presença da alça de mão confere a opção de um estilo mais clássico e elegante.\n\nCaracterísticas do produto:\nMaterial Externo: Sintético\nMaterial Interno: Têxtil\nTamanho: Médio\nFecho: Zíper\nCaracterísticas Especiais: bolso interno, Alça de mão, alça transversal de 140 cm com regulagem de tamanho.\n\nMedidas da peça: 26cm de comprimento - 19cm de altura - 9,5cm de profundidade",
-    "price": 98.99,
+    "price": "107.95",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771001414553-umy5dq.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771001420096-4uo3t4.jpg",
@@ -198,11 +198,15 @@
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "BOLSA-FEMININA-TOTE--370292",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T16:50:48.406Z",
-    "updatedAt": "2026-02-13T16:50:48.406Z"
+    "updatedAt": "2026-02-19T13:09:54.612Z",
+    "originalPrice": "",
+    "costPrice": "59.97",
+    "video": "",
+    "observations": "https://mercadolivre.com/sec/1ALd1wf"
   },
   {
     "id": "1771001634774",
