@@ -362,8 +362,9 @@
     "id": "1771004542010",
     "name": "Kit 2 Bolsa Feminina Transversal De Lado E Ombro + Carteira Cor Nude Desenho do tecido Lisa",
     "description": "Kit Bia é ideal para quem busca praticidade no dia a dia. A bolsa grande é clean, possui ornamentos básicos que combinam com qualquer look. A bolsa pequena pode ser usada como bolsa transversal ou de mão, e a carteira possui várias entradas para cartões, documentos com foto, dinheiro e bolso com zíper para moedas.\n\nEspecificações da bolsa grande\nMaterial: Couro sintético\nFechamento: Zíper\nCaracterísticas especiais: Alça transversal de aproximadamente 1,20 cm com regulagem de tamanho.\n\nMEDIDAS\nAltura: 20cm\nLargura: 6cm\nComprimento: 25.5cm\n\nEspecificações da bolsa pequena\nMaterial: Couro sintético\nFechamento: Botão magnético\nCaracterísticas especiais: Alça transversal de aproximadamente 1,20 cm com regulagem de tamanho.\n\nMEDIDAS\nAltura: 14cm\nLargura: 6cm\nComprimento: 19,5cm\n\nEspecificações da carteira\nMaterial: Couro sintético\nFechamento: Botão magnético",
-    "price": 186.99,
+    "price": "174.45",
     "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771511886786-foxk85.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771004515428-9ib437.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771004515460-9nwsaj.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771004520934-u0fuvh.jpg",
@@ -374,11 +375,15 @@
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "KIT-2-BOLSA-FEMININA-405827",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T17:42:22.010Z",
-    "updatedAt": "2026-02-13T17:42:22.010Z"
+    "updatedAt": "2026-02-19T14:39:14.147Z",
+    "originalPrice": "",
+    "costPrice": "116.30",
+    "video": "",
+    "observations": ""
   },
   {
     "id": "1771004741618",
