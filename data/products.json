@@ -74,7 +74,7 @@
     "id": "1770928732162",
     "name": "Bolsa Feminina Transversal Media Com Carteira Creme Selten",
     "description": "Bolsa Feminina com Carteira Lua\n\nA Bolsa Selten é ideal para mulheres que desejam levar itens essenciais com elegância. Possui fechamento em zíper e alça removível, proporcionando versatilidade e segurança. Acompanha uma carteira elegante e prática, adequada para diversas ocasiões. Uso recomendado para o cotidiano e trabalho.\n\nCARACTERÍSTICAS:\nMaterial: Sintético\nFechamento: Com zíper\n\nMedidas da Bolsa:\nAltura: 19cm\nProfundidade: 10cm\nLargura: 25cm\n\nMedidas da Carteira:\nComprimento: 17cm\nAltura: 8,5cm\n\nTodas as imagens são reais.",
-    "price": 104.99,
+    "price": "116.98",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1770928695348-jlip55.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1770928699997-2vhim9.jpg",
@@ -84,11 +84,15 @@
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "BOLSA-FEMININA-TRANS-660614",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-12T20:38:52.162Z",
-    "updatedAt": "2026-02-12T20:38:52.162Z"
+    "updatedAt": "2026-02-19T12:13:55.910Z",
+    "originalPrice": "",
+    "costPrice": "64.99",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/bolsa-feminina-transversal-media-com-carteira-creme-selten/p/MLB36519417?pdp_filters=item_id%3AMLB3679713429&matt_tool=38524122#origin=share&sid=share&wid=MLB3679713429"
   },
   {
     "id": "1770992153085",
