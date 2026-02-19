@@ -212,7 +212,7 @@
     "id": "1771001634774",
     "name": "Bolsas Femininas Transversal E Pequena Tiracolo Com Carteira Cor Marrom",
     "description": "A Bolsa Lorena Selten é de tamanho médio, com metais dourados e um chaveirinho lateral com o nome da marca. Conta com duas repartições com zíper, bolso interno com e sem zíper, e forro têxtil.\nMedidas da Bolsa:\nAltura: 19 cm\nLargura: 25 cm\nProfundidade: 11 cm\n\nA bolsa Valentina tem tampa em formato de envelope, com botão magnético para segurança dos pertences e penduricalho estiloso na tampa. Seus metais são dourados, possui bolso interno sem zíper e forro em cetim macio e suave ao toque, além de alça transversal com regulador de aproximadamente 130 cm.\nMedidas da Bolsa:\nAltura: 15 cm\nLargura: 19 cm\nProfundidade: 09 cm\n\nA Carteira Selten é versátil, com metais dourados, espaços para cartões, documento e dinheiro.\n\nMaterial Externo: Sintético\nMaterial Interno: Sintético\nFecho: Botão Magnético",
-    "price": 199.99,
+    "price": "199.50",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771001588708-zk0dmr.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771001595407-t1ze7k.jpg",
@@ -224,11 +224,15 @@
     "categoryId": "1770756362394",
     "subcategoryId": "",
     "sku": "BOLSAS-FEMININAS-TRA-478900",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T16:53:54.774Z",
-    "updatedAt": "2026-02-13T16:53:54.774Z"
+    "updatedAt": "2026-02-19T13:47:36.586Z",
+    "originalPrice": "",
+    "costPrice": "142.50",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/bolsas-femininas-transversal-e-pequena-tiracolo-com-carteira-cor-marrom/p/MLB36505912?pdp_filters=item_id%3AMLB3679440297&matt_tool=38524122#origin=share&sid=share&wid=MLB3679440297"
   },
   {
     "id": "1771001816860",
