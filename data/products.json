@@ -937,7 +937,7 @@
     "id": "1771013507998",
     "name": "Relógio Dumont Masculino Traveller Prata - Du2035mow/4a Fundo Azul",
     "description": "Chegar tarde aos seus compromissos não é mais uma opção, com este relógio de pulso cumpra com todos os horários e não perca nenhum evento importante. Adicione estilo ao seu outfit, é o complemento ideal.",
-    "price": 319.39,
+    "price": "343.50",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771013478071-mspt5j.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771013487940-620pa3.jpg",
@@ -948,11 +948,15 @@
     "categoryId": "1770756553973",
     "subcategoryId": "",
     "sku": "RELOGIO-DUMONT-MASCU-366631",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T20:11:47.998Z",
-    "updatedAt": "2026-02-13T20:11:47.998Z"
+    "updatedAt": "2026-02-19T17:03:09.288Z",
+    "originalPrice": "",
+    "costPrice": "229.00",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/relogio-dumont-masculino-traveller-prata-du2035mow4a-fundo-azul/p/MLB53022377?pdp_filters=item_id%3AMLB4131253607&matt_tool=38524122#origin=share&sid=share&wid=MLB4131253607"
   },
   {
     "id": "1771013745423",
