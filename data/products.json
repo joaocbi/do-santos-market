@@ -2226,5 +2226,26 @@
     "updatedAt": "2026-02-18T17:29:31.726Z",
     "originalPrice": "",
     "video": ""
+  },
+  {
+    "id": "1771522683155",
+    "name": "Relógio Mondaine Prata Feminino Analógico 32591l0mvnm2 4,0cm",
+    "description": "Relógio de pulso analógico feminino Mondaine na cor prata, com um diâmetro de 4,0 cm, ideal para quem busca um acessório que una elegância e funcionalidade. Seu design sofisticado complementa qualquer outfit, tornando-o perfeito para diversas ocasiões, desde eventos formais até o uso diário. A caixa é feita de aço, garantindo durabilidade e resistência, enquanto a correia também em aço proporciona conforto e estilo. Com um movimento analógico preciso, este relógio é uma escolha confiável para adultos que apreciam a combinação de beleza e praticidade. Além disso, possui resistência à água de até 50 metros, permitindo que você o use sem preocupações em diferentes ambientes. A embalagem adicional, com dimensões de 21 cm de altura, 11 cm de comprimento e 14 cm de largura, garante que seu novo acessório chegue em perfeitas condições.",
+    "price": 362.6,
+    "costPrice": 259,
+    "images": [
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771522667084-qceiqa.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771522672764-2r09b7.jpg",
+      "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771522673360-g0c6pm.jpg"
+    ],
+    "categoryId": "1770756553973",
+    "subcategoryId": "",
+    "sku": "RELOGIO-DE-PULSO-MON-530449",
+    "stock": 10,
+    "active": true,
+    "featured": false,
+    "observations": "https://www.mercadolivre.com.br/relogio-mondaine-prata-feminino-analogico-32591l0mvnm2-40cm/p/MLB28082926?pdp_filters=item_id%3AMLB4079483363&matt_tool=38524122#origin=share&sid=share&wid=MLB4079483363",
+    "createdAt": "2026-02-19T17:38:03.155Z",
+    "updatedAt": "2026-02-19T17:38:03.156Z"
   }
 ]
