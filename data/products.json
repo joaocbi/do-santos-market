@@ -912,7 +912,7 @@
     "id": "1771013274931",
     "name": "Relógio Dumont Masculino Traveller Dourado - Du2035moz/4p Dourado Preto",
     "description": "Relógio Dumont Masculino Traveller Dourado - DU2035MOZ/4P\n\nO Relógio Dumont Traveller Dourado combina elegância e robustez em um design sofisticado. Com caixa de 40mm, mostrador preto imponente e pulseira em aço dourado, é a escolha ideal para homens que valorizam estilo, personalidade e qualidade em um único acessório.\n\nVersátil e resistente, o Dumont Traveller é perfeito para acompanhar você em qualquer ocasião, seja no dia a dia ou em momentos especiais, sempre transmitindo confiança e bom gosto.\n\nDiferenciais do Dumont Traveller:\n\n- Design moderno com caixa dourada e mostrador preto elegante\n- Pulseira em aço inoxidável dourado com alta durabilidade\n- Movimento em quartzo de precisão\n- Resistência à água até 50 metros\n- Produto 100% original com garantia de fábrica\n\nEspecificações Técnicas:\n\n- Tamanho da Caixa: 40mm\n- Cor do Mostrador: Preto\n- Material da Pulseira: Aço Inoxidável\n- Cor da Pulseira: Dourado\n- Movimento: Quartzo\n- Resistência à Água: Até 50 metros\n- Garantia: 12 meses",
-    "price": 399.99,
+    "price": "390.05",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771013258964-3ezcqn.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771013270602-db3m2q.jpg",
@@ -923,11 +923,15 @@
     "categoryId": "1770756553973",
     "subcategoryId": "",
     "sku": "RELOGIO-DUMONT-MASCU-132903",
-    "stock": 10,
+    "stock": "10",
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T20:07:54.931Z",
-    "updatedAt": "2026-02-13T20:07:54.931Z"
+    "updatedAt": "2026-02-19T17:00:32.944Z",
+    "originalPrice": "",
+    "costPrice": "269.00",
+    "video": "",
+    "observations": "https://www.mercadolivre.com.br/relogio-dumont-masculino-traveller-dourado--du2035moz4p/up/MLBU3586184645?pdp_filters=item_id%3AMLB5954869674&matt_tool=38524122#origin=share&sid=share&wid=MLB5954869674"
   },
   {
     "id": "1771013507998",
