@@ -788,7 +788,7 @@
     "id": "1771011061163",
     "name": "Relógio Dumont Masculino Traveller Grafite - Du2035mox/4f Fundo Cinza",
     "description": "Chegar tarde aos seus compromissos não é mais uma opção, com este relógio de pulso cumpra com todos os horários e não perca nenhum evento importante. Adicione estilo ao seu outfit, é o complemento ideal.",
-    "price": "365.99",
+    "price": "312.08",
     "images": [
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771011052447-8x79y0.jpg",
       "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1771011052516-oi2nm2.jpg",
@@ -804,9 +804,11 @@
     "active": true,
     "featured": false,
     "createdAt": "2026-02-13T19:31:01.163Z",
-    "updatedAt": "2026-02-13T19:40:38.659Z",
+    "updatedAt": "2026-02-19T16:48:49.075Z",
     "originalPrice": "",
-    "video": ""
+    "video": "",
+    "costPrice": "208.05",
+    "observations": "https://www.mercadolivre.com.br/relogio-dumont-masculino-traveller-prata-du2035mot5a-correia-marrom-fundo-azul/p/MLB52336732?pdp_filters=item_id%3AMLB5493855132&matt_tool=38524122#origin=share&sid=share&wid=MLB5493855132"
   },
   {
     "id": "1771011172346",
