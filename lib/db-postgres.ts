@@ -13,35 +13,48 @@ import {
   Order,
 } from './types';
 
-// Get database connection string from environment
-const sql = neon(process.env.POSTGRES_URL || '');
-
 // Helper to check if Postgres is available
 export const isPostgresAvailable = (): boolean => {
   return !!process.env.POSTGRES_URL;
 };
 
+// Lazy initialization of SQL connection to avoid build-time errors
+let sqlInstance: ReturnType<typeof neon> | null = null;
+
+function getSql() {
+  if (!sqlInstance) {
+    const connectionString = process.env.POSTGRES_URL;
+    if (!connectionString) {
+      throw new Error('POSTGRES_URL is not configured');
+    }
+    sqlInstance = neon(connectionString);
+  }
+  return sqlInstance;
+}
+
 // Database operations using Postgres
 export const dbPostgres = {
   categories: {
     getAll: async (): Promise<Category[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, slug, parent_id as "parentId", image, "order"
         FROM categories
         ORDER BY "order" ASC
-      `;
+      ` as any[];
       return result.map((row: any) => ({
         ...row,
         subcategories: [],
       })) as Category[];
     },
     getById: async (id: string): Promise<Category | undefined> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, slug, parent_id as "parentId", image, "order"
         FROM categories
         WHERE id = ${id}
         LIMIT 1
-      `;
+      `) as any[];
       if (result.length === 0) return undefined;
       const row = result[0] as any;
       return {
@@ -88,24 +101,26 @@ export const dbPostgres = {
 
   products: {
     getAll: async (): Promise<Product[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, description, price, original_price as "originalPrice", cost_price as "costPrice",
                images, video, category_id as "categoryId", subcategory_id as "subcategoryId",
                sku, stock, active, featured, observations, created_at as "createdAt", updated_at as "updatedAt"
         FROM products
         ORDER BY created_at DESC
-      `;
+      `) as any[];
       return result as Product[];
     },
     getById: async (id: string): Promise<Product | undefined> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, description, price, original_price as "originalPrice", cost_price as "costPrice",
                images, video, category_id as "categoryId", subcategory_id as "subcategoryId",
                sku, stock, active, featured, observations, created_at as "createdAt", updated_at as "updatedAt"
         FROM products
         WHERE id = ${id}
         LIMIT 1
-      `;
+      `) as any[];
       return result[0] as Product | undefined;
     },
     create: async (product: Product): Promise<Product> => {
@@ -148,29 +163,32 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM products WHERE id = ${id}`;
+      const sql = getSql();
+      await sql`DELETE FROM products WHERE id = ${id}`;
       // Check if deletion was successful by trying to get the record
-      const check = await sql`SELECT id FROM products WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM products WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   customers: {
     getAll: async (): Promise<Customer[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, email, phone, cpf, addresses, created_at as "createdAt"
         FROM customers
         ORDER BY created_at DESC
-      `;
+      `) as any[];
       return result as Customer[];
     },
     getById: async (id: string): Promise<Customer | undefined> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, email, phone, cpf, addresses, created_at as "createdAt"
         FROM customers
         WHERE id = ${id}
         LIMIT 1
-      `;
+      `) as any[];
       return result[0] as Customer | undefined;
     },
     create: async (customer: Customer): Promise<Customer> => {
@@ -199,18 +217,19 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM customers WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM customers WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM customers WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   paymentMethods: {
     getAll: async (): Promise<PaymentMethod[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, type, active, installments, fee
         FROM payment_methods
         ORDER BY name
-      `;
+      `) as any[];
       return result as PaymentMethod[];
     },
     create: async (method: PaymentMethod): Promise<PaymentMethod> => {
@@ -240,18 +259,19 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM payment_methods WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM payment_methods WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM payment_methods WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   deliveryMethods: {
     getAll: async (): Promise<DeliveryMethod[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, name, price, estimated_days as "estimatedDays", active, free_shipping_threshold as "freeShippingThreshold"
         FROM delivery_methods
         ORDER BY price
-      `;
+      `) as any[];
       return result as DeliveryMethod[];
     },
     create: async (method: DeliveryMethod): Promise<DeliveryMethod> => {
@@ -281,18 +301,19 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM delivery_methods WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM delivery_methods WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM delivery_methods WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   banners: {
     getAll: async (): Promise<Banner[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, title, image, link, "order", active, position
         FROM banners
         ORDER BY "order" ASC
-      `;
+      `) as any[];
       return result as Banner[];
     },
     create: async (banner: Banner): Promise<Banner> => {
@@ -324,18 +345,19 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM banners WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM banners WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM banners WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   links: {
     getAll: async (): Promise<ClickableLink[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, title, url, icon, "order", active
         FROM links
         ORDER BY "order" ASC
-      `;
+      `) as any[];
       return result as ClickableLink[];
     },
     create: async (link: ClickableLink): Promise<ClickableLink> => {
@@ -366,18 +388,19 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM links WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM links WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM links WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   gallery: {
     getAll: async (): Promise<GalleryImage[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, url, alt, "order", category
         FROM gallery_images
         ORDER BY "order" ASC
-      `;
+      `) as any[];
       return result as GalleryImage[];
     },
     create: async (image: GalleryImage): Promise<GalleryImage> => {
@@ -406,18 +429,19 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM gallery_images WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM gallery_images WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM gallery_images WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   videos: {
     getAll: async (): Promise<Video[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, title, url, type, thumbnail, "order", active
         FROM videos
         ORDER BY "order" ASC
-      `;
+      `) as any[];
       return result as Video[];
     },
     create: async (video: Video): Promise<Video> => {
@@ -449,21 +473,22 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       await sql`DELETE FROM videos WHERE id = ${id}`;
-      const check = await sql`SELECT id FROM videos WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM videos WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
 
   config: {
     get: async (): Promise<SiteConfig> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT whatsapp_number as "whatsappNumber", email, social_media as "socialMedia",
                mercado_pago_access_token as "mercadoPagoAccessToken",
                mercado_pago_public_key as "mercadoPagoPublicKey"
         FROM site_config
         WHERE id = 'config'
         LIMIT 1
-      `;
+      `) as any[];
       if (result.length === 0) {
         // Initialize default config
         const defaultConfig: SiteConfig = {
@@ -500,7 +525,8 @@ export const dbPostgres = {
 
   orders: {
     getAll: async (): Promise<Order[]> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, customer_name as "customerName", customer_email as "customerEmail",
                customer_phone as "customerPhone", customer_cpf as "customerCpf",
                address, items, subtotal, shipping_fee as "shippingFee", total,
@@ -509,11 +535,12 @@ export const dbPostgres = {
                notes, status, created_at as "createdAt", updated_at as "updatedAt"
         FROM orders
         ORDER BY created_at DESC
-      `;
+      `) as any[];
       return result as Order[];
     },
     getById: async (id: string): Promise<Order | undefined> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, customer_name as "customerName", customer_email as "customerEmail",
                customer_phone as "customerPhone", customer_cpf as "customerCpf",
                address, items, subtotal, shipping_fee as "shippingFee", total,
@@ -523,7 +550,7 @@ export const dbPostgres = {
         FROM orders
         WHERE id = ${id}
         LIMIT 1
-      `;
+      `) as any[];
       return result[0] as Order | undefined;
     },
     create: async (order: Order): Promise<Order> => {
@@ -582,7 +609,8 @@ export const dbPostgres = {
       return updated;
     },
     getByPaymentId: async (paymentId: string): Promise<Order | undefined> => {
-      const result = await sql`
+      const sql = getSql();
+      const result = (await sql`
         SELECT id, customer_name as "customerName", customer_email as "customerEmail",
                customer_phone as "customerPhone", customer_cpf as "customerCpf",
                address, items, subtotal, shipping_fee as "shippingFee", total,
@@ -592,7 +620,7 @@ export const dbPostgres = {
         FROM orders
         WHERE mercado_pago_payment_id = ${paymentId} OR payment_id = ${paymentId}
         LIMIT 1
-      `;
+      `) as any[];
       return result[0] as Order | undefined;
     },
   },
