@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const config = db.config.get();
     
-    const checks = {
+    const checks: any = {
       hasAccessToken: !!config.mercadoPagoAccessToken,
       hasPublicKey: !!config.mercadoPagoPublicKey,
       accessTokenLength: config.mercadoPagoAccessToken?.length || 0,
