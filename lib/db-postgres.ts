@@ -43,7 +43,16 @@ export const dbPostgres = {
         LIMIT 1
       `;
       if (result.length === 0) return undefined;
-      return { ...result[0], subcategories: [] };
+      const row = result[0] as any;
+      return {
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        parentId: row.parentId,
+        image: row.image,
+        order: row.order,
+        subcategories: []
+      };
     },
     create: async (category: Category): Promise<Category> => {
       await sql`
