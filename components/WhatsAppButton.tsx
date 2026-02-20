@@ -15,8 +15,10 @@ export default function WhatsAppButton() {
         if (data?.whatsappNumber) {
           const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
           console.log('WhatsAppButton - Cleaned number:', cleanNumber);
-          if (cleanNumber !== '42991628586') {
-            console.error('WhatsAppButton - WRONG NUMBER! Expected 42991628586, got:', cleanNumber);
+          // Accept both formats: with country code (5542991628586) or without (42991628586)
+          const isValidNumber = cleanNumber === '5542991628586' || cleanNumber === '42991628586';
+          if (!isValidNumber) {
+            console.warn('WhatsAppButton - Number format may be incorrect. Expected 5542991628586 or 42991628586, got:', cleanNumber);
           }
         }
         setConfig(data);

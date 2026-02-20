@@ -47,8 +47,10 @@ export default function CheckoutPage() {
         if (data?.whatsappNumber) {
           const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
           console.log('Cleaned WhatsApp number:', cleanNumber);
-          if (cleanNumber !== '42991628586') {
-            console.warn('WARNING: WhatsApp number mismatch! Expected 42991628586, got:', cleanNumber);
+          // Accept both formats: with country code (5542991628586) or without (42991628586)
+          const isValidNumber = cleanNumber === '5542991628586' || cleanNumber === '42991628586';
+          if (!isValidNumber) {
+            console.warn('WARNING: WhatsApp number format may be incorrect. Expected 5542991628586 or 42991628586, got:', cleanNumber);
           }
         }
         setConfig(data);
