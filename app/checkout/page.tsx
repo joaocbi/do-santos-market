@@ -422,7 +422,32 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4">Método de Pagamento</h2>
               <div className="space-y-3">
-                <label className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                {config?.mercadoPagoAccessToken && (
+                  <label className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition ${
+                    formData.paymentMethod === 'mercado_pago' 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="mercado_pago"
+                      checked={formData.paymentMethod === 'mercado_pago'}
+                      onChange={handleInputChange}
+                      className="w-5 h-5 text-primary"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-lg">💳 Pagamento Online (Mercado Pago)</div>
+                      <div className="text-sm text-gray-600 mt-1">Pague diretamente no site com cartão, PIX ou boleto</div>
+                      <div className="text-xs text-green-600 mt-1 font-medium">✓ Mais rápido e seguro</div>
+                    </div>
+                  </label>
+                )}
+                <label className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition ${
+                  formData.paymentMethod === 'whatsapp' 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-gray-200 hover:bg-gray-50'
+                }`}>
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -431,26 +456,19 @@ export default function CheckoutPage() {
                     onChange={handleInputChange}
                     className="w-5 h-5 text-primary"
                   />
-                  <div>
-                    <div className="font-semibold">Pagamento via WhatsApp</div>
-                    <div className="text-sm text-gray-600">Você receberá as instruções de pagamento via WhatsApp</div>
-                  </div>
-                </label>
-                <label className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="mercado_pago"
-                    checked={formData.paymentMethod === 'mercado_pago'}
-                    onChange={handleInputChange}
-                    className="w-5 h-5 text-primary"
-                  />
-                  <div>
-                    <div className="font-semibold">Pagamento Online (Mercado Pago)</div>
-                    <div className="text-sm text-gray-600">Pague diretamente no site com cartão, PIX ou boleto</div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-lg">📱 Pagamento via WhatsApp</div>
+                    <div className="text-sm text-gray-600 mt-1">Você receberá as instruções de pagamento via WhatsApp</div>
                   </div>
                 </label>
               </div>
+              {!config?.mercadoPagoAccessToken && (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Nota:</strong> Para ativar pagamento online, configure as credenciais do Mercado Pago no painel administrativo.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-6">
