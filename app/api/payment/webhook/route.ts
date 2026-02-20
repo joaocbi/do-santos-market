@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { autoCommit } from '@/lib/gitAutoCommit';
 import { sendWhatsAppNotification, formatOrderWhatsAppMessage } from '@/lib/whatsapp';
 
@@ -53,7 +53,9 @@ export async function POST(request: NextRequest) {
 
     if ((type === 'payment' || type === 'merchant_order') && dataId) {
       // Fetch payment details from Mercado Pago
-      const config = db.config.get();
+      const config = isPostgresAvailable()
+        ? await dbPostgres.config.get()
+        : db.config.get();
       if (!config?.mercadoPagoAccessToken) {
         return NextResponse.json({ error: 'Mercado Pago not configured' }, { status: 500 });
       }
@@ -73,10 +75,14 @@ export async function POST(request: NextRequest) {
       
       // Find order by external_reference or payment ID
       const orderId = payment.external_reference;
-      let order = orderId ? db.orders.getById(orderId) : null;
+      let order = orderId 
+        ? (isPostgresAvailable() ? await dbPostgres.orders.getById(orderId) : db.orders.getById(orderId))
+        : null;
       
       if (!order) {
-        order = db.orders.getByPaymentId(dataId);
+        order = isPostgresAvailable()
+          ? await dbPostgres.orders.getByPaymentId(dataId)
+          : db.orders.getByPaymentId(dataId);
       }
 
       if (!order) {
@@ -91,21 +97,31 @@ export async function POST(request: NextRequest) {
       // Update order payment status
       const paymentStatus = mapMercadoPagoStatus(payment.status);
       
-      const updatedOrder = db.orders.update(order.id, {
-        mercadoPagoPaymentId: dataId.toString(),
-        paymentId: payment.id?.toString(),
-        paymentStatus: paymentStatus,
-        status: paymentStatus === 'approved' ? 'confirmed' : order.status,
-        updatedAt: new Date().toISOString(),
-      });
+      const updatedOrder = isPostgresAvailable()
+        ? await dbPostgres.orders.update(order.id, {
+            mercadoPagoPaymentId: dataId.toString(),
+            paymentId: payment.id?.toString(),
+            paymentStatus: paymentStatus,
+            status: paymentStatus === 'approved' ? 'confirmed' : order.status,
+            updatedAt: new Date().toISOString(),
+          })
+        : db.orders.update(order.id, {
+            mercadoPagoPaymentId: dataId.toString(),
+            paymentId: payment.id?.toString(),
+            paymentStatus: paymentStatus,
+            status: paymentStatus === 'approved' ? 'confirmed' : order.status,
+            updatedAt: new Date().toISOString(),
+          });
 
       if (!updatedOrder) {
         console.error('Failed to update order:', order.id);
         return NextResponse.json({ received: true, error: 'Failed to update order' });
       }
 
-      // Auto-commit changes
-      autoCommit(`Update order payment: ${updatedOrder.id}`, ['data/orders.json']).catch(console.error);
+      // Auto-commit changes (only for JSON mode)
+      if (!isPostgresAvailable()) {
+        autoCommit(`Update order payment: ${updatedOrder.id}`, ['data/orders.json']).catch(console.error);
+      }
 
       // Send WhatsApp notification if payment is approved
       if (paymentStatus === 'approved') {

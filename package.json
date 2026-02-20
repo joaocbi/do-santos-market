@@ -10,6 +10,7 @@
     "migrate-images": "node scripts/migrate-images-direct.js"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.2.0",
     "axios": "^1.6.2",

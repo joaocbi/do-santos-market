@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { Order } from '@/lib/types';
 import { autoCommit } from '@/lib/gitAutoCommit';
 
@@ -9,7 +9,13 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const paymentStatus = searchParams.get('paymentStatus');
     
-    let orders = db.orders.getAll();
+    let orders: Order[];
+    
+    if (isPostgresAvailable()) {
+      orders = await dbPostgres.orders.getAll();
+    } else {
+      orders = db.orders.getAll();
+    }
     
     if (status) {
       orders = orders.filter(o => o.status === status);
@@ -20,8 +26,12 @@ export async function GET(request: NextRequest) {
     }
     
     return NextResponse.json(orders);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error fetching orders:', error);
+    return NextResponse.json({ 
+      error: 'Failed to fetch orders',
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+    }, { status: 500 });
   }
 }
 
@@ -47,10 +57,15 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString(),
     };
     
-    const created = db.orders.create(order);
+    let created: Order;
     
-    // Auto-commit changes
-    autoCommit(`Create order: ${order.id}`, ['data/orders.json']).catch(console.error);
+    if (isPostgresAvailable()) {
+      created = await dbPostgres.orders.create(order);
+    } else {
+      created = db.orders.create(order);
+      // Auto-commit changes (only for JSON mode)
+      autoCommit(`Create order: ${order.id}`, ['data/orders.json']).catch(console.error);
+    }
     
     return NextResponse.json(created, { status: 201 });
   } catch (error: any) {
