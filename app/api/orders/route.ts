@@ -53,7 +53,12 @@ export async function POST(request: NextRequest) {
     autoCommit(`Create order: ${order.id}`, ['data/orders.json']).catch(console.error);
     
     return NextResponse.json(created, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error creating order:', error);
+    const errorMessage = error?.message || 'Failed to create order';
+    return NextResponse.json({ 
+      error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    }, { status: 500 });
   }
 }

@@ -38,8 +38,18 @@ const readJson = <T>(filename: string, defaultValue: T): T => {
 };
 
 const writeJson = <T>(filename: string, data: T): void => {
-  const filePath = getDbFile(filename);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  try {
+    const filePath = getDbFile(filename);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (error: any) {
+    console.error(`Error writing ${filename}:`, error?.message || error);
+    // In production (Vercel), filesystem is read-only, so we can't write
+    // This is expected behavior - data persistence should use a database
+    if (process.env.VERCEL) {
+      console.warn(`Cannot write to filesystem in Vercel. File: ${filename}`);
+    }
+    throw error;
+  }
 };
 
 // Database operations
