@@ -97,7 +97,7 @@ export const dbPostgres = {
       const sql = getSql();
       await sql`DELETE FROM categories WHERE id = ${id}`;
       // Check if deletion was successful by trying to get the record
-      const check = await sql`SELECT id FROM categories WHERE id = ${id} LIMIT 1`;
+      const check = (await sql`SELECT id FROM categories WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },
