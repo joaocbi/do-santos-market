@@ -479,7 +479,7 @@ export const dbPostgres = {
         `;
         return defaultConfig;
       }
-      return result[0];
+      return result[0] as SiteConfig;
     },
     update: async (updates: Partial<SiteConfig>): Promise<SiteConfig> => {
       const current = await dbPostgres.config.get();
