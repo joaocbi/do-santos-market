@@ -68,6 +68,7 @@ export const dbPostgres = {
       };
     },
     create: async (category: Category): Promise<Category> => {
+      const sql = getSql();
       await sql`
         INSERT INTO categories (id, name, slug, parent_id, image, "order")
         VALUES (${category.id}, ${category.name}, ${category.slug}, ${category.parentId || null}, ${category.image || null}, ${category.order})
@@ -79,6 +80,7 @@ export const dbPostgres = {
       if (!existing) return null;
 
       const updated = { ...existing, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE categories
         SET name = ${updated.name},
@@ -92,6 +94,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM categories WHERE id = ${id}`;
       // Check if deletion was successful by trying to get the record
       const check = await sql`SELECT id FROM categories WHERE id = ${id} LIMIT 1`;
@@ -124,6 +127,7 @@ export const dbPostgres = {
       return result[0] as Product | undefined;
     },
     create: async (product: Product): Promise<Product> => {
+      const sql = getSql();
       await sql`
         INSERT INTO products (id, name, description, price, original_price, cost_price, images, video,
                              category_id, subcategory_id, sku, stock, active, featured, observations, created_at, updated_at)
@@ -141,6 +145,7 @@ export const dbPostgres = {
       if (!existing) return null;
 
       const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
+      const sql = getSql();
       await sql`
         UPDATE products
         SET name = ${updated.name},
@@ -192,6 +197,7 @@ export const dbPostgres = {
       return result[0] as Customer | undefined;
     },
     create: async (customer: Customer): Promise<Customer> => {
+      const sql = getSql();
       await sql`
         INSERT INTO customers (id, name, email, phone, cpf, addresses, created_at)
         VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.phone},
@@ -204,6 +210,7 @@ export const dbPostgres = {
       if (!existing) return null;
 
       const updated = { ...existing, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE customers
         SET name = ${updated.name},
@@ -216,6 +223,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM customers WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM customers WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -233,6 +241,7 @@ export const dbPostgres = {
       return result as PaymentMethod[];
     },
     create: async (method: PaymentMethod): Promise<PaymentMethod> => {
+      const sql = getSql();
       await sql`
         INSERT INTO payment_methods (id, name, type, active, installments, fee)
         VALUES (${method.id}, ${method.name}, ${method.type}, ${method.active},
@@ -246,6 +255,7 @@ export const dbPostgres = {
       if (!method) return null;
 
       const updated = { ...method, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE payment_methods
         SET name = ${updated.name},
@@ -258,6 +268,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM payment_methods WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM payment_methods WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -275,6 +286,7 @@ export const dbPostgres = {
       return result as DeliveryMethod[];
     },
     create: async (method: DeliveryMethod): Promise<DeliveryMethod> => {
+      const sql = getSql();
       await sql`
         INSERT INTO delivery_methods (id, name, price, estimated_days, active, free_shipping_threshold)
         VALUES (${method.id}, ${method.name}, ${method.price}, ${method.estimatedDays},
@@ -288,6 +300,7 @@ export const dbPostgres = {
       if (!method) return null;
 
       const updated = { ...method, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE delivery_methods
         SET name = ${updated.name},
@@ -300,6 +313,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM delivery_methods WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM delivery_methods WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -317,6 +331,7 @@ export const dbPostgres = {
       return result as Banner[];
     },
     create: async (banner: Banner): Promise<Banner> => {
+      const sql = getSql();
       await sql`
         INSERT INTO banners (id, title, image, link, "order", active, position)
         VALUES (${banner.id}, ${banner.title}, ${banner.image}, ${banner.link || null},
@@ -330,6 +345,7 @@ export const dbPostgres = {
       if (!banner) return null;
 
       const updated = { ...banner, ...updates, updatedAt: new Date().toISOString() };
+      const sql = getSql();
       await sql`
         UPDATE banners
         SET title = ${updated.title},
@@ -344,6 +360,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM banners WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM banners WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -361,6 +378,7 @@ export const dbPostgres = {
       return result as ClickableLink[];
     },
     create: async (link: ClickableLink): Promise<ClickableLink> => {
+      const sql = getSql();
       await sql`
         INSERT INTO links (id, title, url, icon, "order", active)
         VALUES (${link.id}, ${link.title}, ${link.url}, ${link.icon || null},
@@ -374,6 +392,7 @@ export const dbPostgres = {
       if (!link) return null;
 
       const updated = { ...link, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE links
         SET title = ${updated.title},
@@ -387,6 +406,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM links WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM links WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -404,6 +424,7 @@ export const dbPostgres = {
       return result as GalleryImage[];
     },
     create: async (image: GalleryImage): Promise<GalleryImage> => {
+      const sql = getSql();
       await sql`
         INSERT INTO gallery_images (id, url, alt, "order", category)
         VALUES (${image.id}, ${image.url}, ${image.alt}, ${image.order}, ${image.category || null})
@@ -416,6 +437,7 @@ export const dbPostgres = {
       if (!image) return null;
 
       const updated = { ...image, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE gallery_images
         SET url = ${updated.url},
@@ -428,6 +450,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM gallery_images WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM gallery_images WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -445,6 +468,7 @@ export const dbPostgres = {
       return result as Video[];
     },
     create: async (video: Video): Promise<Video> => {
+      const sql = getSql();
       await sql`
         INSERT INTO videos (id, title, url, type, thumbnail, "order", active)
         VALUES (${video.id}, ${video.title}, ${video.url}, ${video.type},
@@ -458,6 +482,7 @@ export const dbPostgres = {
       if (!video) return null;
 
       const updated = { ...video, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE videos
         SET title = ${updated.title},
@@ -472,6 +497,7 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
+      const sql = getSql();
       await sql`DELETE FROM videos WHERE id = ${id}`;
       const check = (await sql`SELECT id FROM videos WHERE id = ${id} LIMIT 1`) as any[];
       return check.length === 0;
@@ -498,6 +524,7 @@ export const dbPostgres = {
           mercadoPagoAccessToken: '',
           mercadoPagoPublicKey: '',
         };
+        const sql = getSql();
         await sql`
           INSERT INTO site_config (id, whatsapp_number, email, social_media, mercado_pago_access_token, mercado_pago_public_key)
           VALUES ('config', '', '', '{}'::jsonb, '', '')
@@ -509,6 +536,7 @@ export const dbPostgres = {
     update: async (updates: Partial<SiteConfig>): Promise<SiteConfig> => {
       const current = await dbPostgres.config.get();
       const updated = { ...current, ...updates };
+      const sql = getSql();
       await sql`
         UPDATE site_config
         SET whatsapp_number = ${updated.whatsappNumber},
@@ -561,6 +589,7 @@ export const dbPostgres = {
           total: order.total
         });
         
+        const sql = getSql();
         await sql`
           INSERT INTO orders (id, customer_name, customer_email, customer_phone, customer_cpf,
                             address, items, subtotal, shipping_fee, total, payment_method,
@@ -586,6 +615,7 @@ export const dbPostgres = {
       if (!existing) return null;
 
       const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
+      const sql = getSql();
       await sql`
         UPDATE orders
         SET customer_name = ${updated.customerName},
