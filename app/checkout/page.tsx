@@ -163,6 +163,13 @@ export default function CheckoutPage() {
 
       // Process payment based on method
       if (formData.paymentMethod === 'mercado_pago') {
+        // Check if Mercado Pago is configured before proceeding
+        if (!config?.mercadoPagoAccessToken) {
+          alert('Mercado Pago não está configurado. Por favor, configure as credenciais no painel administrativo ou escolha pagamento via WhatsApp.');
+          setIsSubmitting(false);
+          return;
+        }
+
         // Create payment and redirect to Mercado Pago
         const paymentResponse = await fetch('/api/payment/create', {
           method: 'POST',
@@ -201,6 +208,12 @@ export default function CheckoutPage() {
         }
 
         const payment = await paymentResponse.json();
+        
+        if (!payment.initPoint && !payment.sandboxInitPoint) {
+          alert('Erro: Não foi possível obter o link de pagamento. Por favor, tente novamente ou escolha pagamento via WhatsApp.');
+          setIsSubmitting(false);
+          return;
+        }
         
         // Clear cart
         cartUtils.clearCart();
@@ -445,27 +458,30 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4">Método de Pagamento</h2>
               <div className="space-y-3">
-                {config?.mercadoPagoAccessToken && (
-                  <label className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition ${
-                    formData.paymentMethod === 'mercado_pago' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-gray-200 hover:bg-gray-50'
-                  }`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="mercado_pago"
-                      checked={formData.paymentMethod === 'mercado_pago'}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-primary"
-                    />
-                    <div className="flex-1">
-                      <div className="font-semibold text-lg">💳 Pagamento Online (Mercado Pago)</div>
-                      <div className="text-sm text-gray-600 mt-1">Pague diretamente no site com cartão, PIX ou boleto</div>
-                      <div className="text-xs text-green-600 mt-1 font-medium">✓ Mais rápido e seguro</div>
-                    </div>
-                  </label>
-                )}
+                {/* Always show Mercado Pago option - will be enabled/disabled based on config */}
+                <label className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition ${
+                  formData.paymentMethod === 'mercado_pago' 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-gray-200 hover:bg-gray-50'
+                } ${!config?.mercadoPagoAccessToken ? 'opacity-60 cursor-not-allowed' : ''}`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="mercado_pago"
+                    checked={formData.paymentMethod === 'mercado_pago'}
+                    onChange={handleInputChange}
+                    disabled={!config?.mercadoPagoAccessToken}
+                    className="w-5 h-5 text-primary disabled:opacity-50"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-lg">💳 Pagamento Online (Mercado Pago)</div>
+                    <div className="text-sm text-gray-600 mt-1">Pague diretamente no site com cartão, PIX ou boleto</div>
+                    <div className="text-xs text-green-600 mt-1 font-medium">✓ Mais rápido e seguro</div>
+                    {!config?.mercadoPagoAccessToken && (
+                      <div className="text-xs text-yellow-600 mt-1 font-medium">⚠️ Configurando...</div>
+                    )}
+                  </div>
+                </label>
                 <label className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition ${
                   formData.paymentMethod === 'whatsapp' 
                     ? 'border-primary bg-primary/5' 
