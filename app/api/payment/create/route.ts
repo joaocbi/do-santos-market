@@ -73,13 +73,13 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
       },
     },
     back_urls: {
-      success: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/success?order_id=${order.id}`,
-      failure: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/failure?order_id=${order.id}`,
-      pending: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/payment/pending?order_id=${order.id}`,
+      success: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/payment/success?order_id=${order.id}`,
+      failure: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/payment/failure?order_id=${order.id}`,
+      pending: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/payment/pending?order_id=${order.id}`,
     },
     auto_return: 'approved',
     external_reference: order.id,
-    notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/payment/webhook`,
+    notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/api/payment/webhook`,
   };
 
   const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
