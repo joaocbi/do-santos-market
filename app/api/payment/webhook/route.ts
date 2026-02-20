@@ -99,6 +99,11 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date().toISOString(),
       });
 
+      if (!updatedOrder) {
+        console.error('Failed to update order:', order.id);
+        return NextResponse.json({ received: true, error: 'Failed to update order' });
+      }
+
       // Auto-commit changes
       autoCommit(`Update order payment: ${updatedOrder.id}`, ['data/orders.json']).catch(console.error);
 
