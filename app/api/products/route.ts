@@ -28,20 +28,48 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
+    const allProducts = db.products.getAll();
+    
+    // Verifica duplicatas
+    const duplicateName = allProducts.find(p => 
+      p.name.toLowerCase().trim() === data.name.toLowerCase().trim()
+    );
+    
+    const skuToCheck = data.sku || `SKU-${Date.now()}`;
+    const duplicateSku = allProducts.find(p => 
+      p.sku.toLowerCase().trim() === skuToCheck.toLowerCase().trim()
+    );
+    
+    if (duplicateName || duplicateSku) {
+      let errorMessage = 'Duplicate product detected: ';
+      const errors: string[] = [];
+      if (duplicateName) {
+        errors.push(`Name "${duplicateName.name}" already exists (ID: ${duplicateName.id})`);
+      }
+      if (duplicateSku) {
+        errors.push(`SKU "${duplicateSku.sku}" already exists (Product: ${duplicateSku.name})`);
+      }
+      return NextResponse.json({ 
+        error: errorMessage + errors.join('; ') 
+      }, { status: 409 });
+    }
+    
     const product: Product = {
       id: Date.now().toString(),
       name: data.name,
       description: data.description || '',
       price: parseFloat(data.price),
       originalPrice: data.originalPrice ? parseFloat(data.originalPrice) : undefined,
+      costPrice: data.costPrice ? parseFloat(data.costPrice) : undefined,
       images: Array.isArray(data.images) ? data.images : [],
       video: data.video && data.video.trim() !== '' ? data.video : undefined,
       categoryId: data.categoryId,
       subcategoryId: data.subcategoryId,
-      sku: data.sku || `SKU-${Date.now()}`,
+      sku: skuToCheck,
       stock: parseInt(data.stock) || 0,
       active: data.active !== false,
       featured: data.featured || false,
+      observations: data.observations || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

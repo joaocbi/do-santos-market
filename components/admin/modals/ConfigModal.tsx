@@ -14,6 +14,8 @@ export default function ConfigModal({ onClose }: ConfigModalProps) {
     whatsappNumber: '',
     email: '',
     socialMedia: {},
+    mercadoPagoAccessToken: '',
+    mercadoPagoPublicKey: '',
   });
 
   useEffect(() => {
@@ -80,6 +82,73 @@ export default function ConfigModal({ onClose }: ConfigModalProps) {
                 className="w-full border rounded px-3 py-2"
               />
             </div>
+            
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-lg font-semibold mb-4">Mercado Pago - Pagamento Online</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Access Token (Obrigatório)
+                  </label>
+                  <input
+                    type="password"
+                    value={formData.mercadoPagoAccessToken || ''}
+                    onChange={e => setFormData({ 
+                      ...formData, 
+                      mercadoPagoAccessToken: e.target.value 
+                    })}
+                    className="w-full border rounded px-3 py-2"
+                    placeholder="APP_USR-..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Token de acesso do Mercado Pago. Encontre em: Credenciais → Access Token
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Public Key (Opcional)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.mercadoPagoPublicKey || ''}
+                    onChange={e => setFormData({ 
+                      ...formData, 
+                      mercadoPagoPublicKey: e.target.value 
+                    })}
+                    className="w-full border rounded px-3 py-2"
+                    placeholder="APP_USR-..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Chave pública do Mercado Pago (para uso no frontend, se necessário)
+                  </p>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-800">
+                    <strong>Como obter as credenciais:</strong>
+                  </p>
+                  <ol className="text-xs text-blue-700 mt-2 ml-4 list-decimal space-y-1">
+                    <li>Acesse <a href="https://www.mercadopago.com.br/developers" target="_blank" rel="noopener noreferrer" className="underline">Mercado Pago Developers</a></li>
+                    <li>Faça login na sua conta</li>
+                    <li>Vá em "Suas integrações" → "Credenciais"</li>
+                    <li>Copie o "Access Token" (produção ou teste)</li>
+                    <li className="mt-2">
+                      <strong>Configure o webhook no Mercado Pago:</strong>
+                      <div className="mt-1 bg-white p-2 rounded border">
+                        <code className="text-xs break-all">
+                          {typeof window !== 'undefined' 
+                            ? `${window.location.origin}/api/payment/webhook`
+                            : 'https://seu-dominio.com.br/api/payment/webhook'}
+                        </code>
+                      </div>
+                      <p className="mt-1 text-xs">
+                        ⚠️ <strong>Importante:</strong> Substitua "seu-dominio.com.br" pela URL real do seu site (ex: dosantosmarket.com.br)
+                      </p>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+            
             <div>
               <label className="block text-sm font-medium mb-2">Redes Sociais</label>
               <div className="space-y-2">

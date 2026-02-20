@@ -23,6 +23,8 @@ export default function ProductModal({ onClose }: ProductModalProps) {
     description: '',
     price: '',
     originalPrice: '',
+    costPrice: '',
+    salePercentage: '',
     images: [] as string[],
     video: '',
     categoryId: '',
@@ -31,6 +33,7 @@ export default function ProductModal({ onClose }: ProductModalProps) {
     stock: '',
     active: true,
     featured: false,
+    observations: '',
   });
   const [imageInput, setImageInput] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -64,6 +67,38 @@ export default function ProductModal({ onClose }: ProductModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Gera SKU automaticamente se estiver vazio (apenas para novos produtos)
+    const { salePercentage, ...submitData } = formData;
+    if (!editing && !submitData.sku.trim()) {
+      submitData.sku = generateSKU(submitData.name);
+    }
+    
+    // Verifica duplicatas antes de salvar
+    const duplicateName = products.find(p => 
+      p.name.toLowerCase().trim() === submitData.name.toLowerCase().trim() && 
+      (!editing || p.id !== editing.id)
+    );
+    
+    const duplicateSku = products.find(p => 
+      p.sku.toLowerCase().trim() === submitData.sku.toLowerCase().trim() && 
+      (!editing || p.id !== editing.id)
+    );
+    
+    if (duplicateName || duplicateSku) {
+      let alertMessage = 'ATENÇÃO: Produto duplicado detectado!\n\n';
+      if (duplicateName) {
+        alertMessage += `- Nome duplicado: "${duplicateName.name}" (ID: ${duplicateName.id})\n`;
+      }
+      if (duplicateSku) {
+        alertMessage += `- SKU duplicado: "${duplicateSku.sku}" (Produto: ${duplicateSku.name})\n`;
+      }
+      alertMessage += '\nDeseja continuar mesmo assim?';
+      
+      if (!confirm(alertMessage)) {
+        return;
+      }
+    }
+    
     // Confirmação antes de salvar
     const confirmMessage = editing 
       ? `Tem certeza que deseja atualizar o produto "${formData.name}"?`
@@ -77,12 +112,6 @@ export default function ProductModal({ onClose }: ProductModalProps) {
       const url = editing ? `/api/products/${editing.id}` : '/api/products';
       const method = editing ? 'PUT' : 'POST';
       
-      // Gera SKU automaticamente se estiver vazio (apenas para novos produtos)
-      const submitData = { ...formData };
-      if (!editing && !submitData.sku.trim()) {
-        submitData.sku = generateSKU(submitData.name);
-      }
-      
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -95,7 +124,13 @@ export default function ProductModal({ onClose }: ProductModalProps) {
         resetForm();
       } else {
         const errorData = await res.json().catch(() => ({}));
-        toast.error(errorData.error || 'Falha ao salvar produto');
+        if (res.status === 409) {
+          // Duplicate detected by backend
+          alert(`ATENÇÃO: ${errorData.error || 'Produto duplicado detectado!'}`);
+          toast.error(errorData.error || 'Produto duplicado detectado!');
+        } else {
+          toast.error(errorData.error || 'Falha ao salvar produto');
+        }
       }
     } catch (error) {
       console.error('Error saving product:', error);
@@ -120,11 +155,19 @@ export default function ProductModal({ onClose }: ProductModalProps) {
 
   const handleEdit = (product: Product) => {
     setEditing(product);
+    const costPrice = product.costPrice?.toString() || '';
+    const salePrice = product.price.toString();
+    let salePercentage = '';
+    if (product.costPrice && product.costPrice > 0) {
+      salePercentage = (((product.price - product.costPrice) / product.costPrice) * 100).toFixed(2);
+    }
     setFormData({
       name: product.name,
       description: product.description,
-      price: product.price.toString(),
+      price: salePrice,
       originalPrice: product.originalPrice?.toString() || '',
+      costPrice: costPrice,
+      salePercentage: salePercentage,
       images: product.images,
       video: product.video || '',
       categoryId: product.categoryId,
@@ -133,6 +176,7 @@ export default function ProductModal({ onClose }: ProductModalProps) {
       stock: product.stock.toString(),
       active: product.active,
       featured: product.featured,
+      observations: product.observations || '',
     });
   };
 
@@ -160,6 +204,8 @@ export default function ProductModal({ onClose }: ProductModalProps) {
       description: '',
       price: '',
       originalPrice: '',
+      costPrice: '',
+      salePercentage: '',
       images: [],
       video: '',
       categoryId: '',
@@ -168,6 +214,7 @@ export default function ProductModal({ onClose }: ProductModalProps) {
       stock: '',
       active: true,
       featured: false,
+      observations: '',
     });
     setImageInput('');
   };
@@ -392,20 +439,111 @@ export default function ProductModal({ onClose }: ProductModalProps) {
                 rows={3}
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Observações (não visível ao comprador)</label>
+              <textarea
+                value={formData.observations}
+                onChange={e => setFormData({ ...formData, observations: e.target.value })}
+                className="w-full border rounded px-3 py-2"
+                rows={3}
+                placeholder="Observações internas sobre o produto..."
+              />
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Preço</label>
+                <label className="block text-sm font-medium mb-1">Preço de Custo</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.costPrice}
+                  onChange={e => {
+                    const costPrice = e.target.value;
+                    let newPrice = formData.price;
+                    let newPercentage = formData.salePercentage;
+                    
+                    if (costPrice && formData.salePercentage) {
+                      const cost = parseFloat(costPrice);
+                      const percentage = parseFloat(formData.salePercentage);
+                      if (!isNaN(cost) && !isNaN(percentage)) {
+                        newPrice = (cost * (1 + percentage / 100)).toFixed(2);
+                      }
+                    } else if (costPrice && formData.price) {
+                      const cost = parseFloat(costPrice);
+                      const sale = parseFloat(formData.price);
+                      if (!isNaN(cost) && !isNaN(sale) && cost > 0) {
+                        newPercentage = (((sale - cost) / cost) * 100).toFixed(2);
+                      }
+                    }
+                    
+                    setFormData({ 
+                      ...formData, 
+                      costPrice: costPrice,
+                      price: newPrice,
+                      salePercentage: newPercentage
+                    });
+                  }}
+                  className="w-full border rounded px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Porcentagem de Venda (%)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.salePercentage}
+                  onChange={e => {
+                    const salePercentage = e.target.value;
+                    let newPrice = formData.price;
+                    
+                    if (salePercentage && formData.costPrice) {
+                      const cost = parseFloat(formData.costPrice);
+                      const percentage = parseFloat(salePercentage);
+                      if (!isNaN(cost) && !isNaN(percentage)) {
+                        newPrice = (cost * (1 + percentage / 100)).toFixed(2);
+                      }
+                    }
+                    
+                    setFormData({ 
+                      ...formData, 
+                      salePercentage: salePercentage,
+                      price: newPrice
+                    });
+                  }}
+                  className="w-full border rounded px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Preço de Venda</label>
                 <input
                   type="number"
                   step="0.01"
                   value={formData.price}
-                  onChange={e => setFormData({ ...formData, price: e.target.value })}
+                  onChange={e => {
+                    const salePrice = e.target.value;
+                    let newPercentage = formData.salePercentage;
+                    
+                    if (salePrice && formData.costPrice) {
+                      const cost = parseFloat(formData.costPrice);
+                      const sale = parseFloat(salePrice);
+                      if (!isNaN(cost) && !isNaN(sale) && cost > 0) {
+                        newPercentage = (((sale - cost) / cost) * 100).toFixed(2);
+                      }
+                    }
+                    
+                    setFormData({ 
+                      ...formData, 
+                      price: salePrice,
+                      salePercentage: newPercentage
+                    });
+                  }}
                   className="w-full border rounded px-3 py-2"
                   required
                 />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Preço Original</label>
+                <label className="block text-sm font-medium mb-1">Preço Original (para desconto)</label>
                 <input
                   type="number"
                   step="0.01"

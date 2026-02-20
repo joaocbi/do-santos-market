@@ -11,6 +11,7 @@ import {
   GalleryImage,
   Video,
   SiteConfig,
+  Order,
 } from './types';
 
 const dbPath = path.join(process.cwd(), 'data');
@@ -276,16 +277,46 @@ export const db = {
       whatsappNumber: '',
       email: '',
       socialMedia: {},
+      mercadoPagoAccessToken: '',
+      mercadoPagoPublicKey: '',
     }),
     update: (updates: Partial<SiteConfig>): SiteConfig => {
       const config = readJson<SiteConfig>('config.json', {
         whatsappNumber: '',
         email: '',
         socialMedia: {},
+        mercadoPagoAccessToken: '',
+        mercadoPagoPublicKey: '',
       });
       const updated = { ...config, ...updates };
       writeJson('config.json', updated);
       return updated;
+    },
+  },
+
+  orders: {
+    getAll: (): Order[] => readJson('orders.json', []),
+    getById: (id: string): Order | undefined => {
+      const orders = readJson<Order[]>('orders.json', []);
+      return orders.find(o => o.id === id);
+    },
+    create: (order: Order): Order => {
+      const orders = readJson<Order[]>('orders.json', []);
+      orders.push(order);
+      writeJson('orders.json', orders);
+      return order;
+    },
+    update: (id: string, updates: Partial<Order>): Order | null => {
+      const orders = readJson<Order[]>('orders.json', []);
+      const index = orders.findIndex(o => o.id === id);
+      if (index === -1) return null;
+      orders[index] = { ...orders[index], ...updates };
+      writeJson('orders.json', orders);
+      return orders[index];
+    },
+    getByPaymentId: (paymentId: string): Order | undefined => {
+      const orders = readJson<Order[]>('orders.json', []);
+      return orders.find(o => o.mercadoPagoPaymentId === paymentId || o.paymentId === paymentId);
     },
   },
 };

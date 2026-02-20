@@ -67,9 +67,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-          {product.stock === 0 && (
-            <span className="text-red-500 text-sm mt-2 block">Fora de estoque</span>
-          )}
         </div>
       </div>
     </Link>

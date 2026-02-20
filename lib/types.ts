@@ -14,6 +14,7 @@ export interface Product {
   description: string;
   price: number;
   originalPrice?: number;
+  costPrice?: number;
   images: string[];
   video?: string;
   categoryId: string;
@@ -22,6 +23,7 @@ export interface Product {
   stock: number;
   active: boolean;
   featured: boolean;
+  observations?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -111,4 +113,43 @@ export interface SiteConfig {
     facebook?: string;
     twitter?: string;
   };
+  mercadoPagoAccessToken?: string;
+  mercadoPagoPublicKey?: string;
+}
+
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  productSku: string;
+  quantity: number;
+  price: number;
+}
+
+export interface Order {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  customerCpf?: string;
+  address: {
+    street: string;
+    number: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
+  items: OrderItem[];
+  subtotal: number;
+  shippingFee: number;
+  total: number;
+  paymentMethod: string;
+  paymentStatus: 'pending' | 'approved' | 'rejected' | 'cancelled' | 'refunded';
+  paymentId?: string;
+  mercadoPagoPaymentId?: string;
+  notes?: string;
+  status: 'pending' | 'confirmed' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
 }

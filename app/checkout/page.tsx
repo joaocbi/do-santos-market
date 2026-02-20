@@ -25,7 +25,7 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     zipCode: '',
-    paymentMethod: '',
+    paymentMethod: 'whatsapp',
     deliveryMethod: '',
     notes: '',
   });
@@ -116,84 +116,147 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
-    const orderItems = cartItems.map(item => 
-      `${item.quantity}x ${item.product.name} (SKU: ${item.product.sku}) - ${formatPrice(item.product.price * item.quantity)}`
-    ).join('\n');
+    try {
+      // Create order
+      const orderItems = cartItems.map(item => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        productSku: item.product.sku,
+        quantity: item.quantity,
+        price: item.product.price,
+      }));
 
-    const address = `${formData.street}, ${formData.number}${formData.complement ? ', ' + formData.complement : ''}\n${formData.neighborhood}, ${formData.city} - ${formData.state}\nCEP: ${formData.zipCode}`;
+      const orderData = {
+        customerName: formData.name,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        customerCpf: formData.cpf,
+        address: {
+          street: formData.street,
+          number: formData.number,
+          complement: formData.complement,
+          neighborhood: formData.neighborhood,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+        },
+        items: orderItems,
+        subtotal: subtotal,
+        shippingFee: shippingFee,
+        total: total,
+        paymentMethod: formData.paymentMethod,
+        notes: formData.notes,
+      };
 
-    const message = `*NOVO PEDIDO - Do Santos Market*\n\n` +
-      `*DADOS DO CLIENTE:*\n` +
-      `Nome: ${formData.name}\n` +
-      `Email: ${formData.email}\n` +
-      `Telefone: ${formData.phone}\n` +
-      `${formData.cpf ? `CPF: ${formData.cpf}\n` : ''}\n` +
-      `*ENDEREÇO DE ENTREGA:*\n${address}\n\n` +
-      `*ITENS DO PEDIDO:*\n${orderItems}\n\n` +
-      `Subtotal: ${formatPrice(subtotal)}\n` +
-      `Frete: ${shippingFee > 0 ? formatPrice(shippingFee) : 'Grátis'}\n` +
-      `*TOTAL: ${formatPrice(total)}*\n\n` +
-      `${formData.notes ? `*OBSERVAÇÕES:*\n${formData.notes}\n\n` : ''}` +
-      `_Pedido realizado em ${new Date().toLocaleString('pt-BR')}_\n` +
-      `*Prazo de Entrega:* até 10 dias após confirmação do pagamento.\n\n` +
-      `*INFORMAÇÕES DE PAGAMENTO:*\n` +
-      `Em instantes você receberá link do Mercado Pago, em nome de João Batista dos Santos para realizar seu pagamento. Após a confirmação de seu pagamento seu produto será enviado.`;
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
 
-    if (config?.whatsappNumber) {
-      let whatsappNumber = config.whatsappNumber.replace(/\D/g, '');
-      
-      if (!whatsappNumber) {
-        alert('Erro: Número do WhatsApp inválido. Entre em contato com o administrador.');
-        setIsSubmitting(false);
-        return;
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create order');
       }
-      
-      // Force correct number - always use 5542991628586 (with country code 55)
-      const correctNumber = '5542991628586';
-      if (whatsappNumber !== correctNumber && whatsappNumber !== '42991628586') {
-        console.error('ERROR: Wrong WhatsApp number detected!', {
-          expected: correctNumber,
-          got: whatsappNumber,
-          original: config.whatsappNumber
+
+      const order = await orderResponse.json();
+
+      // Process payment based on method
+      if (formData.paymentMethod === 'mercado_pago') {
+        // Create payment and redirect to Mercado Pago
+        const paymentResponse = await fetch('/api/payment/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: order.id,
+            paymentMethod: 'mercado_pago',
+          }),
         });
-        console.warn('Using correct number with country code:', correctNumber);
-        whatsappNumber = correctNumber;
-      } else if (whatsappNumber === '42991628586') {
-        // Add country code if missing
-        whatsappNumber = correctNumber;
-        console.log('Added country code 55 to WhatsApp number');
-      }
-      
-      console.log('Enviando para WhatsApp:', whatsappNumber);
-      console.log('Número original do config:', config.whatsappNumber);
-      
-      cartUtils.clearCart();
-      
-      const encodedMessage = encodeURIComponent(message);
-      const whatsappMobileUrl = `whatsapp://send?phone=${whatsappNumber}&text=${encodedMessage}`;
-      
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        window.location.href = whatsappMobileUrl;
-      } else {
-        const link = document.createElement('a');
-        link.href = whatsappMobileUrl;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        setTimeout(() => {
-          const fallbackUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-          window.location.href = fallbackUrl;
-        }, 1500);
-      }
-    } else {
-      alert('Erro: Número do WhatsApp não configurado. Entre em contato com o administrador.');
-    }
 
-    setIsSubmitting(false);
+        if (!paymentResponse.ok) {
+          const errorData = await paymentResponse.json();
+          throw new Error(errorData.error || 'Failed to create payment');
+        }
+
+        const payment = await paymentResponse.json();
+        
+        // Clear cart
+        cartUtils.clearCart();
+        
+        // Redirect to Mercado Pago
+        window.location.href = payment.initPoint || payment.sandboxInitPoint;
+      } else {
+        // WhatsApp payment flow (original)
+        const orderItemsText = cartItems.map(item => 
+          `${item.quantity}x ${item.product.name} (SKU: ${item.product.sku}) - ${formatPrice(item.product.price * item.quantity)}`
+        ).join('\n');
+
+        const address = `${formData.street}, ${formData.number}${formData.complement ? ', ' + formData.complement : ''}\n${formData.neighborhood}, ${formData.city} - ${formData.state}\nCEP: ${formData.zipCode}`;
+
+        const message = `*NOVO PEDIDO - Do Santos Market*\n\n` +
+          `*PEDIDO #${order.id}*\n\n` +
+          `*DADOS DO CLIENTE:*\n` +
+          `Nome: ${formData.name}\n` +
+          `Email: ${formData.email}\n` +
+          `Telefone: ${formData.phone}\n` +
+          `${formData.cpf ? `CPF: ${formData.cpf}\n` : ''}\n` +
+          `*ENDEREÇO DE ENTREGA:*\n${address}\n\n` +
+          `*ITENS DO PEDIDO:*\n${orderItemsText}\n\n` +
+          `Subtotal: ${formatPrice(subtotal)}\n` +
+          `Frete: ${shippingFee > 0 ? formatPrice(shippingFee) : 'Grátis'}\n` +
+          `*TOTAL: ${formatPrice(total)}*\n\n` +
+          `${formData.notes ? `*OBSERVAÇÕES:*\n${formData.notes}\n\n` : ''}` +
+          `_Pedido realizado em ${new Date().toLocaleString('pt-BR')}_\n` +
+          `*Prazo de Entrega:* até 10 dias após confirmação do pagamento.\n\n` +
+          `*INFORMAÇÕES DE PAGAMENTO:*\n` +
+          `Em instantes você receberá link do Mercado Pago, em nome de João Batista dos Santos para realizar seu pagamento. Após a confirmação de seu pagamento seu produto será enviado.`;
+
+        if (config?.whatsappNumber) {
+          let whatsappNumber = config.whatsappNumber.replace(/\D/g, '');
+          
+          if (!whatsappNumber) {
+            alert('Erro: Número do WhatsApp inválido. Entre em contato com o administrador.');
+            setIsSubmitting(false);
+            return;
+          }
+          
+          const correctNumber = '5542991628586';
+          if (whatsappNumber !== correctNumber && whatsappNumber !== '42991628586') {
+            whatsappNumber = correctNumber;
+          } else if (whatsappNumber === '42991628586') {
+            whatsappNumber = correctNumber;
+          }
+          
+          cartUtils.clearCart();
+          
+          const encodedMessage = encodeURIComponent(message);
+          const whatsappMobileUrl = `whatsapp://send?phone=${whatsappNumber}&text=${encodedMessage}`;
+          
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          
+          if (isMobile) {
+            window.location.href = whatsappMobileUrl;
+          } else {
+            const link = document.createElement('a');
+            link.href = whatsappMobileUrl;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setTimeout(() => {
+              const fallbackUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+              window.location.href = fallbackUrl;
+            }, 1500);
+          }
+        } else {
+          alert('Erro: Número do WhatsApp não configurado. Entre em contato com o administrador.');
+        }
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      alert(error.message || 'Erro ao processar pedido. Tente novamente.');
+      setIsSubmitting(false);
+    }
   };
 
   if (cartItems.length === 0) {
@@ -357,6 +420,40 @@ export default function CheckoutPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4">Método de Pagamento</h2>
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="whatsapp"
+                    checked={formData.paymentMethod === 'whatsapp'}
+                    onChange={handleInputChange}
+                    className="w-5 h-5 text-primary"
+                  />
+                  <div>
+                    <div className="font-semibold">Pagamento via WhatsApp</div>
+                    <div className="text-sm text-gray-600">Você receberá as instruções de pagamento via WhatsApp</div>
+                  </div>
+                </label>
+                <label className="flex items-center gap-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="mercado_pago"
+                    checked={formData.paymentMethod === 'mercado_pago'}
+                    onChange={handleInputChange}
+                    className="w-5 h-5 text-primary"
+                  />
+                  <div>
+                    <div className="font-semibold">Pagamento Online (Mercado Pago)</div>
+                    <div className="text-sm text-gray-600">Pague diretamente no site com cartão, PIX ou boleto</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4">Observações</h2>
               <textarea
                 name="notes"
@@ -416,7 +513,11 @@ export default function CheckoutPage() {
                 disabled={isSubmitting}
                 className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
               >
-                {isSubmitting ? 'Enviando...' : 'Finalizar Pedido via WhatsApp'}
+                {isSubmitting 
+                  ? 'Processando...' 
+                  : formData.paymentMethod === 'mercado_pago' 
+                    ? 'Pagar Agora' 
+                    : 'Finalizar Pedido via WhatsApp'}
               </button>
               <Link
                 href="/cart"

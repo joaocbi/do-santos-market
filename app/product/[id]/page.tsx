@@ -183,9 +183,6 @@ export default function ProductPage() {
             </div>
             <div className="mb-6">
               <p className="text-sm text-gray-600">SKU: {product.sku}</p>
-              <p className="text-sm text-gray-600">
-                Estoque: {product.stock > 0 ? `${product.stock} disponíveis` : 'Fora de estoque'}
-              </p>
             </div>
             <button
               onClick={handleAddToCart}
