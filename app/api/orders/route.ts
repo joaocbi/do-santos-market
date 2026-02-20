@@ -61,7 +61,15 @@ export async function POST(request: NextRequest) {
     
     if (isPostgresAvailable()) {
       created = await dbPostgres.orders.create(order);
+    } else if (process.env.VERCEL) {
+      // In Vercel without Postgres, we can't write to filesystem
+      // Return error asking to configure Postgres
+      return NextResponse.json({ 
+        error: 'Database not configured. Please configure POSTGRES_URL environment variable.',
+        details: 'The application requires a database to store orders. Please set up Vercel Postgres or Neon database.'
+      }, { status: 500 });
     } else {
+      // Local development with JSON files
       created = db.orders.create(order);
       // Auto-commit changes (only for JSON mode)
       autoCommit(`Create order: ${order.id}`, ['data/orders.json']).catch(console.error);
