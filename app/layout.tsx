@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Do Santos Market',
   description: 'Plataforma de e-commerce',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
