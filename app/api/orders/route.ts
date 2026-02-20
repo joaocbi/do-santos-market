@@ -59,8 +59,26 @@ export async function POST(request: NextRequest) {
     
     let created: Order;
     
-    if (isPostgresAvailable()) {
-      created = await dbPostgres.orders.create(order);
+    // Check Postgres availability
+    const postgresAvailable = isPostgresAvailable();
+    console.log('Postgres available:', postgresAvailable);
+    console.log('POSTGRES_URL exists:', !!process.env.POSTGRES_URL);
+    
+    if (postgresAvailable) {
+      try {
+        console.log('Creating order in Postgres...');
+        created = await dbPostgres.orders.create(order);
+        console.log('Order created successfully:', order.id);
+      } catch (dbError: any) {
+        console.error('Postgres error:', dbError);
+        console.error('Error details:', {
+          message: dbError?.message,
+          code: dbError?.code,
+          detail: dbError?.detail,
+          hint: dbError?.hint
+        });
+        throw new Error(`Database error: ${dbError?.message || 'Unknown error'}`);
+      }
     } else if (process.env.VERCEL) {
       // In Vercel without Postgres, we can't write to filesystem
       // Return error asking to configure Postgres
@@ -79,9 +97,10 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Error creating order:', error);
     const errorMessage = error?.message || 'Failed to create order';
+    console.error('Full error:', JSON.stringify(error, null, 2));
     return NextResponse.json({ 
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+      details: process.env.NODE_ENV === 'development' ? error?.stack : error?.message
     }, { status: 500 });
   }
 }

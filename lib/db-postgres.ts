@@ -507,18 +507,32 @@ export const dbPostgres = {
       return result[0];
     },
     create: async (order: Order): Promise<Order> => {
-      await sql`
-        INSERT INTO orders (id, customer_name, customer_email, customer_phone, customer_cpf,
-                          address, items, subtotal, shipping_fee, total, payment_method,
-                          payment_status, payment_id, mercado_pago_payment_id, notes, status, created_at, updated_at)
-        VALUES (${order.id}, ${order.customerName}, ${order.customerEmail}, ${order.customerPhone},
-                ${order.customerCpf || null}, ${JSON.stringify(order.address)}::jsonb,
-                ${JSON.stringify(order.items)}::jsonb, ${order.subtotal}, ${order.shippingFee},
-                ${order.total}, ${order.paymentMethod}, ${order.paymentStatus},
-                ${order.paymentId || null}, ${order.mercadoPagoPaymentId || null},
-                ${order.notes || null}, ${order.status}, ${order.createdAt}, ${order.updatedAt})
-      `;
-      return order;
+      try {
+        console.log('Inserting order into Postgres:', {
+          id: order.id,
+          customerName: order.customerName,
+          total: order.total
+        });
+        
+        await sql`
+          INSERT INTO orders (id, customer_name, customer_email, customer_phone, customer_cpf,
+                            address, items, subtotal, shipping_fee, total, payment_method,
+                            payment_status, payment_id, mercado_pago_payment_id, notes, status, created_at, updated_at)
+          VALUES (${order.id}, ${order.customerName}, ${order.customerEmail}, ${order.customerPhone},
+                  ${order.customerCpf || null}, ${JSON.stringify(order.address)}::jsonb,
+                  ${JSON.stringify(order.items)}::jsonb, ${order.subtotal}, ${order.shippingFee},
+                  ${order.total}, ${order.paymentMethod}, ${order.paymentStatus},
+                  ${order.paymentId || null}, ${order.mercadoPagoPaymentId || null},
+                  ${order.notes || null}, ${order.status}, ${order.createdAt}, ${order.updatedAt})
+        `;
+        
+        console.log('Order inserted successfully:', order.id);
+        return order;
+      } catch (error: any) {
+        console.error('Error inserting order:', error);
+        console.error('Order data:', JSON.stringify(order, null, 2));
+        throw error;
+      }
     },
     update: async (id: string, updates: Partial<Order>): Promise<Order | null> => {
       const existing = await dbPostgres.orders.getById(id);
