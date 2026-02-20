@@ -174,8 +174,20 @@ export default function CheckoutPage() {
         });
 
         if (!paymentResponse.ok) {
-          const errorData = await paymentResponse.json();
+          let errorData;
+          try {
+            errorData = await paymentResponse.json();
+          } catch (e) {
+            errorData = { error: `Erro ${paymentResponse.status}: ${paymentResponse.statusText}` };
+          }
+          
           console.error('Payment creation error:', errorData);
+          
+          if (paymentResponse.status === 404) {
+            alert('Erro: Endpoint de pagamento não encontrado. Por favor, tente novamente ou escolha pagamento via WhatsApp.');
+            setIsSubmitting(false);
+            return;
+          }
           
           if (errorData.code === 'NOT_CONFIGURED') {
             alert('Mercado Pago não está configurado. Por favor, configure as credenciais no painel administrativo ou escolha pagamento via WhatsApp.');
@@ -183,7 +195,9 @@ export default function CheckoutPage() {
             return;
           }
           
-          throw new Error(errorData.error || 'Falha ao criar pagamento');
+          alert(`Erro ao processar pagamento: ${errorData.error || errorData.details || 'Erro desconhecido'}`);
+          setIsSubmitting(false);
+          return;
         }
 
         const payment = await paymentResponse.json();
