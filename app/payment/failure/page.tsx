@@ -1,10 +1,11 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 
-export default function PaymentFailurePage() {
+function PaymentFailureContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id');
 
@@ -44,5 +45,22 @@ export default function PaymentFailurePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function PaymentFailurePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 text-center">
+            <p>Carregando...</p>
+          </div>
+        </main>
+      </div>
+    }>
+      <PaymentFailureContent />
+    </Suspense>
   );
 }
