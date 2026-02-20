@@ -41,7 +41,7 @@ export const dbPostgres = {
         SELECT id, name, slug, parent_id as "parentId", image, "order"
         FROM categories
         ORDER BY "order" ASC
-      ` as any[];
+      `) as any[];
       return result.map((row: any) => ({
         ...row,
         subcategories: [],
