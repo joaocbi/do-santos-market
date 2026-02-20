@@ -33,6 +33,10 @@ export async function PUT(
       updatedAt: new Date().toISOString(),
     });
     
+    if (!updated) {
+      return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
+    }
+    
     // Auto-commit changes
     autoCommit(`Update order: ${updated.id}`, ['data/orders.json']).catch(console.error);
     
