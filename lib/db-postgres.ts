@@ -79,8 +79,10 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM categories WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM categories WHERE id = ${id}`;
+      // Check if deletion was successful by trying to get the record
+      const check = await sql`SELECT id FROM categories WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -147,7 +149,9 @@ export const dbPostgres = {
     },
     delete: async (id: string): Promise<boolean> => {
       const result = await sql`DELETE FROM products WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      // Check if deletion was successful by trying to get the record
+      const check = await sql`SELECT id FROM products WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -194,8 +198,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM customers WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM customers WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM customers WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -234,8 +239,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM payment_methods WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM payment_methods WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM payment_methods WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -274,8 +280,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM delivery_methods WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM delivery_methods WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM delivery_methods WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -316,8 +323,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM banners WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM banners WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM banners WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -357,8 +365,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM links WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM links WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM links WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -396,8 +405,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM gallery_images WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM gallery_images WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM gallery_images WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
@@ -438,8 +448,9 @@ export const dbPostgres = {
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
-      const result = await sql`DELETE FROM videos WHERE id = ${id}`;
-      return result.rowCount ? result.rowCount > 0 : false;
+      await sql`DELETE FROM videos WHERE id = ${id}`;
+      const check = await sql`SELECT id FROM videos WHERE id = ${id} LIMIT 1`;
+      return check.length === 0;
     },
   },
 
