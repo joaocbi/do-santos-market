@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "id": "1771622278666",
+    "customerName": "Tereza de Melo Maia dos Santos",
+    "customerEmail": "joaobsantoscbi@gmail.com",
+    "customerPhone": "(42) 99141-7956",
+    "customerCpf": "162.749.668-89",
+    "address": {
+      "street": "Avenida Atlanta",
+      "number": "830",
+      "complement": "",
+      "neighborhood": "Jardim Atlanta",
+      "city": "Carambeí",
+      "state": "PR",
+      "zipCode": "84145-000"
+    },
+    "items": [
+      {
+        "productId": "1771007946358",
+        "productName": "Pasta Tripla Executiva Musical Rava Marrom CCB Quadriculado Com Alça",
+        "productSku": "PASTA-TRIPLA-EXECUTI-885073",
+        "quantity": 1,
+        "price": "175.99"
+      },
+      {
+        "productId": "1771016694917",
+        "productName": "Relógio Smart Feminino Nova Geração Prova D'água Lançamento Dourado",
+        "productSku": "RELOGIO-SMART-FEMINI-633583",
+        "quantity": 1,
+        "price": "671.46"
+      }
+    ],
+    "subtotal": 847.45,
+    "shippingFee": 0,
+    "total": 847.45,
+    "paymentMethod": "mercado_pago",
+    "paymentStatus": "pending",
+    "notes": "",
+    "status": "pending",
+    "createdAt": "2026-02-20T21:17:58.666Z",
+    "updatedAt": "2026-02-20T21:17:58.666Z"
+  }
+]
