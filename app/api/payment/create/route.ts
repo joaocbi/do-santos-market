@@ -17,8 +17,15 @@ export async function POST(request: NextRequest) {
 
     const config = db.config.get();
     
-    // If Mercado Pago is configured, create payment preference
-    if (paymentMethod === 'mercado_pago' && config.mercadoPagoAccessToken) {
+    // Check if Mercado Pago is configured
+    if (paymentMethod === 'mercado_pago') {
+      if (!config.mercadoPagoAccessToken) {
+        return NextResponse.json({ 
+          error: 'Mercado Pago não está configurado. Configure as credenciais no painel administrativo.',
+          code: 'NOT_CONFIGURED'
+        }, { status: 400 });
+      }
+
       try {
         const mercadoPagoResponse = await createMercadoPagoPayment(order, config.mercadoPagoAccessToken);
         
@@ -30,15 +37,16 @@ export async function POST(request: NextRequest) {
       } catch (error: any) {
         console.error('Mercado Pago error:', error);
         return NextResponse.json({ 
-          error: 'Failed to create Mercado Pago payment',
-          details: error.message 
+          error: 'Falha ao criar pagamento no Mercado Pago',
+          details: error.message,
+          code: 'PAYMENT_CREATION_FAILED'
         }, { status: 500 });
       }
     }
 
-    // For other payment methods or if Mercado Pago is not configured
+    // For other payment methods
     return NextResponse.json({ 
-      error: 'Payment method not supported or not configured' 
+      error: 'Método de pagamento não suportado' 
     }, { status: 400 });
   } catch (error) {
     console.error('Payment creation error:', error);

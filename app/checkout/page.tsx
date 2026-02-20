@@ -42,7 +42,8 @@ export default function CheckoutPage() {
       .then(res => res.json())
       .then(data => {
         console.log('Config loaded:', data);
-        console.log('WhatsApp number from config:', data?.whatsappNumber);
+        console.log('Mercado Pago Access Token:', data?.mercadoPagoAccessToken ? 'Configured' : 'Not configured');
+        console.log('Mercado Pago Public Key:', data?.mercadoPagoPublicKey ? 'Configured' : 'Not configured');
         if (data?.whatsappNumber) {
           const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
           console.log('Cleaned WhatsApp number:', cleanNumber);
@@ -174,7 +175,15 @@ export default function CheckoutPage() {
 
         if (!paymentResponse.ok) {
           const errorData = await paymentResponse.json();
-          throw new Error(errorData.error || 'Failed to create payment');
+          console.error('Payment creation error:', errorData);
+          
+          if (errorData.code === 'NOT_CONFIGURED') {
+            alert('Mercado Pago não está configurado. Por favor, configure as credenciais no painel administrativo ou escolha pagamento via WhatsApp.');
+            setIsSubmitting(false);
+            return;
+          }
+          
+          throw new Error(errorData.error || 'Falha ao criar pagamento');
         }
 
         const payment = await paymentResponse.json();
@@ -466,6 +475,13 @@ export default function CheckoutPage() {
                 <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <p className="text-xs text-yellow-800">
                     <strong>Nota:</strong> Para ativar pagamento online, configure as credenciais do Mercado Pago no painel administrativo.
+                  </p>
+                </div>
+              )}
+              {config?.mercadoPagoAccessToken && (
+                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-xs text-green-800">
+                    <strong>✓ Mercado Pago configurado:</strong> Pagamento online disponível
                   </p>
                 </div>
               )}
