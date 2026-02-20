@@ -33,7 +33,7 @@ export const dbPostgres = {
       return result.map((row: any) => ({
         ...row,
         subcategories: [],
-      }));
+      })) as Category[];
     },
     getById: async (id: string): Promise<Category | undefined> => {
       const result = await sql`
@@ -95,7 +95,7 @@ export const dbPostgres = {
         FROM products
         ORDER BY created_at DESC
       `;
-      return result;
+      return result as Product[];
     },
     getById: async (id: string): Promise<Product | undefined> => {
       const result = await sql`
@@ -106,7 +106,7 @@ export const dbPostgres = {
         WHERE id = ${id}
         LIMIT 1
       `;
-      return result[0];
+      return result[0] as Product | undefined;
     },
     create: async (product: Product): Promise<Product> => {
       await sql`
@@ -162,7 +162,7 @@ export const dbPostgres = {
         FROM customers
         ORDER BY created_at DESC
       `;
-      return result;
+      return result as Customer[];
     },
     getById: async (id: string): Promise<Customer | undefined> => {
       const result = await sql`
@@ -171,7 +171,7 @@ export const dbPostgres = {
         WHERE id = ${id}
         LIMIT 1
       `;
-      return result[0];
+      return result[0] as Customer | undefined;
     },
     create: async (customer: Customer): Promise<Customer> => {
       await sql`
@@ -211,7 +211,7 @@ export const dbPostgres = {
         FROM payment_methods
         ORDER BY name
       `;
-      return result;
+      return result as PaymentMethod[];
     },
     create: async (method: PaymentMethod): Promise<PaymentMethod> => {
       await sql`
@@ -252,7 +252,7 @@ export const dbPostgres = {
         FROM delivery_methods
         ORDER BY price
       `;
-      return result;
+      return result as DeliveryMethod[];
     },
     create: async (method: DeliveryMethod): Promise<DeliveryMethod> => {
       await sql`
@@ -293,7 +293,7 @@ export const dbPostgres = {
         FROM banners
         ORDER BY "order" ASC
       `;
-      return result;
+      return result as Banner[];
     },
     create: async (banner: Banner): Promise<Banner> => {
       await sql`
@@ -336,7 +336,7 @@ export const dbPostgres = {
         FROM links
         ORDER BY "order" ASC
       `;
-      return result;
+      return result as ClickableLink[];
     },
     create: async (link: ClickableLink): Promise<ClickableLink> => {
       await sql`
@@ -378,7 +378,7 @@ export const dbPostgres = {
         FROM gallery_images
         ORDER BY "order" ASC
       `;
-      return result;
+      return result as GalleryImage[];
     },
     create: async (image: GalleryImage): Promise<GalleryImage> => {
       await sql`
@@ -418,7 +418,7 @@ export const dbPostgres = {
         FROM videos
         ORDER BY "order" ASC
       `;
-      return result;
+      return result as Video[];
     },
     create: async (video: Video): Promise<Video> => {
       await sql`
@@ -510,7 +510,7 @@ export const dbPostgres = {
         FROM orders
         ORDER BY created_at DESC
       `;
-      return result;
+      return result as Order[];
     },
     getById: async (id: string): Promise<Order | undefined> => {
       const result = await sql`
@@ -524,7 +524,7 @@ export const dbPostgres = {
         WHERE id = ${id}
         LIMIT 1
       `;
-      return result[0];
+      return result[0] as Order | undefined;
     },
     create: async (order: Order): Promise<Order> => {
       try {
@@ -593,7 +593,7 @@ export const dbPostgres = {
         WHERE mercado_pago_payment_id = ${paymentId} OR payment_id = ${paymentId}
         LIMIT 1
       `;
-      return result[0];
+      return result[0] as Order | undefined;
     },
   },
 };
