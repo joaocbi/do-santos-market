@@ -601,29 +601,36 @@ export const dbPostgres = {
         
         const sql = getSql();
         
-        console.log('Order data:', {
-          id: order.id,
-          customerName: order.customerName,
-          address: order.address,
-          items: order.items,
-          subtotal: order.subtotal,
-          shippingFee: order.shippingFee,
-          total: order.total
-        });
+        // Convert to JSON strings for Postgres JSONB
+        const addressJson = JSON.stringify(order.address);
+        const itemsJson = JSON.stringify(order.items);
         
-        // Neon automatically converts JavaScript objects to JSONB
-        // Pass objects directly, not stringified
-        await sql`
+        // Use unsafe with positional parameters - this works reliably with JSONB
+        await sql.unsafe(`
           INSERT INTO orders (id, customer_name, customer_email, customer_phone, customer_cpf,
                             address, items, subtotal, shipping_fee, total, payment_method,
                             payment_status, payment_id, mercado_pago_payment_id, notes, status, created_at, updated_at)
-          VALUES (${order.id}, ${order.customerName}, ${order.customerEmail}, ${order.customerPhone},
-                  ${order.customerCpf || null}, ${order.address},
-                  ${order.items}, ${order.subtotal}, ${order.shippingFee},
-                  ${order.total}, ${order.paymentMethod}, ${order.paymentStatus},
-                  ${order.paymentId || null}, ${order.mercadoPagoPaymentId || null},
-                  ${order.notes || null}, ${order.status}, ${order.createdAt}, ${order.updatedAt})
-        `;
+          VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+        `, [
+          order.id,
+          order.customerName,
+          order.customerEmail,
+          order.customerPhone,
+          order.customerCpf || null,
+          addressJson,
+          itemsJson,
+          order.subtotal,
+          order.shippingFee,
+          order.total,
+          order.paymentMethod,
+          order.paymentStatus,
+          order.paymentId || null,
+          order.mercadoPagoPaymentId || null,
+          order.notes || null,
+          order.status,
+          order.createdAt,
+          order.updatedAt
+        ]);
         
         console.log('Order inserted successfully:', order.id);
         return order;
