@@ -78,50 +78,78 @@ try {
   console.log('🔄 Tentando conectar com URL limpa...');
   const sql = neon(cleanUrl);
   
-  // Test connection
+  // Test connection and execute schema
   console.log('📊 Testando conexão...');
-  sql`SELECT 1 as test`.then(() => {
-    console.log('✅ Conexão bem-sucedida!');
-    console.log('📝 Executando schema...\n');
-    
-    // Split schema into statements
-    const statements = schema
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'));
-    
-    let completed = 0;
-    const total = statements.length;
-    
-    Promise.all(statements.map(async (stmt, index) => {
-      try {
-        // Use unsafe for DDL statements
-        await sql.unsafe(stmt);
-        completed++;
-        console.log(`✅ Comando ${completed}/${total} executado`);
-      } catch (error) {
-        if (error.message && (
-          error.message.includes('already exists') || 
-          error.message.includes('duplicate')
-        )) {
-          completed++;
-          console.log(`ℹ️  Comando ${completed}/${total} - já existe (ignorado)`);
-        } else {
-          console.error(`❌ Erro no comando ${index + 1}:`, error.message);
+  (async () => {
+    try {
+      await sql`SELECT 1 as test`;
+      console.log('✅ Conexão bem-sucedida!');
+      console.log('📝 Executando schema...\n');
+      
+      // Execute schema as a single transaction
+      // Split by semicolon but be smarter about it
+      const lines = schema.split(/\r?\n/);
+      const statements = [];
+      let currentStatement = '';
+      
+      for (const line of lines) {
+        const trimmed = line.trim();
+        // Skip empty lines and full-line comments
+        if (!trimmed || trimmed.startsWith('--')) {
+          continue;
+        }
+        // Add line to current statement
+        currentStatement += (currentStatement ? ' ' : '') + line;
+        // If line ends with semicolon, it's a complete statement
+        if (trimmed.endsWith(';')) {
+          const stmt = currentStatement.trim();
+          if (stmt && stmt !== ';') {
+            statements.push(stmt);
+          }
+          currentStatement = '';
         }
       }
-    })).then(() => {
+      
+      // Add any remaining statement
+      if (currentStatement.trim()) {
+        statements.push(currentStatement.trim());
+      }
+      
+      console.log(`📊 Encontrados ${statements.length} comandos SQL\n`);
+      
+      // Execute statements sequentially to avoid conflicts
+      let completed = 0;
+      const total = statements.length;
+      
+      for (let i = 0; i < statements.length; i++) {
+        const stmt = statements[i];
+        try {
+          await sql.unsafe(stmt);
+          completed++;
+          console.log(`✅ Comando ${completed}/${total} executado`);
+        } catch (error) {
+          if (error.message && (
+            error.message.includes('already exists') || 
+            error.message.includes('duplicate') ||
+            (error.message.includes('relation') && error.message.includes('already exists'))
+          )) {
+            completed++;
+            console.log(`ℹ️  Comando ${completed}/${total} - já existe (ignorado)`);
+          } else {
+            console.error(`❌ Erro no comando ${i + 1}:`, error.message);
+            console.error(`   Comando: ${stmt.substring(0, 100)}...`);
+          }
+        }
+      }
+      
       console.log('\n✅ Schema executado com sucesso!');
       process.exit(0);
-    }).catch(err => {
-      console.error('\n❌ Erro ao executar schema:', err.message);
+    } catch (err) {
+      console.error('❌ Erro:', err.message);
+      console.log('\n⚠️  Use a OPÇÃO 1 (SQL Editor da Vercel) para executar o schema manualmente.\n');
       process.exit(1);
-    });
-  }).catch(err => {
-    console.error('❌ Erro de conexão:', err.message);
-    console.log('\n⚠️  Use a OPÇÃO 1 (SQL Editor da Vercel) para executar o schema manualmente.\n');
-    process.exit(1);
-  });
+    }
+  })();
   
 } catch (error) {
   console.error('❌ Erro ao carregar módulo:', error.message);
