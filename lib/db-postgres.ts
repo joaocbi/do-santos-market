@@ -14,8 +14,26 @@ import {
 } from './types';
 
 // Helper to check if Postgres is available
+// In localhost, prefer JSON files unless explicitly using Postgres
 export const isPostgresAvailable = (): boolean => {
-  return !!process.env.POSTGRES_URL;
+  // If POSTGRES_URL is not set, definitely not available
+  if (!process.env.POSTGRES_URL) {
+    return false;
+  }
+  
+  // In Vercel (production), always use Postgres if URL is available
+  if (process.env.VERCEL) {
+    return true;
+  }
+  
+  // In localhost, only use Postgres if explicitly enabled via USE_POSTGRES env var
+  // This allows local development to use JSON files by default
+  if (process.env.NODE_ENV === 'development' || !process.env.VERCEL) {
+    return process.env.USE_POSTGRES === 'true';
+  }
+  
+  // Default: use Postgres if URL is available
+  return true;
 };
 
 // Lazy initialization of SQL connection to avoid build-time errors
