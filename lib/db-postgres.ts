@@ -45,10 +45,11 @@ function getSql() {
     if (!connectionString) {
       throw new Error('POSTGRES_URL is not configured');
     }
-    // Clean connection string - remove any line breaks or whitespace
+    // Clean connection string - remove quotes, line breaks, and whitespace
     connectionString = connectionString
-      .replace(/[\r\n\t]/g, '')
-      .trim();
+      .replace(/^["']|["']$/g, '') // Remove surrounding quotes
+      .replace(/[\r\n\t]/g, '') // Remove line breaks and tabs
+      .trim(); // Remove leading/trailing whitespace
     sqlInstance = neon(connectionString);
   }
   return sqlInstance;

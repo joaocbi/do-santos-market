@@ -29,8 +29,11 @@ export async function GET(request: NextRequest) {
   // Try to test database connection
   if (isPostgresAvailable() && process.env.POSTGRES_URL) {
     try {
-      // Clean connection string
-      const cleanUrl = process.env.POSTGRES_URL.replace(/[\r\n\t]/g, '').trim();
+      // Clean connection string - remove quotes and line breaks
+      const cleanUrl = process.env.POSTGRES_URL
+        .replace(/^["']|["']$/g, '') // Remove surrounding quotes
+        .replace(/[\r\n\t]/g, '') // Remove line breaks and tabs
+        .trim(); // Remove leading/trailing whitespace
       const sql = neon(cleanUrl);
       
       // Test query
