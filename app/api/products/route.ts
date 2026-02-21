@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { Product } from '@/lib/types';
 import { autoCommit } from '@/lib/gitAutoCommit';
 
@@ -9,7 +9,13 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('categoryId');
     const featured = searchParams.get('featured');
     
-    let products = db.products.getAll();
+    let products: Product[];
+    
+    if (isPostgresAvailable()) {
+      products = await dbPostgres.products.getAll();
+    } else {
+      products = db.products.getAll();
+    }
     
     if (categoryId) {
       products = products.filter(p => p.categoryId === categoryId || p.subcategoryId === categoryId);
@@ -21,6 +27,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json(products);
   } catch (error) {
+    console.error('Error fetching products:', error);
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
   }
 }
@@ -28,7 +35,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const allProducts = db.products.getAll();
+    
+    let allProducts: Product[];
+    if (isPostgresAvailable()) {
+      allProducts = await dbPostgres.products.getAll();
+    } else {
+      allProducts = db.products.getAll();
+    }
     
     // Verifica duplicatas
     const duplicateName = allProducts.find(p => 
@@ -73,13 +86,19 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    const created = db.products.create(product);
     
-    // Auto-commit changes
-    autoCommit(`Add product: ${product.name}`, ['data/products.json']).catch(console.error);
+    let created: Product;
+    if (isPostgresAvailable()) {
+      created = await dbPostgres.products.create(product);
+    } else {
+      created = db.products.create(product);
+      // Auto-commit changes
+      autoCommit(`Add product: ${product.name}`, ['data/products.json']).catch(console.error);
+    }
     
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
+    console.error('Error creating product:', error);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }

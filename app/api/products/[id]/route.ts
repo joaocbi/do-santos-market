@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { autoCommit } from '@/lib/gitAutoCommit';
 
 export async function GET(
@@ -7,12 +7,19 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = db.products.getById(params.id);
+    let product;
+    if (isPostgresAvailable()) {
+      product = await dbPostgres.products.getById(params.id);
+    } else {
+      product = db.products.getById(params.id);
+    }
+    
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     return NextResponse.json(product);
   } catch (error) {
+    console.error('Error fetching product:', error);
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
   }
 }
@@ -23,13 +30,23 @@ export async function PUT(
 ) {
   try {
     const data = await request.json();
-    const product = db.products.getById(params.id);
+    
+    let product;
+    let allProducts;
+    
+    if (isPostgresAvailable()) {
+      product = await dbPostgres.products.getById(params.id);
+      allProducts = await dbPostgres.products.getAll();
+    } else {
+      product = db.products.getById(params.id);
+      allProducts = db.products.getAll();
+    }
+    
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     
     // Verifica duplicatas (excluindo o produto atual)
-    const allProducts = db.products.getAll();
     const duplicateName = allProducts.find(p => 
       p.id !== params.id && 
       p.name.toLowerCase().trim() === data.name.toLowerCase().trim()
@@ -55,20 +72,28 @@ export async function PUT(
       }, { status: 409 });
     }
     
-    const updated = db.products.update(params.id, {
-      ...data,
-      updatedAt: new Date().toISOString(),
-    });
+    let updated;
+    if (isPostgresAvailable()) {
+      updated = await dbPostgres.products.update(params.id, {
+        ...data,
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      updated = db.products.update(params.id, {
+        ...data,
+        updatedAt: new Date().toISOString(),
+      });
+      // Auto-commit changes
+      autoCommit(`Update product: ${updated.name || product?.name || params.id}`, ['data/products.json']).catch(console.error);
+    }
     
     if (!updated) {
       return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
     }
     
-    // Auto-commit changes
-    autoCommit(`Update product: ${updated.name || product?.name || params.id}`, ['data/products.json']).catch(console.error);
-    
     return NextResponse.json(updated);
   } catch (error) {
+    console.error('Error updating product:', error);
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
@@ -78,17 +103,26 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = db.products.getById(params.id);
-    const deleted = db.products.delete(params.id);
+    let product;
+    let deleted: boolean;
+    
+    if (isPostgresAvailable()) {
+      product = await dbPostgres.products.getById(params.id);
+      deleted = await dbPostgres.products.delete(params.id);
+    } else {
+      product = db.products.getById(params.id);
+      deleted = db.products.delete(params.id);
+      // Auto-commit changes
+      autoCommit(`Delete product: ${product?.name || params.id}`, ['data/products.json']).catch(console.error);
+    }
+    
     if (!deleted) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     
-    // Auto-commit changes
-    autoCommit(`Delete product: ${product?.name || params.id}`, ['data/products.json']).catch(console.error);
-    
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Error deleting product:', error);
     return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
   }
 }

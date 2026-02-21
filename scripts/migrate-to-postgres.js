@@ -10,15 +10,44 @@ const { neon } = require('@neondatabase/serverless');
 const fs = require('fs');
 const path = require('path');
 
-const POSTGRES_URL = process.env.POSTGRES_URL;
+// Read from .env.local if POSTGRES_URL is not set
+let POSTGRES_URL = process.env.POSTGRES_URL;
+
+if (!POSTGRES_URL) {
+  const envPath = path.join(process.cwd(), '.env.local');
+  if (fs.existsSync(envPath)) {
+    const envFile = fs.readFileSync(envPath, 'utf-8');
+    const lines = envFile.split(/\r?\n/);
+    for (const line of lines) {
+      if (line.startsWith('POSTGRES_URL=')) {
+        POSTGRES_URL = line.substring('POSTGRES_URL='.length).trim();
+        // Remove quotes
+        if ((POSTGRES_URL.startsWith('"') && POSTGRES_URL.endsWith('"')) || 
+            (POSTGRES_URL.startsWith("'") && POSTGRES_URL.endsWith("'"))) {
+          POSTGRES_URL = POSTGRES_URL.slice(1, -1);
+        }
+        // Clean all whitespace and line breaks
+        POSTGRES_URL = POSTGRES_URL.replace(/[\r\n\t\s]/g, '').trim();
+        break;
+      }
+    }
+  }
+}
 
 if (!POSTGRES_URL) {
   console.error('❌ POSTGRES_URL environment variable is required');
   console.log('Set it with: export POSTGRES_URL="your-connection-string"');
+  console.log('Or add it to .env.local file');
   process.exit(1);
 }
 
-const sql = neon(POSTGRES_URL);
+// Clean connection string
+const cleanUrl = POSTGRES_URL
+  .replace(/^["']|["']$/g, '') // Remove surrounding quotes
+  .replace(/[\r\n\t]/g, '') // Remove line breaks and tabs
+  .trim(); // Remove leading/trailing whitespace
+
+const sql = neon(cleanUrl);
 const dataPath = path.join(process.cwd(), 'data');
 
 async function migrateTable(tableName, jsonFile, transformFn) {
