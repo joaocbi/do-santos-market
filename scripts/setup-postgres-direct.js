@@ -138,9 +138,22 @@ try {
           } else {
             console.error(`❌ Erro no comando ${i + 1}:`, error.message);
             console.error(`   Comando: ${stmt.substring(0, 100)}...`);
+            // Don't continue if there's a real error
+            throw error;
           }
         }
       }
+      
+      // Verify tables were created
+      console.log('\n📊 Verificando tabelas criadas...');
+      const tables = await sql`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+      `;
+      console.log(`✅ ${tables.length} tabelas encontradas no banco:`);
+      tables.forEach(t => console.log(`   - ${t.table_name}`));
       
       console.log('\n✅ Schema executado com sucesso!');
       process.exit(0);

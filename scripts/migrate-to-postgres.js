@@ -99,14 +99,20 @@ async function migrate() {
 
   // Migrate products
   await migrateTable('products', 'products.json', async (product, sql) => {
+    // Convert price from string to number if needed
+    const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
+    const originalPrice = product.originalPrice ? (typeof product.originalPrice === 'string' ? parseFloat(product.originalPrice) : product.originalPrice) : null;
+    const costPrice = product.costPrice ? (typeof product.costPrice === 'string' ? parseFloat(product.costPrice) : product.costPrice) : null;
+    const stock = typeof product.stock === 'string' ? parseInt(product.stock) : (product.stock || 0);
+    
     await sql`
       INSERT INTO products (id, name, description, price, original_price, cost_price, images, video,
                            category_id, subcategory_id, sku, stock, active, featured, observations, created_at, updated_at)
-      VALUES (${product.id}, ${product.name}, ${product.description || ''}, ${product.price},
-              ${product.originalPrice || null}, ${product.costPrice || null},
+      VALUES (${product.id}, ${product.name}, ${product.description || ''}, ${price},
+              ${originalPrice}, ${costPrice},
               ${JSON.stringify(product.images || [])}::jsonb, ${product.video || null},
               ${product.categoryId}, ${product.subcategoryId || null}, ${product.sku},
-              ${product.stock || 0}, ${product.active !== false}, ${product.featured || false},
+              ${stock}, ${product.active !== false}, ${product.featured || false},
               ${product.observations || null}, ${product.createdAt || new Date().toISOString()},
               ${product.updatedAt || new Date().toISOString()})
       ON CONFLICT (id) DO UPDATE SET
