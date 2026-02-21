@@ -600,19 +600,26 @@ export const dbPostgres = {
         }
         
         const sql = getSql();
-        const addressJson = JSON.stringify(order.address);
-        const itemsJson = JSON.stringify(order.items);
         
-        console.log('Address JSON:', addressJson);
-        console.log('Items JSON:', itemsJson);
+        console.log('Order data:', {
+          id: order.id,
+          customerName: order.customerName,
+          address: order.address,
+          items: order.items,
+          subtotal: order.subtotal,
+          shippingFee: order.shippingFee,
+          total: order.total
+        });
         
+        // Neon automatically converts JavaScript objects to JSONB
+        // Pass objects directly, not stringified
         await sql`
           INSERT INTO orders (id, customer_name, customer_email, customer_phone, customer_cpf,
                             address, items, subtotal, shipping_fee, total, payment_method,
                             payment_status, payment_id, mercado_pago_payment_id, notes, status, created_at, updated_at)
           VALUES (${order.id}, ${order.customerName}, ${order.customerEmail}, ${order.customerPhone},
-                  ${order.customerCpf || null}, ${addressJson}::jsonb,
-                  ${itemsJson}::jsonb, ${order.subtotal}, ${order.shippingFee},
+                  ${order.customerCpf || null}, ${order.address},
+                  ${order.items}, ${order.subtotal}, ${order.shippingFee},
                   ${order.total}, ${order.paymentMethod}, ${order.paymentStatus},
                   ${order.paymentId || null}, ${order.mercadoPagoPaymentId || null},
                   ${order.notes || null}, ${order.status}, ${order.createdAt}, ${order.updatedAt})
