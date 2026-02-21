@@ -10,7 +10,36 @@ const { neon } = require('@neondatabase/serverless');
 const fs = require('fs');
 const path = require('path');
 
-const POSTGRES_URL = process.env.POSTGRES_URL;
+// Load .env.local if it exists
+const envPath = path.join(process.cwd(), '.env.local');
+if (fs.existsSync(envPath)) {
+  const envFile = fs.readFileSync(envPath, 'utf-8');
+  const lines = envFile.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    if (trimmedLine && !trimmedLine.startsWith('#')) {
+      const equalIndex = trimmedLine.indexOf('=');
+      if (equalIndex > 0) {
+        const key = trimmedLine.substring(0, equalIndex).trim();
+        let value = trimmedLine.substring(equalIndex + 1);
+        // Remove quotes if present
+        if ((value.startsWith('"') && value.endsWith('"')) || 
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+        // Aggressively remove all whitespace and line breaks
+        value = value.replace(/[\r\n\t\s]+/g, '').trim();
+        if (!process.env[key]) {
+          process.env[key] = value;
+        }
+      }
+    }
+  }
+}
+
+let POSTGRES_URL = process.env.POSTGRES_URL || '';
+// Aggressively clean the URL
+POSTGRES_URL = POSTGRES_URL.replace(/[\r\n\t]/g, '').trim();
 
 if (!POSTGRES_URL) {
   console.error('❌ POSTGRES_URL environment variable is required');
@@ -24,7 +53,22 @@ if (!POSTGRES_URL) {
   process.exit(1);
 }
 
-const sql = neon(POSTGRES_URL);
+// Clean connection string one more time before using - remove ALL non-printable characters
+const cleanUrl = POSTGRES_URL
+  .split('')
+  .filter(char => char.charCodeAt(0) >= 32 || char === '\n' || char === '\r')
+  .join('')
+  .replace(/[\r\n\t]/g, '')
+  .trim();
+
+// Set it back to process.env so neon can read it
+process.env.POSTGRES_URL = cleanUrl;
+
+console.log('Using connection string:', cleanUrl.substring(0, 50) + '...');
+console.log('URL length:', cleanUrl.length);
+console.log('Has line breaks:', cleanUrl.includes('\n') || cleanUrl.includes('\r'));
+
+const sql = neon(cleanUrl);
 
 async function setupSchema() {
   console.log('🚀 Configurando schema do banco de dados...\n');
