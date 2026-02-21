@@ -171,19 +171,40 @@ export async function POST(request: NextRequest) {
     let created: Order;
     
     // Check Postgres availability
-    const postgresAvailable = isPostgresAvailable();
     const isVercel = !!process.env.VERCEL;
+    const hasPostgresUrl = !!process.env.POSTGRES_URL;
+    const postgresAvailable = isPostgresAvailable();
     
     const envInfo = {
       isVercel: isVercel,
       postgresAvailable: postgresAvailable,
-      hasPostgresUrl: !!process.env.POSTGRES_URL,
+      hasPostgresUrl: hasPostgresUrl,
       nodeEnv: process.env.NODE_ENV,
-      postgresUrlPrefix: process.env.POSTGRES_URL?.substring(0, 30) + '...' || 'não configurado'
+      postgresUrlLength: process.env.POSTGRES_URL?.length || 0,
+      postgresUrlPrefix: process.env.POSTGRES_URL ? process.env.POSTGRES_URL.substring(0, 30) + '...' : 'não configurado'
     };
     
     console.log('Ambiente:', envInfo);
     console.error('Ambiente (error log):', envInfo); // Force to error level to appear in logs
+    
+    // In Vercel, we MUST have Postgres configured
+    if (isVercel && !hasPostgresUrl) {
+      console.error('ERRO CRÍTICO: Vercel detectado mas POSTGRES_URL não encontrada!');
+      return NextResponse.json({ 
+        error: 'Banco de dados não configurado',
+        details: 'A aplicação requer um banco de dados Postgres na Vercel. A variável POSTGRES_URL não foi encontrada. Verifique se está configurada em Settings → Environment Variables.',
+        code: 'DATABASE_NOT_CONFIGURED',
+        debug: envInfo,
+        instructions: [
+          '1. Acesse o dashboard da Vercel',
+          '2. Vá em Settings → Environment Variables',
+          '3. Verifique se POSTGRES_URL existe',
+          '4. Se não existir, adicione com a connection string do banco',
+          '5. Certifique-se de marcar todas as environments (Production, Preview, Development)',
+          '6. Faça um redeploy após adicionar a variável'
+        ]
+      }, { status: 500 });
+    }
     
     if (postgresAvailable) {
       try {
