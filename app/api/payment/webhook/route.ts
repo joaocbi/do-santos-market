@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Log received notification for debugging
-    console.log('Webhook received:', { type: data.type, dataId: data.data?.id || data.data_id });
+    console.log('Webhook recebido:', { type: data.type, dataId: data.data?.id || data.data_id });
     
     // Mercado Pago sends different types of notifications
     const type = data.type;
@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
 
     // Always return success for webhook test notifications
     if (!dataId || dataId === '123456' || dataId === '123') {
-      console.log('Test notification received, returning success');
-      return NextResponse.json({ received: true, note: 'Test notification processed' });
+      console.log('Notificação de teste recebida, retornando sucesso');
+      return NextResponse.json({ received: true, note: 'Notificação de teste processada' });
     }
 
     if ((type === 'payment' || type === 'merchant_order') && dataId) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         ? await dbPostgres.config.get()
         : db.config.get();
       if (!config?.mercadoPagoAccessToken) {
-        return NextResponse.json({ error: 'Mercado Pago not configured' }, { status: 500 });
+        return NextResponse.json({ error: 'Mercado Pago não configurado' }, { status: 500 });
       }
 
       const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${dataId}`, {
@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
       });
 
       if (!paymentResponse.ok) {
-        console.error('Failed to fetch payment details from Mercado Pago');
-        return NextResponse.json({ error: 'Failed to fetch payment' }, { status: 500 });
+        console.error('Falha ao buscar detalhes do pagamento do Mercado Pago');
+        return NextResponse.json({ error: 'Falha ao buscar pagamento' }, { status: 500 });
       }
 
       const payment = await paymentResponse.json();
@@ -86,11 +86,11 @@ export async function POST(request: NextRequest) {
       }
 
       if (!order) {
-        console.log('Order not found for payment:', dataId, '- This may be a test notification');
+        console.log('Pedido não encontrado para pagamento:', dataId, '- Isso pode ser uma notificação de teste');
         // Return success even if order not found (might be a test or payment not yet linked to order)
         return NextResponse.json({ 
           received: true, 
-          note: 'Order not found - payment may not be linked to an order yet' 
+          note: 'Pedido não encontrado - o pagamento pode não estar vinculado a um pedido ainda' 
         });
       }
 
@@ -114,8 +114,8 @@ export async function POST(request: NextRequest) {
           });
 
       if (!updatedOrder) {
-        console.error('Failed to update order:', order.id);
-        return NextResponse.json({ received: true, error: 'Failed to update order' });
+        console.error('Falha ao atualizar pedido:', order.id);
+        return NextResponse.json({ received: true, error: 'Falha ao atualizar pedido' });
       }
 
       // Auto-commit changes (only for JSON mode)
@@ -134,11 +134,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error: any) {
-    console.error('Webhook error:', error);
+    console.error('Erro no webhook:', error);
     // Return 200 even on error to prevent Mercado Pago from retrying invalid requests
     return NextResponse.json({ 
       received: true, 
-      error: error?.message || 'Webhook processing failed' 
+      error: error?.message || 'Falha ao processar webhook' 
     }, { status: 200 });
   }
 }

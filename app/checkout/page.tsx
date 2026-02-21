@@ -41,9 +41,9 @@ export default function CheckoutPage() {
     fetch('/api/config')
       .then(res => res.json())
       .then(data => {
-        console.log('Config loaded:', data);
-        console.log('Mercado Pago Access Token:', data?.mercadoPagoAccessToken ? 'Configured' : 'Not configured');
-        console.log('Mercado Pago Public Key:', data?.mercadoPagoPublicKey ? 'Configured' : 'Not configured');
+        console.log('Configuração carregada:', data);
+        console.log('Token de Acesso Mercado Pago:', data?.mercadoPagoAccessToken ? 'Configurado' : 'Não configurado');
+        console.log('Chave Pública Mercado Pago:', data?.mercadoPagoPublicKey ? 'Configurado' : 'Não configurado');
         if (data?.whatsappNumber) {
           const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
           console.log('Cleaned WhatsApp number:', cleanNumber);
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
         setConfig(data);
       })
       .catch(error => {
-        console.error('Error loading config:', error);
+        console.error('Erro ao carregar configuração:', error);
       });
   }, [router]);
 
@@ -151,14 +151,44 @@ export default function CheckoutPage() {
         notes: formData.notes,
       };
 
+      console.log('Enviando pedido para API:', {
+        customerName: orderData.customerName,
+        itemsCount: orderData.items.length,
+        total: orderData.total,
+        paymentMethod: orderData.paymentMethod
+      });
+
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
       });
 
+      console.log('Resposta da API:', {
+        status: orderResponse.status,
+        statusText: orderResponse.statusText,
+        ok: orderResponse.ok
+      });
+
       if (!orderResponse.ok) {
-        throw new Error('Failed to create order');
+        let errorData;
+        try {
+          const text = await orderResponse.text();
+          console.error('Resposta de erro (texto):', text);
+          errorData = JSON.parse(text);
+        } catch (e) {
+          errorData = { 
+            error: `Erro ${orderResponse.status}: ${orderResponse.statusText}`,
+            details: 'Não foi possível parsear a resposta de erro'
+          };
+        }
+        
+        console.error('Erro ao criar pedido:', {
+          status: orderResponse.status,
+          statusText: orderResponse.statusText,
+          errorData: errorData
+        });
+        throw new Error(errorData.error || errorData.details || 'Falha ao criar pedido');
       }
 
       const order = await orderResponse.json();
@@ -190,7 +220,7 @@ export default function CheckoutPage() {
             errorData = { error: `Erro ${paymentResponse.status}: ${paymentResponse.statusText}` };
           }
           
-          console.error('Payment creation error:', errorData);
+          console.error('Erro ao criar pagamento:', errorData);
           
           if (paymentResponse.status === 404) {
             alert('Erro: Endpoint de pagamento não encontrado. Por favor, tente novamente ou escolha pagamento via WhatsApp.');
@@ -291,7 +321,7 @@ export default function CheckoutPage() {
         }
       }
     } catch (error: any) {
-      console.error('Checkout error:', error);
+      console.error('Erro no checkout:', error);
       alert(error.message || 'Erro ao processar pedido. Tente novamente.');
       setIsSubmitting(false);
     }
