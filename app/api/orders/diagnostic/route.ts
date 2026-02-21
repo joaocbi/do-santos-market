@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isPostgresAvailable } from '@/lib/db-postgres';
+import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -7,7 +8,7 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   console.log('=== DIAGNÓSTICO: Verificando configuração ===');
   
-  const diagnostics = {
+  const diagnostics: any = {
     timestamp: new Date().toISOString(),
     environment: {
       VERCEL: !!process.env.VERCEL,
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     },
     database: {
       postgresAvailable: isPostgresAvailable(),
-      postgresUrlPrefix: process.env.POSTGRES_URL?.substring(0, 20) + '...' || 'não configurado',
+      postgresUrlPrefix: process.env.POSTGRES_URL ? process.env.POSTGRES_URL.substring(0, 20) + '...' : 'não configurado',
     },
     test: {
       canCreateOrder: false,
@@ -26,10 +27,9 @@ export async function GET(request: NextRequest) {
   };
 
   // Try to test database connection
-  if (isPostgresAvailable()) {
+  if (isPostgresAvailable() && process.env.POSTGRES_URL) {
     try {
-      const { dbPostgres } = await import('@/lib/db-postgres');
-      const sql = (await import('@neondatabase/serverless')).neon(process.env.POSTGRES_URL!);
+      const sql = neon(process.env.POSTGRES_URL);
       
       // Test query
       const result = await sql`SELECT 1 as test`;
@@ -44,10 +44,7 @@ export async function GET(request: NextRequest) {
           WHERE table_schema = 'public' 
           AND table_name = 'orders'
         `;
-        diagnostics.database = {
-          ...diagnostics.database,
-          ordersTableExists: tablesResult.length > 0,
-        };
+        diagnostics.database.ordersTableExists = tablesResult.length > 0;
       } catch (tableError: any) {
         diagnostics.test.error = `Erro ao verificar tabelas: ${tableError?.message}`;
       }
