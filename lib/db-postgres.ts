@@ -41,10 +41,14 @@ let sqlInstance: ReturnType<typeof neon> | null = null;
 
 function getSql() {
   if (!sqlInstance) {
-    const connectionString = process.env.POSTGRES_URL;
+    let connectionString = process.env.POSTGRES_URL;
     if (!connectionString) {
       throw new Error('POSTGRES_URL is not configured');
     }
+    // Clean connection string - remove any line breaks or whitespace
+    connectionString = connectionString
+      .replace(/[\r\n\t]/g, '')
+      .trim();
     sqlInstance = neon(connectionString);
   }
   return sqlInstance;

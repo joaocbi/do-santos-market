@@ -29,7 +29,9 @@ export async function GET(request: NextRequest) {
   // Try to test database connection
   if (isPostgresAvailable() && process.env.POSTGRES_URL) {
     try {
-      const sql = neon(process.env.POSTGRES_URL);
+      // Clean connection string
+      const cleanUrl = process.env.POSTGRES_URL.replace(/[\r\n\t]/g, '').trim();
+      const sql = neon(cleanUrl);
       
       // Test query
       const result = await sql`SELECT 1 as test`;
