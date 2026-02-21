@@ -586,17 +586,33 @@ export const dbPostgres = {
         console.log('Inserting order into Postgres:', {
           id: order.id,
           customerName: order.customerName,
-          total: order.total
+          total: order.total,
+          hasAddress: !!order.address,
+          hasItems: !!order.items && order.items.length > 0
         });
         
+        // Validate required fields
+        if (!order.address) {
+          throw new Error('Order address is required');
+        }
+        if (!order.items || order.items.length === 0) {
+          throw new Error('Order must have at least one item');
+        }
+        
         const sql = getSql();
+        const addressJson = JSON.stringify(order.address);
+        const itemsJson = JSON.stringify(order.items);
+        
+        console.log('Address JSON:', addressJson);
+        console.log('Items JSON:', itemsJson);
+        
         await sql`
           INSERT INTO orders (id, customer_name, customer_email, customer_phone, customer_cpf,
                             address, items, subtotal, shipping_fee, total, payment_method,
                             payment_status, payment_id, mercado_pago_payment_id, notes, status, created_at, updated_at)
           VALUES (${order.id}, ${order.customerName}, ${order.customerEmail}, ${order.customerPhone},
-                  ${order.customerCpf || null}, ${JSON.stringify(order.address)}::jsonb,
-                  ${JSON.stringify(order.items)}::jsonb, ${order.subtotal}, ${order.shippingFee},
+                  ${order.customerCpf || null}, ${addressJson}::jsonb,
+                  ${itemsJson}::jsonb, ${order.subtotal}, ${order.shippingFee},
                   ${order.total}, ${order.paymentMethod}, ${order.paymentStatus},
                   ${order.paymentId || null}, ${order.mercadoPagoPaymentId || null},
                   ${order.notes || null}, ${order.status}, ${order.createdAt}, ${order.updatedAt})
@@ -606,6 +622,10 @@ export const dbPostgres = {
         return order;
       } catch (error: any) {
         console.error('Error inserting order:', error);
+        console.error('Error message:', error?.message);
+        console.error('Error code:', error?.code);
+        console.error('Error detail:', error?.detail);
+        console.error('Error hint:', error?.hint);
         console.error('Order data:', JSON.stringify(order, null, 2));
         throw error;
       }

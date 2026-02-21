@@ -100,7 +100,8 @@ export async function POST(request: NextRequest) {
     console.error('Full error:', JSON.stringify(error, null, 2));
     return NextResponse.json({ 
       error: errorMessage,
-      details: process.env.NODE_ENV === 'development' ? error?.stack : error?.message
+      details: error?.message || 'Unknown error',
+      stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
     }, { status: 500 });
   }
 }
