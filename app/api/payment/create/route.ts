@@ -223,6 +223,9 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
     payer.phone = payerPhone;
   }
 
+  // Calculate total to ensure it matches
+  const totalAmount = items.reduce((sum: number, item: any) => sum + (item.unit_price * item.quantity), 0);
+  
   const preference = {
     items: items,
     payer: payer,
@@ -234,7 +237,13 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
     auto_return: 'approved',
     external_reference: order.id,
     notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/api/payment/webhook`,
+    statement_descriptor: 'Do Santos Market',
+    expires: false,
+    binary_mode: false,
   };
+  
+  console.log('Total calculado:', totalAmount);
+  console.log('Total do pedido:', order.total);
 
   console.log('Preferência Mercado Pago:', JSON.stringify(preference, null, 2));
 
