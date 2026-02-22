@@ -287,5 +287,19 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
 
   const result = await response.json();
   console.log('Pagamento Mercado Pago criado com sucesso:', result.id);
+  console.log('Response completo:', JSON.stringify(result, null, 2));
+  
+  // Validate that init_point is present
+  if (!result.init_point && !result.sandbox_init_point) {
+    console.error('ERRO CRÍTICO: Mercado Pago não retornou init_point!');
+    console.error('Response:', JSON.stringify(result, null, 2));
+    throw new Error('Mercado Pago não retornou o link de pagamento. Verifique as configurações.');
+  }
+  
+  // Log warnings if any
+  if (result.warnings && result.warnings.length > 0) {
+    console.warn('Avisos do Mercado Pago:', result.warnings);
+  }
+  
   return result;
 }
