@@ -258,8 +258,6 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
   console.log('Total do pedido:', order.total);
   console.log('Preferência completa:', JSON.stringify(preference, null, 2));
 
-  console.log('Preferência Mercado Pago:', JSON.stringify(preference, null, 2));
-
   const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
     method: 'POST',
     headers: {
