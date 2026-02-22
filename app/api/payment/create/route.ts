@@ -228,6 +228,7 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
   
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br';
   
+  // Ensure all required fields for button to work
   const preference: any = {
     items: items,
     payer: payer,
@@ -237,7 +238,7 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
       pending: `${baseUrl}/payment/pending?order_id=${order.id}`,
     },
     auto_return: 'approved',
-    external_reference: order.id,
+    external_reference: order.id.toString(),
     notification_url: `${baseUrl}/api/payment/webhook`,
     statement_descriptor: 'Do Santos Market',
     expires: false,
@@ -248,10 +249,12 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
       installments: 12
     },
     metadata: {
-      order_id: order.id,
+      order_id: order.id.toString(),
       customer_name: order.customerName,
       customer_email: order.customerEmail
-    }
+    },
+    // Additional fields that may be required for button to work
+    site_id: 'MLB'
   };
   
   console.log('Total calculado:', totalAmount);
