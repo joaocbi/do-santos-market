@@ -23,8 +23,13 @@ export const isPostgresAvailable = (): boolean => {
   }
   
   // In Vercel (production), use Postgres if URL is available
+  // Check multiple possible variable names
   if (process.env.VERCEL) {
-    return !!process.env.POSTGRES_URL;
+    return !!(process.env.POSTGRES_URL || 
+              process.env.URL_POSTGRES || 
+              process.env.DATABASE_URL ||
+              process.env.POSTGRES_CONNECTION_STRING ||
+              process.env.NEON_DATABASE_URL);
   }
   
   // Default: not available
@@ -36,24 +41,27 @@ let sqlInstance: ReturnType<typeof neon> | null = null;
 
 function getSql() {
   if (!sqlInstance) {
-    let connectionString = process.env.POSTGRES_URL;
+    // Try multiple environment variable names (including common variations)
+    let connectionString = process.env.POSTGRES_URL || 
+                          process.env.URL_POSTGRES ||  // Common typo/alternative
+                          process.env.DATABASE_URL || 
+                          process.env.POSTGRES_CONNECTION_STRING ||
+                          process.env.NEON_DATABASE_URL;
+    
     if (!connectionString) {
-      // Try alternative environment variable names
-      connectionString = process.env.DATABASE_URL || 
-                        process.env.POSTGRES_CONNECTION_STRING ||
-                        process.env.NEON_DATABASE_URL;
-      
-      if (!connectionString) {
-        console.error('POSTGRES_URL não encontrada. Variáveis disponíveis:', {
-          hasPostgresUrl: !!process.env.POSTGRES_URL,
-          hasDatabaseUrl: !!process.env.DATABASE_URL,
-          hasPostgresConnectionString: !!process.env.POSTGRES_CONNECTION_STRING,
-          hasNeonDatabaseUrl: !!process.env.NEON_DATABASE_URL,
-          vercel: !!process.env.VERCEL,
-          nodeEnv: process.env.NODE_ENV
-        });
-        throw new Error('POSTGRES_URL is not configured. Verifique as variáveis de ambiente na Vercel.');
-      }
+      console.error('POSTGRES_URL não encontrada. Variáveis disponíveis:', {
+        hasPostgresUrl: !!process.env.POSTGRES_URL,
+        hasUrlPostgres: !!process.env.URL_POSTGRES,
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        hasPostgresConnectionString: !!process.env.POSTGRES_CONNECTION_STRING,
+        hasNeonDatabaseUrl: !!process.env.NEON_DATABASE_URL,
+        vercel: !!process.env.VERCEL,
+        nodeEnv: process.env.NODE_ENV,
+        allEnvKeys: Object.keys(process.env).filter(k => 
+          k.includes('POSTGRES') || k.includes('DATABASE') || k.includes('NEON') || k.includes('URL')
+        ).join(', ')
+      });
+      throw new Error('POSTGRES_URL is not configured. Verifique as variáveis de ambiente na Vercel.');
     }
     // Clean connection string - remove quotes, line breaks, and whitespace
     connectionString = connectionString

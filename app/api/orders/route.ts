@@ -184,8 +184,9 @@ export async function POST(request: NextRequest) {
     
     // Check Postgres availability
     const isVercel = !!process.env.VERCEL;
-    // Try multiple environment variable names
+    // Try multiple environment variable names (including URL_POSTGRES)
     const postgresUrl = process.env.POSTGRES_URL || 
+                       process.env.URL_POSTGRES ||  // Common alternative name
                        process.env.DATABASE_URL || 
                        process.env.POSTGRES_CONNECTION_STRING ||
                        process.env.NEON_DATABASE_URL;
