@@ -188,6 +188,16 @@ export default function CheckoutPage() {
           statusText: orderResponse.statusText,
           errorData: errorData
         });
+        
+        // Handle database configuration error specifically
+        if (errorData.code === 'DATABASE_NOT_CONFIGURED') {
+          const instructions = errorData.instructions || [];
+          const message = `Banco de dados não configurado.\n\n${errorData.details || ''}\n\n${instructions.join('\n')}`;
+          alert(message);
+          setIsSubmitting(false);
+          return;
+        }
+        
         throw new Error(errorData.error || errorData.details || 'Falha ao criar pedido');
       }
 
@@ -322,7 +332,17 @@ export default function CheckoutPage() {
       }
     } catch (error: any) {
       console.error('Erro no checkout:', error);
-      alert(error.message || 'Erro ao processar pedido. Tente novamente.');
+      
+      // Handle database-related errors with more context
+      if (error.message?.includes('Banco de dados não configurado') || 
+          error.message?.includes('DATABASE_NOT_CONFIGURED')) {
+        alert('Banco de dados não configurado. Por favor, configure o banco de dados Postgres nas configurações do projeto na Vercel.');
+      } else if (error.message?.includes('conexão') || error.message?.includes('connection')) {
+        alert('Erro de conexão com o banco de dados. Verifique se o banco de dados está configurado corretamente.');
+      } else {
+        alert(error.message || 'Erro ao processar pedido. Tente novamente.');
+      }
+      
       setIsSubmitting(false);
     }
   };
