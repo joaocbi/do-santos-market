@@ -226,24 +226,37 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
   // Calculate total to ensure it matches
   const totalAmount = items.reduce((sum: number, item: any) => sum + (item.unit_price * item.quantity), 0);
   
-  const preference = {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br';
+  
+  const preference: any = {
     items: items,
     payer: payer,
     back_urls: {
-      success: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/payment/success?order_id=${order.id}`,
-      failure: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/payment/failure?order_id=${order.id}`,
-      pending: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/payment/pending?order_id=${order.id}`,
+      success: `${baseUrl}/payment/success?order_id=${order.id}`,
+      failure: `${baseUrl}/payment/failure?order_id=${order.id}`,
+      pending: `${baseUrl}/payment/pending?order_id=${order.id}`,
     },
     auto_return: 'approved',
     external_reference: order.id,
-    notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br'}/api/payment/webhook`,
+    notification_url: `${baseUrl}/api/payment/webhook`,
     statement_descriptor: 'Do Santos Market',
     expires: false,
     binary_mode: false,
+    payment_methods: {
+      excluded_payment_methods: [],
+      excluded_payment_types: [],
+      installments: 12
+    },
+    metadata: {
+      order_id: order.id,
+      customer_name: order.customerName,
+      customer_email: order.customerEmail
+    }
   };
   
   console.log('Total calculado:', totalAmount);
   console.log('Total do pedido:', order.total);
+  console.log('Preferência completa:', JSON.stringify(preference, null, 2));
 
   console.log('Preferência Mercado Pago:', JSON.stringify(preference, null, 2));
 
