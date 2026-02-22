@@ -15,19 +15,70 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'ID do pedido é obrigatório' }, { status: 400 });
     }
 
+    // Check Postgres availability - same logic as orders route
+    const isVercel = !!process.env.VERCEL;
+    const hasPostgresUrl = !!process.env.POSTGRES_URL;
+    const postgresAvailable = isPostgresAvailable();
+
+    // In Vercel, we MUST have Postgres configured
+    if (isVercel && !hasPostgresUrl) {
+      console.error('ERRO CRÍTICO: Vercel detectado mas POSTGRES_URL não encontrada!');
+      return NextResponse.json({ 
+        error: 'Banco de dados não configurado',
+        details: 'A aplicação requer um banco de dados Postgres na Vercel. A variável POSTGRES_URL não foi encontrada. Verifique se está configurada em Settings → Environment Variables.',
+        code: 'DATABASE_NOT_CONFIGURED',
+        instructions: [
+          '1. Acesse o dashboard da Vercel',
+          '2. Vá em Settings → Environment Variables',
+          '3. Verifique se POSTGRES_URL existe',
+          '4. Se não existir, adicione com a connection string do banco',
+          '5. Certifique-se de marcar todas as environments (Production, Preview, Development)',
+          '6. Faça um redeploy após adicionar a variável'
+        ]
+      }, { status: 500 });
+    }
+
     // Get order from appropriate database
-    const order = isPostgresAvailable()
-      ? await dbPostgres.orders.getById(orderId)
-      : db.orders.getById(orderId);
+    let order;
+    try {
+      order = postgresAvailable
+        ? await dbPostgres.orders.getById(orderId)
+        : db.orders.getById(orderId);
+    } catch (dbError: any) {
+      console.error('Erro ao buscar pedido:', dbError);
+      // Check if it's a database connection error
+      if (dbError?.message?.includes('POSTGRES_URL') || dbError?.message?.includes('not configured')) {
+        return NextResponse.json({ 
+          error: 'Banco de dados não configurado',
+          details: 'Erro ao conectar com o banco de dados. Verifique se POSTGRES_URL está configurada corretamente na Vercel.',
+          code: 'DATABASE_NOT_CONFIGURED'
+        }, { status: 500 });
+      }
+      throw dbError;
+    }
     
     if (!order) {
       return NextResponse.json({ error: 'Pedido não encontrado' }, { status: 404 });
     }
 
     // Get config from appropriate database
-    const config = isPostgresAvailable()
-      ? await dbPostgres.config.get()
-      : db.config.get();
+    let config;
+    try {
+      config = postgresAvailable
+        ? await dbPostgres.config.get()
+        : db.config.get();
+    } catch (dbError: any) {
+      console.error('Erro ao buscar configuração:', dbError);
+      // Check if it's a database connection error
+      if (dbError?.message?.includes('POSTGRES_URL') || dbError?.message?.includes('not configured')) {
+        return NextResponse.json({ 
+          error: 'Banco de dados não configurado',
+          details: 'Erro ao conectar com o banco de dados. Verifique se POSTGRES_URL está configurada corretamente na Vercel.',
+          code: 'DATABASE_NOT_CONFIGURED'
+        }, { status: 500 });
+      }
+      throw dbError;
+    }
     
     // Check if Mercado Pago is configured
     if (paymentMethod === 'mercado_pago') {
