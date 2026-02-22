@@ -84,9 +84,11 @@ export async function PUT(
         updatedAt: new Date().toISOString(),
       });
       // Auto-commit changes
-      autoCommit(`Update product: ${updated.name || product?.name || params.id}`, ['data/products.json']).catch(console.error);
+      if (updated) {
+        autoCommit(`Update product: ${updated.name || product?.name || params.id}`, ['data/products.json']).catch(console.error);
+      }
     }
-    
+
     if (!updated) {
       return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
     }
