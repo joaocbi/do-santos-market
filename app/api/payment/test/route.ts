@@ -8,7 +8,10 @@ export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
-    const config = db.config.get();
+    // Use Postgres config if available, otherwise fallback to JSON
+    const config = isPostgresAvailable() 
+      ? await dbPostgres.config.get()
+      : db.config.get();
     
     const checks: any = {
       hasAccessToken: !!config.mercadoPagoAccessToken,

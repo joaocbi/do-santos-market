@@ -9,8 +9,10 @@ export async function GET(request: NextRequest) {
   try {
     console.log('🔍 Starting complete payment test...');
 
-    // Step 1: Get config
-    const config = db.config.get();
+    // Step 1: Get config - use Postgres if available
+    const config = isPostgresAvailable() 
+      ? await dbPostgres.config.get()
+      : db.config.get();
     
     if (!config.mercadoPagoAccessToken) {
       return NextResponse.json({
