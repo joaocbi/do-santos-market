@@ -172,7 +172,12 @@ export async function POST(request: NextRequest) {
     
     // Check Postgres availability
     const isVercel = !!process.env.VERCEL;
-    const hasPostgresUrl = !!process.env.POSTGRES_URL;
+    // Try multiple environment variable names
+    const postgresUrl = process.env.POSTGRES_URL || 
+                       process.env.DATABASE_URL || 
+                       process.env.POSTGRES_CONNECTION_STRING ||
+                       process.env.NEON_DATABASE_URL;
+    const hasPostgresUrl = !!postgresUrl;
     const postgresAvailable = isPostgresAvailable();
     
     const envInfo = {
@@ -180,8 +185,9 @@ export async function POST(request: NextRequest) {
       postgresAvailable: postgresAvailable,
       hasPostgresUrl: hasPostgresUrl,
       nodeEnv: process.env.NODE_ENV,
-      postgresUrlLength: process.env.POSTGRES_URL?.length || 0,
-      postgresUrlPrefix: process.env.POSTGRES_URL ? process.env.POSTGRES_URL.substring(0, 30) + '...' : 'não configurado'
+      postgresUrlLength: postgresUrl?.length || 0,
+      postgresUrlPrefix: postgresUrl ? postgresUrl.substring(0, 30) + '...' : 'não configurado',
+      allEnvKeys: Object.keys(process.env).filter(k => k.includes('POSTGRES') || k.includes('DATABASE')).join(', ')
     };
     
     console.log('Ambiente:', envInfo);
@@ -190,6 +196,7 @@ export async function POST(request: NextRequest) {
     // In Vercel, we MUST have Postgres configured
     if (isVercel && !hasPostgresUrl) {
       console.error('ERRO CRÍTICO: Vercel detectado mas POSTGRES_URL não encontrada!');
+      console.error('Variáveis de ambiente disponíveis relacionadas:', envInfo.allEnvKeys);
       return NextResponse.json({ 
         error: 'Banco de dados não configurado',
         details: 'A aplicação requer um banco de dados Postgres na Vercel. A variável POSTGRES_URL não foi encontrada. Verifique se está configurada em Settings → Environment Variables.',
