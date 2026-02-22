@@ -38,10 +38,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   console.log('=== INÍCIO: Criar Pedido ===');
   console.log('Timestamp:', new Date().toISOString());
+  
+  // Try multiple ways to get POSTGRES_URL
+  const postgresUrl = process.env.POSTGRES_URL || 
+                     process.env.DATABASE_URL || 
+                     process.env.POSTGRES_CONNECTION_STRING ||
+                     process.env.NEON_DATABASE_URL;
+  
   console.log('Environment:', {
     VERCEL: !!process.env.VERCEL,
+    VERCEL_ENV: process.env.VERCEL_ENV,
     NODE_ENV: process.env.NODE_ENV,
-    hasPostgresUrl: !!process.env.POSTGRES_URL
+    hasPostgresUrl: !!postgresUrl,
+    postgresUrlLength: postgresUrl?.length || 0,
+    allEnvKeys: Object.keys(process.env).filter(k => 
+      k.includes('POSTGRES') || k.includes('DATABASE') || k.includes('NEON')
+    ).join(', ') || 'nenhuma encontrada'
   });
   
   try {
