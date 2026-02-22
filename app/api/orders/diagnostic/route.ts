@@ -8,17 +8,31 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   console.log('=== DIAGNÓSTICO: Verificando configuração ===');
   
+  // Try multiple environment variable names
+  const postgresUrl = process.env.POSTGRES_URL || 
+                     process.env.URL_POSTGRES || 
+                     process.env.DATABASE_URL || 
+                     process.env.POSTGRES_CONNECTION_STRING ||
+                     process.env.NEON_DATABASE_URL;
+  
   const diagnostics: any = {
     timestamp: new Date().toISOString(),
     environment: {
       VERCEL: !!process.env.VERCEL,
+      VERCEL_ENV: process.env.VERCEL_ENV,
       NODE_ENV: process.env.NODE_ENV,
       hasPostgresUrl: !!process.env.POSTGRES_URL,
-      postgresUrlLength: process.env.POSTGRES_URL?.length || 0,
+      hasUrlPostgres: !!process.env.URL_POSTGRES,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      postgresUrlFound: !!postgresUrl,
+      postgresUrlLength: postgresUrl?.length || 0,
+      allEnvKeys: Object.keys(process.env).filter(k => 
+        k.includes('POSTGRES') || k.includes('DATABASE') || k.includes('NEON') || k.includes('URL')
+      ).join(', ') || 'nenhuma encontrada'
     },
     database: {
       postgresAvailable: isPostgresAvailable(),
-      postgresUrlPrefix: process.env.POSTGRES_URL ? process.env.POSTGRES_URL.substring(0, 20) + '...' : 'não configurado',
+      postgresUrlPrefix: postgresUrl ? postgresUrl.substring(0, 20) + '...' : 'não configurado',
     },
     test: {
       canCreateOrder: false,
@@ -27,10 +41,10 @@ export async function GET(request: NextRequest) {
   };
 
   // Try to test database connection
-  if (isPostgresAvailable() && process.env.POSTGRES_URL) {
+  if (isPostgresAvailable() && postgresUrl) {
     try {
       // Clean connection string - remove quotes and line breaks
-      const cleanUrl = process.env.POSTGRES_URL
+      const cleanUrl = postgresUrl
         .replace(/^["']|["']$/g, '') // Remove surrounding quotes
         .replace(/[\r\n\t]/g, '') // Remove line breaks and tabs
         .trim(); // Remove leading/trailing whitespace
@@ -59,7 +73,10 @@ export async function GET(request: NextRequest) {
       console.error('Erro ao testar conexão:', dbError);
     }
   } else {
-    diagnostics.test.error = 'POSTGRES_URL não configurada';
+    diagnostics.test.error = 'POSTGRES_URL ou URL_POSTGRES não configurada';
+    diagnostics.test.availableKeys = Object.keys(process.env).filter(k => 
+      k.includes('POSTGRES') || k.includes('DATABASE') || k.includes('NEON')
+    );
   }
 
   console.log('Diagnóstico completo:', JSON.stringify(diagnostics, null, 2));
