@@ -529,5 +529,39 @@
     "status": "pending",
     "createdAt": "2026-02-23T17:55:47.583Z",
     "updatedAt": "2026-02-23T17:55:47.583Z"
+  },
+  {
+    "id": "1771869374176",
+    "customerName": "Tereza de Melo Maia dos Santos",
+    "customerEmail": "teremelomaia@gmail.com",
+    "customerPhone": "(42) 99141-7956",
+    "customerCpf": "162.749.668-89",
+    "address": {
+      "street": "Avenida Atlanta",
+      "number": "830",
+      "complement": "",
+      "neighborhood": "Jardim Atlanta",
+      "city": "Carambeí",
+      "state": "PR",
+      "zipCode": "84145-000"
+    },
+    "items": [
+      {
+        "productId": "1771008173784",
+        "productName": "Pasta Ccb Capanga Matelasse Marrom Ap R1910",
+        "productSku": "PASTA-CCB-CAPANGA-MA-095768",
+        "quantity": 2,
+        "price": "175.99"
+      }
+    ],
+    "subtotal": 351.98,
+    "shippingFee": 0,
+    "total": 351.98,
+    "paymentMethod": "mercado_pago",
+    "paymentStatus": "pending",
+    "notes": "",
+    "status": "pending",
+    "createdAt": "2026-02-23T17:56:14.177Z",
+    "updatedAt": "2026-02-23T17:56:14.177Z"
   }
 ]
