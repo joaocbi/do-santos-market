@@ -14,6 +14,7 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -61,6 +62,13 @@ export default function CheckoutPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const formatPhone = (value: string) => {
@@ -89,6 +97,13 @@ export default function CheckoutPage() {
   const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCPF(e.target.value);
     setFormData(prev => ({ ...prev, cpf: formatted }));
+    if (errors.cpf) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.cpf;
+        return newErrors;
+      });
+    }
   };
 
   const handleCEPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,17 +111,46 @@ export default function CheckoutPage() {
     setFormData(prev => ({ ...prev, zipCode: formatted }));
   };
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Nome é obrigatório';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email é obrigatório';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Email inválido';
+    }
+    
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Telefone é obrigatório';
+    }
+    
+    const cpfNumbers = formData.cpf.replace(/\D/g, '');
+    if (!formData.cpf.trim()) {
+      newErrors.cpf = 'CPF é obrigatório';
+    } else if (cpfNumbers.length !== 11) {
+      newErrors.cpf = 'CPF deve ter 11 dígitos';
+    }
+    
+    if (!formData.street.trim()) {
+      newErrors.street = 'Rua é obrigatória';
+    }
+    
+    if (!formData.number.trim()) {
+      newErrors.number = 'Número é obrigatório';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const cpfNumbers = formData.cpf.replace(/\D/g, '');
-    
-    if (!formData.name || !formData.phone || !formData.email || !formData.cpf || cpfNumbers.length !== 11 || !formData.street || !formData.number) {
-      if (!formData.cpf || cpfNumbers.length !== 11) {
-        alert('Por favor, preencha o CPF corretamente (11 dígitos).');
-        return;
-      }
-      alert('Por favor, preencha todos os campos obrigatórios.');
+    if (!validateForm()) {
       return;
     }
 
@@ -307,8 +351,13 @@ export default function CheckoutPage() {
                     placeholder="000.000.000-00"
                     maxLength={14}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                      errors.cpf ? 'border-red-500' : ''
+                    }`}
                   />
+                  {errors.cpf && (
+                    <p className="text-red-500 text-sm mt-1">{errors.cpf}</p>
+                  )}
                 </div>
               </div>
             </div>
