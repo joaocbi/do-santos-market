@@ -99,7 +99,13 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.phone || !formData.email || !formData.cpf || !formData.street || !formData.number) {
+    const cpfNumbers = formData.cpf.replace(/\D/g, '');
+    
+    if (!formData.name || !formData.phone || !formData.email || !formData.cpf || cpfNumbers.length !== 11 || !formData.street || !formData.number) {
+      if (!formData.cpf || cpfNumbers.length !== 11) {
+        alert('Por favor, preencha o CPF corretamente (11 dígitos).');
+        return;
+      }
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -290,7 +296,9 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">CPF *</label>
+                  <label className="block text-sm font-medium mb-2">
+                    CPF <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     name="cpf"
