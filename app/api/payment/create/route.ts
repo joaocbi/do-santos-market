@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
         
         return NextResponse.json({
           paymentId: mercadoPagoResponse.id,
+          preferenceId: mercadoPagoResponse.id, // ID da preferência para usar no Bricks
           initPoint: mercadoPagoResponse.init_point,
           sandboxInitPoint: mercadoPagoResponse.sandbox_init_point,
         });
@@ -218,17 +219,29 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
     email: order.customerEmail,
   };
   
-  // Only add phone if it's valid
+  // Adiciona telefone apenas se for válido
   if (payerPhone) {
     payer.phone = payerPhone;
   }
 
-  // Calculate total to ensure it matches
+  // Calcula o total para garantir que corresponde
   const totalAmount = items.reduce((sum: number, item: any) => sum + (item.unit_price * item.quantity), 0);
+  
+  // Valida o valor total
+  if (totalAmount <= 0) {
+    throw new Error('O valor total do pedido deve ser maior que zero');
+  }
+  
+  // Valida se o total corresponde ao total do pedido (com pequena tolerância para arredondamento)
+  const totalDifference = Math.abs(totalAmount - order.total);
+  if (totalDifference > 0.01) {
+    console.warn(`Diferença entre total calculado (${totalAmount}) e total do pedido (${order.total}): ${totalDifference}`);
+  }
   
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.dosantosmarket.com.br';
   
-  // Ensure all required fields for button to work
+  // Garante que todos os campos obrigatórios estão presentes para o botão funcionar
+  // Seguindo a documentação da API do Mercado Pago para preferências
   const preference: any = {
     items: items,
     payer: payer,
@@ -253,21 +266,53 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
       customer_name: order.customerName,
       customer_email: order.customerEmail
     },
-    // Additional fields that may be required for button to work
+    // ID do site para Brasil (MLB)
     site_id: 'MLB'
   };
   
+  // Valida a estrutura da preferência antes de enviar
+  if (!preference.items || preference.items.length === 0) {
+    throw new Error('A preferência deve conter pelo menos um item');
+  }
+  
+  if (!preference.payer || !preference.payer.name || !preference.payer.email) {
+    throw new Error('Dados do pagador incompletos');
+  }
+  
+  if (!preference.back_urls || !preference.back_urls.success) {
+    throw new Error('URLs de retorno não configuradas');
+  }
+  
   console.log('Total calculado:', totalAmount);
   console.log('Total do pedido:', order.total);
+  console.log('Itens na preferência:', items.length);
   console.log('Preferência completa:', JSON.stringify(preference, null, 2));
 
-  const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+  // Faz requisição para a API do Mercado Pago
+  const apiUrl = 'https://api.mercadopago.com/checkout/preferences';
+  console.log('Enviando requisição para Mercado Pago:', {
+    url: apiUrl,
+    method: 'POST',
+    itemsCount: preference.items.length,
+    payerEmail: preference.payer.email,
+    totalAmount: totalAmount
+  });
+  
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`,
+      'X-Idempotency-Key': `order-${order.id}-${Date.now()}`, // Previne requisições duplicadas
     },
     body: JSON.stringify(preference),
+  });
+  
+  console.log('Resposta do Mercado Pago recebida:', {
+    status: response.status,
+    statusText: response.statusText,
+    ok: response.ok,
+    headers: Object.fromEntries(response.headers.entries())
   });
 
   if (!response.ok) {
@@ -282,27 +327,74 @@ async function createMercadoPagoPayment(order: any, accessToken: string) {
     console.error('Erro na API do Mercado Pago:', {
       status: response.status,
       statusText: response.statusText,
-      error: errorData
+      error: errorData,
+      preferenceSent: JSON.stringify(preference, null, 2)
     });
     
-    throw new Error(errorData.message || errorData.error || 'Falha ao criar preferência no Mercado Pago');
+    // Fornece mensagens de erro mais específicas baseadas no código de status
+    let errorMessage = 'Falha ao criar preferência no Mercado Pago';
+    
+    if (response.status === 401) {
+      errorMessage = 'Token de acesso do Mercado Pago inválido ou expirado. Verifique as credenciais.';
+    } else if (response.status === 400) {
+      errorMessage = errorData.message || errorData.cause?.[0]?.description || 'Dados inválidos na requisição ao Mercado Pago';
+    } else if (response.status === 403) {
+      errorMessage = 'Acesso negado pelo Mercado Pago. Verifique as permissões da conta.';
+    } else if (response.status === 404) {
+      errorMessage = 'Endpoint do Mercado Pago não encontrado. Verifique a URL da API.';
+    } else if (response.status >= 500) {
+      errorMessage = 'Erro no servidor do Mercado Pago. Tente novamente em alguns instantes.';
+    } else if (errorData.message) {
+      errorMessage = errorData.message;
+    } else if (errorData.error) {
+      errorMessage = errorData.error;
+    }
+    
+    throw new Error(errorMessage);
   }
 
   const result = await response.json();
   console.log('Pagamento Mercado Pago criado com sucesso:', result.id);
-  console.log('Response completo:', JSON.stringify(result, null, 2));
+  console.log('Resposta completa:', JSON.stringify(result, null, 2));
   
-  // Validate that init_point is present
+  // Valida a estrutura da resposta
+  if (!result || typeof result !== 'object') {
+    console.error('ERRO CRÍTICO: Resposta do Mercado Pago inválida');
+    throw new Error('Resposta inválida do Mercado Pago. Tente novamente.');
+  }
+  
+  // Valida se init_point está presente
   if (!result.init_point && !result.sandbox_init_point) {
     console.error('ERRO CRÍTICO: Mercado Pago não retornou init_point!');
-    console.error('Response:', JSON.stringify(result, null, 2));
-    throw new Error('Mercado Pago não retornou o link de pagamento. Verifique as configurações.');
+    console.error('Resposta:', JSON.stringify(result, null, 2));
+    
+    // Verifica mensagens de erro específicas na resposta
+    const errorMessage = result.message || result.error || 'Link de pagamento não disponível';
+    throw new Error(`Mercado Pago não retornou o link de pagamento: ${errorMessage}`);
   }
   
-  // Log warnings if any
+  // Registra avisos se houver - podem indicar problemas que podem afetar o botão
   if (result.warnings && result.warnings.length > 0) {
-    console.warn('Avisos do Mercado Pago:', result.warnings);
+    console.warn('Avisos do Mercado Pago:', JSON.stringify(result.warnings, null, 2));
+    // Registra cada aviso separadamente para melhor depuração
+    result.warnings.forEach((warning: any, index: number) => {
+      console.warn(`Aviso ${index + 1}:`, warning);
+    });
   }
+  
+  // Valida o ID da preferência
+  if (!result.id) {
+    console.error('ERRO: Mercado Pago não retornou ID da preferência');
+    throw new Error('Resposta incompleta do Mercado Pago. Tente novamente.');
+  }
+  
+  // Registra sucesso com todas as informações relevantes
+  console.log('Preferência criada com sucesso:', {
+    preferenceId: result.id,
+    hasInitPoint: !!result.init_point,
+    hasSandboxInitPoint: !!result.sandbox_init_point,
+    warningsCount: result.warnings?.length || 0
+  });
   
   return result;
 }

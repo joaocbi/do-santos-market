@@ -8,11 +8,21 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import { cartUtils, CartItem } from '@/lib/cart';
 import { SiteConfig } from '@/lib/types';
 
+// Declaração de tipos para Mercado Pago
+declare global {
+  interface Window {
+    MercadoPago: any;
+  }
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPaymentBrick, setShowPaymentBrick] = useState(false);
+  const [preferenceId, setPreferenceId] = useState<string | null>(null);
+  const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -42,8 +52,21 @@ export default function CheckoutPage() {
       .then(res => res.json())
       .then(data => {
         console.log('Configuração carregada:', data);
-        console.log('Token de Acesso Mercado Pago:', data?.mercadoPagoAccessToken ? 'Configurado' : 'Não configurado');
-        console.log('Chave Pública Mercado Pago:', data?.mercadoPagoPublicKey ? 'Configurado' : 'Não configurado');
+        console.log('Token de Acesso Mercado Pago:', data?.mercadoPagoAccessToken ? '✅ Configurado' : '❌ Não configurado');
+        
+        // Verificação detalhada da chave pública
+        const hasPublicKey = !!data?.mercadoPagoPublicKey && data.mercadoPagoPublicKey.trim().length > 0;
+        if (hasPublicKey) {
+          console.log('✅ Chave Pública Mercado Pago: Configurada');
+          console.log(`   Preview: ${data.mercadoPagoPublicKey.substring(0, 20)}...`);
+          console.log(`   Tamanho: ${data.mercadoPagoPublicKey.length} caracteres`);
+          console.log('✅ Bricks Builder: Pode ser usado');
+        } else {
+          console.warn('⚠️ Chave Pública Mercado Pago: NÃO configurada');
+          console.warn('⚠️ Bricks Builder: NÃO pode ser usado (será usado redirecionamento)');
+          console.warn('   Para usar Bricks Builder, configure a chave pública no painel administrativo');
+        }
+        
         if (data?.whatsappNumber) {
           const cleanNumber = data.whatsappNumber.replace(/\D/g, '');
           console.log('Cleaned WhatsApp number:', cleanNumber);
@@ -59,6 +82,201 @@ export default function CheckoutPage() {
         console.error('Erro ao carregar configuração:', error);
       });
   }, [router]);
+
+  // Inicializa o Mercado Pago Bricks Builder
+  useEffect(() => {
+    if (!showPaymentBrick || !preferenceId || !config?.mercadoPagoPublicKey) {
+      return;
+    }
+
+    // Aguarda o container estar disponível no DOM
+    const initBricks = () => {
+      const container = document.getElementById('paymentBrick_container');
+      if (!container) {
+        // Tenta novamente após um pequeno delay
+        setTimeout(initBricks, 100);
+        return;
+      }
+
+      // Carrega o script do Mercado Pago se ainda não estiver carregado
+      const loadMercadoPagoScript = () => {
+        return new Promise((resolve, reject) => {
+          if (window.MercadoPago) {
+            resolve(window.MercadoPago);
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = 'https://sdk.mercadopago.com/js/v2';
+          script.async = true;
+          script.onload = () => resolve(window.MercadoPago);
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      };
+
+      loadMercadoPagoScript()
+        .then((mp: any) => {
+          console.log('Mercado Pago SDK carregado com sucesso');
+          console.log('Inicializando Bricks com:', {
+            publicKey: config.mercadoPagoPublicKey?.substring(0, 20) + '...',
+            preferenceId: preferenceId
+          });
+
+          const mpInstance = new mp(config.mercadoPagoPublicKey);
+          const bricksBuilder = mpInstance.bricks();
+
+          // Limpa o container antes de criar o brick
+          container.innerHTML = '';
+
+          console.log('Criando brick de pagamento...');
+
+          bricksBuilder.create(
+            'payment',
+            'paymentBrick_container',
+            {
+              initialization: {
+                preferenceId: preferenceId
+              },
+              callbacks: {
+                onSubmit: async (formData: any) => {
+                  console.log('Pagamento disparado pelo Bricks:', formData);
+
+                  try {
+                    // Prepara os dados para o endpoint
+                    const paymentData = {
+                      token: formData.token,
+                      transaction_amount: formData.transaction_amount || formData.amount,
+                      payment_method_id: formData.payment_method_id,
+                      installments: formData.installments || 1,
+                      payer: {
+                        email: formData.payer?.email || formData.email,
+                        identification: formData.payer?.identification
+                      },
+                      external_reference: currentOrderId?.toString()
+                    };
+
+                    console.log('Enviando dados para processamento:', {
+                      hasToken: !!paymentData.token,
+                      transaction_amount: paymentData.transaction_amount,
+                      payment_method_id: paymentData.payment_method_id,
+                      orderId: paymentData.external_reference
+                    });
+
+                    const response = await fetch('/api/payment/process', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(paymentData)
+                    });
+
+                    if (!response.ok) {
+                      const errorData = await response.json();
+                      console.error('Erro na resposta:', errorData);
+                      throw new Error(errorData.details || errorData.error || 'Erro ao processar pagamento');
+                    }
+
+                    const result = await response.json();
+                    console.log('Resultado do processamento:', result);
+                    
+                    // O Bricks espera um objeto com status e id
+                    const bricksResponse = {
+                      status: result.status,
+                      status_detail: result.payment_result?.status_detail || result.status,
+                      id: result.payment_id || result.payment_result?.id
+                    };
+
+                    // Redireciona baseado no status
+                    if (result.status === 'approved') {
+                      // Limpa o carrinho
+                      cartUtils.clearCart();
+                      // Redireciona para página de sucesso após um pequeno delay
+                      setTimeout(() => {
+                        window.location.href = result.redirect_url || `/payment/success?order_id=${currentOrderId}`;
+                      }, 500);
+                    } else if (result.status === 'rejected') {
+                      // Redireciona para página de falha
+                      setTimeout(() => {
+                        window.location.href = result.redirect_url || `/payment/failure?order_id=${currentOrderId}`;
+                      }, 500);
+                    } else {
+                      // Redireciona para página de pendente
+                      setTimeout(() => {
+                        window.location.href = result.redirect_url || `/payment/pending?order_id=${currentOrderId}`;
+                      }, 500);
+                    }
+
+                    // Retorna a resposta no formato esperado pelo Bricks
+                    return bricksResponse;
+                  } catch (error: any) {
+                    console.error('Erro ao processar pagamento:', error);
+                    // Retorna erro no formato esperado pelo Bricks
+                    return {
+                      status: 'error',
+                      status_detail: error?.message || 'Erro ao processar pagamento',
+                      message: error?.message || 'Erro ao processar pagamento'
+                    };
+                  }
+                },
+                onError: (error: any) => {
+                  console.error('Erro no pagamento', error);
+                  console.error('Detalhes do erro:', JSON.stringify(error, null, 2));
+                  alert(`Erro ao processar pagamento: ${error?.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
+                },
+                onReady: () => {
+                  console.log('✅ Brick de pagamento pronto e renderizado');
+                  console.log('Verificando se o botão está habilitado...');
+                  
+                  // Verifica se o botão está presente e habilitado
+                  setTimeout(() => {
+                    const brickButton = container.querySelector('button[type="submit"]') || 
+                                       container.querySelector('button') ||
+                                       container.querySelector('[data-testid="submit-button"]');
+                    
+                    if (brickButton) {
+                      console.log('Botão encontrado:', {
+                        disabled: (brickButton as HTMLButtonElement).disabled,
+                        text: (brickButton as HTMLElement).textContent,
+                        classes: (brickButton as HTMLElement).className
+                      });
+                    } else {
+                      console.warn('⚠️ Botão do Bricks não encontrado no container');
+                    }
+                  }, 1000);
+                }
+              }
+            }
+          ).then((brickController: any) => {
+            console.log('Brick criado com sucesso:', brickController);
+          }).catch((error: any) => {
+            console.error('❌ Erro ao criar brick:', error);
+            console.error('Detalhes:', JSON.stringify(error, null, 2));
+            alert(`Erro ao inicializar o formulário de pagamento: ${error?.message || 'Erro desconhecido'}. Por favor, recarregue a página.`);
+          });
+        })
+        .catch((error) => {
+          console.error('❌ Erro ao carregar Mercado Pago SDK:', error);
+          alert('Erro ao carregar o sistema de pagamento. Por favor, recarregue a página.');
+        });
+    };
+
+    // Inicia após um pequeno delay para garantir que o DOM está atualizado
+    setTimeout(initBricks, 200);
+  }, [showPaymentBrick, preferenceId, config?.mercadoPagoPublicKey, currentOrderId]);
+
+  // Log de debug para verificar estado
+  useEffect(() => {
+    if (showPaymentBrick) {
+      console.log('Estado do Bricks:', {
+        showPaymentBrick,
+        preferenceId,
+        hasPublicKey: !!config?.mercadoPagoPublicKey,
+        currentOrderId,
+        containerExists: !!document.getElementById('paymentBrick_container')
+      });
+    }
+  }, [showPaymentBrick, preferenceId, config?.mercadoPagoPublicKey, currentOrderId]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -212,7 +430,9 @@ export default function CheckoutPage() {
           return;
         }
 
-        // Create payment and redirect to Mercado Pago
+        // Cria pagamento e redireciona para Mercado Pago
+        console.log('Criando pagamento Mercado Pago para pedido:', order.id);
+        
         const paymentResponse = await fetch('/api/payment/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -222,15 +442,26 @@ export default function CheckoutPage() {
           }),
         });
 
+        console.log('Resposta da criação de pagamento:', {
+          status: paymentResponse.status,
+          statusText: paymentResponse.statusText,
+          ok: paymentResponse.ok
+        });
+
         if (!paymentResponse.ok) {
           let errorData;
           try {
-            errorData = await paymentResponse.json();
+            const errorText = await paymentResponse.text();
+            console.error('Texto de erro recebido:', errorText);
+            errorData = JSON.parse(errorText);
           } catch (e) {
             errorData = { error: `Erro ${paymentResponse.status}: ${paymentResponse.statusText}` };
           }
           
-          console.error('Erro ao criar pagamento:', errorData);
+          console.error('Erro ao criar pagamento:', {
+            status: paymentResponse.status,
+            errorData: errorData
+          });
           
           if (paymentResponse.status === 404) {
             alert('Erro: Endpoint de pagamento não encontrado. Por favor, tente novamente ou escolha pagamento via WhatsApp.');
@@ -244,24 +475,63 @@ export default function CheckoutPage() {
             return;
           }
           
-          alert(`Erro ao processar pagamento: ${errorData.error || errorData.details || 'Erro desconhecido'}`);
+          if (errorData.code === 'PAYMENT_CREATION_FAILED') {
+            const errorMsg = errorData.details || errorData.error || 'Erro desconhecido ao criar pagamento';
+            alert(`Erro ao processar pagamento: ${errorMsg}\n\nPor favor, tente novamente ou escolha pagamento via WhatsApp.`);
+            setIsSubmitting(false);
+            return;
+          }
+          
+          // Mostra mensagem de erro amigável ao usuário
+          const errorMessage = errorData.error || errorData.details || errorData.message || 'Erro desconhecido';
+          alert(`Erro ao processar pagamento: ${errorMessage}\n\nPor favor, tente novamente ou escolha pagamento via WhatsApp.`);
           setIsSubmitting(false);
           return;
         }
 
         const payment = await paymentResponse.json();
         
-        if (!payment.initPoint && !payment.sandboxInitPoint) {
-          alert('Erro: Não foi possível obter o link de pagamento. Por favor, tente novamente ou escolha pagamento via WhatsApp.');
+        console.log('Resposta do pagamento recebida:', {
+          paymentId: payment.paymentId,
+          preferenceId: payment.preferenceId,
+          hasPreferenceId: !!(payment.preferenceId || payment.paymentId),
+          fullResponse: payment
+        });
+        
+        const prefId = payment.preferenceId || payment.paymentId;
+        if (!prefId) {
+          console.error('❌ Erro: ID da preferência não disponível', payment);
+          alert('Erro: Não foi possível obter o ID da preferência. Por favor, tente novamente ou escolha pagamento via WhatsApp.');
           setIsSubmitting(false);
           return;
         }
+
+        // Verifica se temos chave pública para usar Bricks
+        if (!config?.mercadoPagoPublicKey) {
+          console.warn('⚠️ Chave pública não configurada, usando redirecionamento');
+          // Fallback para redirecionamento se não tiver chave pública
+          if (payment.initPoint || payment.sandboxInitPoint) {
+            cartUtils.clearCart();
+            window.location.href = payment.initPoint || payment.sandboxInitPoint;
+            return;
+          }
+        }
         
-        // Clear cart
-        cartUtils.clearCart();
+        console.log('✅ Configurando Bricks Builder com preferenceId:', prefId);
         
-        // Redirect to Mercado Pago
-        window.location.href = payment.initPoint || payment.sandboxInitPoint;
+        // Configura o Bricks Builder
+        setPreferenceId(prefId);
+        setCurrentOrderId(order.id);
+        setShowPaymentBrick(true);
+        setIsSubmitting(false);
+        
+        // Scroll para o brick de pagamento
+        setTimeout(() => {
+          const brickContainer = document.getElementById('paymentBrick_container');
+          if (brickContainer) {
+            brickContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
       } else {
         // WhatsApp payment flow (original)
         const orderItemsText = cartItems.map(item => 
@@ -651,6 +921,17 @@ export default function CheckoutPage() {
             </div>
           </div>
         </form>
+
+        {/* Container para o Mercado Pago Bricks */}
+        {showPaymentBrick && preferenceId && (
+          <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-bold mb-4">Finalize seu Pagamento</h2>
+            <p className="text-gray-600 mb-6">
+              Preencha os dados abaixo para concluir seu pagamento de forma segura.
+            </p>
+            <div id="paymentBrick_container" className="w-full"></div>
+          </div>
+        )}
       </main>
       <WhatsAppButton />
     </div>
