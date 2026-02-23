@@ -99,7 +99,7 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.phone || !formData.email || !formData.street || !formData.number) {
+    if (!formData.name || !formData.phone || !formData.email || !formData.cpf || !formData.street || !formData.number) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">CPF</label>
+                  <label className="block text-sm font-medium mb-2">CPF *</label>
                   <input
                     type="text"
                     name="cpf"
@@ -298,6 +298,7 @@ export default function CheckoutPage() {
                     onChange={handleCPFChange}
                     placeholder="000.000.000-00"
                     maxLength={14}
+                    required
                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
