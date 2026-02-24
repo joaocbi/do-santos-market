@@ -91,6 +91,22 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
+    // Validate CPF - required field
+    if (!data.customerCpf || !data.customerCpf.trim()) {
+      return NextResponse.json({ 
+        error: 'CPF é obrigatório',
+        code: 'MISSING_CUSTOMER_CPF'
+      }, { status: 400 });
+    }
+    
+    const cpfNumbers = data.customerCpf.replace(/\D/g, '');
+    if (cpfNumbers.length !== 11) {
+      return NextResponse.json({ 
+        error: 'CPF inválido. Deve conter 11 dígitos',
+        code: 'INVALID_CPF'
+      }, { status: 400 });
+    }
+    
     if (!data.address) {
       return NextResponse.json({ 
         error: 'Endereço é obrigatório',
@@ -166,7 +182,7 @@ export async function POST(request: NextRequest) {
       customerName: data.customerName.trim(),
       customerEmail: data.customerEmail.trim(),
       customerPhone: data.customerPhone.trim(),
-      customerCpf: data.customerCpf?.trim() || undefined,
+      customerCpf: data.customerCpf.trim(),
       address: data.address,
       items: data.items,
       subtotal: subtotal,
