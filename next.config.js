@@ -64,7 +64,18 @@ const nextConfig = {
   },
   // Ensure proper redirects
   async redirects() {
-    return [];
+    return [
+      {
+        source: '/api/pedidos',
+        destination: '/api/orders',
+        permanent: false,
+      },
+      {
+        source: '/api/pedidos/:id',
+        destination: '/api/orders/:id',
+        permanent: false,
+      },
+    ];
   },
 }
 
