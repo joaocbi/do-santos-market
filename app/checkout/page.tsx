@@ -498,7 +498,9 @@ function CheckoutContent() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">
-                    CPF <span className="text-red-500 font-bold text-lg">*</span> <span className="text-red-500 text-xs">(Obrigatório)</span>
+                    <span>CPF</span>
+                    <span className="text-red-500 font-bold text-lg ml-1">*</span>
+                    <span className="text-red-500 text-xs font-semibold ml-1">(Obrigatório)</span>
                   </label>
                   <input
                     type="text"
