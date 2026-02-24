@@ -18,6 +18,7 @@ function CheckoutContent() {
   const [retryOrder, setRetryOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
     name: '',
@@ -198,6 +199,11 @@ function CheckoutContent() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleMercadoPagoPaymentClick = () => {
+    // Show security confirmation modal first
+    setShowSecurityModal(true);
+  };
+
   const handleMercadoPagoPayment = async () => {
     if (!retryOrder) {
       alert('Pedido não encontrado');
@@ -209,6 +215,8 @@ function CheckoutContent() {
       return;
     }
 
+    // Close modal and proceed with payment
+    setShowSecurityModal(false);
     setIsCreatingPayment(true);
 
     try {
@@ -602,7 +610,7 @@ function CheckoutContent() {
                 <>
                   <button
                     type="button"
-                    onClick={handleMercadoPagoPayment}
+                    onClick={handleMercadoPagoPaymentClick}
                     disabled={isCreatingPayment}
                     className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
                   >
@@ -636,6 +644,59 @@ function CheckoutContent() {
         </form>
       </main>
       <WhatsAppButton />
+      
+      {/* Security Confirmation Modal */}
+      {showSecurityModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <div className="mb-4">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-center mb-2">Confirmação de Segurança</h2>
+              <p className="text-gray-600 text-center mb-4">
+                Você está prestes a ser redirecionado para o Mercado Pago para finalizar o pagamento.
+              </p>
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-yellow-800 font-semibold mb-2">⚠️ Importante - Segurança:</p>
+              <ul className="text-sm text-yellow-700 space-y-1 list-disc list-inside">
+                <li>Certifique-se de que você está em um ambiente seguro</li>
+                <li>Não compartilhe sua senha do Mercado Pago com ninguém</li>
+                <li>O Mercado Pago pode solicitar autenticação adicional</li>
+                <li>Em caso de perda ou furto do aparelho, entre em contato imediatamente com o Mercado Pago</li>
+              </ul>
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-800">
+                <strong>Valor do pedido:</strong> {formatPrice(retryOrder?.total || 0)}
+              </p>
+              <p className="text-sm text-blue-800 mt-1">
+                <strong>Pedido:</strong> #{retryOrder ? formatOrderNumber(retryOrder.id) : ''}
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSecurityModal(false)}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleMercadoPagoPayment}
+                className="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
+              >
+                Confirmar e Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
