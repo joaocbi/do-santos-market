@@ -179,7 +179,7 @@ export default function ProductPage() {
               </div>
             </div>
             <div className="mb-6">
-              <p className="text-gray-700 whitespace-pre-line">{product.description}</p>
+              <p className="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{product.description}</p>
             </div>
             <div className="mb-6">
               <p className="text-sm text-gray-600">SKU: {product.sku}</p>

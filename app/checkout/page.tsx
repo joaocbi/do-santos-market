@@ -1,19 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { cartUtils, CartItem } from '@/lib/cart';
-import { SiteConfig } from '@/lib/types';
+import { SiteConfig, Order } from '@/lib/types';
 import { formatOrderNumber } from '@/lib/orderUtils';
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const retryOrderId = searchParams.get('retry_order');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [config, setConfig] = useState<SiteConfig | null>(null);
+  const [retryOrder, setRetryOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreatingPayment, setIsCreatingPayment] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [formData, setFormData] = useState({
     name: '',
@@ -31,12 +35,59 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
+    // Load retry order if retry_order parameter exists
+    if (retryOrderId) {
+      fetch(`/api/orders/${retryOrderId}`)
+        .then(res => res.json())
+        .then(data => {
+          setRetryOrder(data);
+          // Pre-fill form with order data
+          if (data) {
+            setFormData({
+              name: data.customerName || '',
+              email: data.customerEmail || '',
+              phone: data.customerPhone || '',
+              cpf: data.customerCpf || '',
+              street: data.address?.street || '',
+              number: data.address?.number || '',
+              complement: data.address?.complement || '',
+              neighborhood: data.address?.neighborhood || '',
+              city: data.address?.city || '',
+              state: data.address?.state || '',
+              zipCode: data.address?.zipCode || '',
+              notes: data.notes || '',
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error loading retry order:', error);
+        });
+    }
+
     const items = cartUtils.getCart();
-    if (items.length === 0) {
+    if (items.length === 0 && !retryOrderId) {
       router.push('/cart');
       return;
     }
-    setCartItems(items);
+    if (items.length > 0) {
+      setCartItems(items);
+    } else if (retryOrderId && retryOrder) {
+      // If retrying order, set cart items from order
+      const orderItems = retryOrder.items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        product: {
+          id: item.productId,
+          name: item.productName,
+          sku: item.productSku,
+          price: item.price,
+          images: [],
+          stock: 0,
+          active: true,
+        },
+      }));
+      setCartItems(orderItems as CartItem[]);
+    }
 
     fetch('/api/config')
       .then(res => res.json())
@@ -46,7 +97,7 @@ export default function CheckoutPage() {
       .catch(error => {
         console.error('Error loading config:', error);
       });
-  }, [router]);
+  }, [router, retryOrderId]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -55,9 +106,9 @@ export default function CheckoutPage() {
     }).format(price);
   };
 
-  const subtotal = cartUtils.getCartTotal();
-  const shippingFee = subtotal < 300 ? 20 : 0;
-  const total = subtotal + shippingFee;
+  const subtotal = retryOrder ? retryOrder.subtotal : cartUtils.getCartTotal();
+  const shippingFee = retryOrder ? retryOrder.shippingFee : (subtotal < 300 ? 20 : 0);
+  const total = retryOrder ? retryOrder.total : (subtotal + shippingFee);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -145,6 +196,45 @@ export default function CheckoutPage() {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleMercadoPagoPayment = async () => {
+    if (!retryOrder) {
+      alert('Pedido não encontrado');
+      return;
+    }
+
+    if (!config?.mercadoPagoAccessToken) {
+      alert('Mercado Pago não está configurado. Entre em contato com o administrador.');
+      return;
+    }
+
+    setIsCreatingPayment(true);
+
+    try {
+      const response = await fetch('/api/mercadopago/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: retryOrder.id }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Falha ao criar pagamento');
+      }
+
+      const data = await response.json();
+      
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        throw new Error('URL de pagamento não retornada');
+      }
+    } catch (error: any) {
+      console.error('Erro ao criar pagamento:', error);
+      alert(error.message || 'Erro ao processar pagamento. Tente novamente.');
+      setIsCreatingPayment(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -312,7 +402,7 @@ export default function CheckoutPage() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -323,7 +413,7 @@ export default function CheckoutPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -336,7 +426,7 @@ export default function CheckoutPage() {
                     required
                     placeholder="(00) 00000-0000"
                     maxLength={15}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -373,7 +463,7 @@ export default function CheckoutPage() {
                     value={formData.street}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -384,7 +474,7 @@ export default function CheckoutPage() {
                     value={formData.number}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -394,7 +484,7 @@ export default function CheckoutPage() {
                     name="complement"
                     value={formData.complement}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -404,7 +494,7 @@ export default function CheckoutPage() {
                     name="neighborhood"
                     value={formData.neighborhood}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -414,7 +504,7 @@ export default function CheckoutPage() {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -426,7 +516,7 @@ export default function CheckoutPage() {
                     onChange={handleInputChange}
                     placeholder="SP"
                     maxLength={2}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
                 <div>
@@ -438,7 +528,7 @@ export default function CheckoutPage() {
                     onChange={handleCEPChange}
                     placeholder="00000-000"
                     maxLength={9}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
               </div>
@@ -452,7 +542,7 @@ export default function CheckoutPage() {
                 onChange={handleInputChange}
                 rows={4}
                 placeholder="Alguma observação sobre o pedido?"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full resize-none"
               />
             </div>
           </div>
@@ -461,12 +551,21 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
               <h2 className="text-xl font-bold mb-4">Resumo do Pedido</h2>
               <div className="space-y-2 mb-4">
-                {cartItems.map((item) => (
-                  <div key={item.productId} className="flex justify-between text-sm">
-                    <span>{item.quantity}x {item.product.name}</span>
-                    <span>{formatPrice(item.product.price * item.quantity)}</span>
-                  </div>
-                ))}
+                {retryOrder ? (
+                  retryOrder.items.map((item, index) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <span>{item.quantity}x {item.productName}</span>
+                      <span>{formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                  ))
+                ) : (
+                  cartItems.map((item) => (
+                    <div key={item.productId} className="flex justify-between text-sm">
+                      <span>{item.quantity}x {item.product.name}</span>
+                      <span>{formatPrice(item.product.price * item.quantity)}</span>
+                    </div>
+                  ))
+                )}
               </div>
               <div className="space-y-2 mb-4 pt-3 border-t">
                 <div className="flex justify-between">
@@ -499,13 +598,33 @@ export default function CheckoutPage() {
                 </div>
               )}
               
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
-              >
-                {isSubmitting ? 'Processando...' : 'Finalizar Pedido via WhatsApp'}
-              </button>
+              {retryOrder && config?.mercadoPagoAccessToken ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleMercadoPagoPayment}
+                    disabled={isCreatingPayment}
+                    className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                  >
+                    {isCreatingPayment ? 'Processando...' : 'Pagar com Mercado Pago'}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                  >
+                    {isSubmitting ? 'Processando...' : 'Finalizar via WhatsApp'}
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                >
+                  {isSubmitting ? 'Processando...' : 'Finalizar Pedido via WhatsApp'}
+                </button>
+              )}
               <Link
                 href="/cart"
                 className="block w-full text-center text-gray-600 hover:text-primary transition"
@@ -518,5 +637,22 @@ export default function CheckoutPage() {
       </main>
       <WhatsAppButton />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <p>Carregando...</p>
+          </div>
+        </main>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

@@ -49,11 +49,11 @@ export default function Header() {
             {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
 
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <img 
               src="/logo.jpeg" 
               alt="Logo" 
-              className="h-12 md:h-14 w-auto object-contain"
+              className="h-10 sm:h-12 md:h-14 w-auto object-contain flex-shrink-0 max-w-full"
               onLoad={() => setLogoLoaded(true)}
               onError={(e) => {
                 setLogoError(true);
@@ -62,36 +62,36 @@ export default function Header() {
               }}
             />
             {logoError && (
-              <div className="h-12 md:h-14 w-12 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">DS</span>
+              <div className="h-10 sm:h-12 md:h-14 w-10 sm:w-12 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm sm:text-lg">DS</span>
               </div>
             )}
-            <span className="text-2xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent break-words overflow-wrap-anywhere min-w-0">
               Do Santos Market
             </span>
           </Link>
 
-          <div className="flex items-center gap-4">
-            <button className="hidden md:block">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+            <button className="hidden md:block" aria-label="Buscar">
               <FiSearch size={20} />
             </button>
-            <Link href="/cart" className="relative">
-              <FiShoppingBag size={20} />
+            <Link href="/cart" className="relative" aria-label="Carrinho">
+              <FiShoppingBag size={18} className="sm:w-5 sm:h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center min-w-[20px]">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
             </Link>
-            <Link href="/account">
-              <FiUser size={20} />
+            <Link href="/account" aria-label="Conta">
+              <FiUser size={18} className="sm:w-5 sm:h-5" />
             </Link>
           </div>
         </div>
 
         {/* Navigation */}
         <nav className={`${isMenuOpen ? 'block' : 'hidden'} lg:block py-4`}>
-          <ul className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+          <ul className="list-none flex flex-col lg:flex-row gap-4 lg:gap-6">
             <li>
               <Link
                 href="/"

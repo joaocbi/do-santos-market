@@ -98,47 +98,49 @@ export default function CartPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-md p-6">
               {cartItems.map((item) => (
-                <div key={item.productId} className="flex gap-4 pb-6 mb-6 border-b last:border-b-0 last:pb-0 last:mb-0">
+                <div key={item.productId} className="flex gap-2 sm:gap-4 pb-6 mb-6 border-b last:border-b-0 last:pb-0 last:mb-0">
                   <Link href={`/product/${item.productId}`} className="flex-shrink-0">
                     <img
                       src={normalizeImageUrl(item.product.images[0])}
                       alt={item.product.name}
-                      className="w-24 h-24 object-contain rounded bg-gray-100"
+                      className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded bg-gray-100 max-w-full"
                       crossOrigin="anonymous"
                       referrerPolicy="no-referrer"
                     />
                   </Link>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <Link href={`/product/${item.productId}`}>
-                      <h3 className="font-semibold text-lg mb-2 hover:text-primary transition">
+                      <h3 className="font-semibold text-lg mb-2 hover:text-primary transition break-words overflow-wrap-anywhere">
                         {item.product.name}
                       </h3>
                     </Link>
-                    <p className="text-gray-600 text-sm mb-2">SKU: {item.product.sku}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <p className="text-gray-600 text-sm mb-2 break-words">SKU: {item.product.sku}</p>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <button
                           onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
-                          className="p-1 rounded hover:bg-gray-100 transition"
+                          className="p-1 rounded hover:bg-gray-100 transition min-w-[32px]"
                           disabled={item.quantity <= 1}
+                          aria-label="Diminuir quantidade"
                         >
                           <FiMinus size={16} />
                         </button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <span className="w-12 text-center font-medium min-w-[48px]">{item.quantity}</span>
                         <button
                           onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                          className="p-1 rounded hover:bg-gray-100 transition"
+                          className="p-1 rounded hover:bg-gray-100 transition min-w-[32px]"
                           disabled={item.quantity >= item.product.stock}
+                          aria-label="Aumentar quantidade"
                         >
                           <FiPlus size={16} />
                         </button>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-lg text-primary">
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-bold text-lg text-primary break-words">
                           {formatPrice(item.product.price * item.quantity)}
                         </p>
                         {item.quantity > 1 && (
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500 break-words">
                             {formatPrice(item.product.price)} cada
                           </p>
                         )}

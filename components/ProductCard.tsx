@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.name}</h3>
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2 break-words overflow-wrap-anywhere">{product.name}</h3>
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-primary">
               {formatPrice(product.price)}
