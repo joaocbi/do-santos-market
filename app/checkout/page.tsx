@@ -264,6 +264,22 @@ function CheckoutContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Force CPF validation
+    const cpfNumbers = formData.cpf.replace(/\D/g, '');
+    if (!formData.cpf.trim() || cpfNumbers.length !== 11) {
+      setErrors(prev => ({
+        ...prev,
+        cpf: cpfNumbers.length === 0 ? 'CPF é obrigatório' : 'CPF deve ter 11 dígitos'
+      }));
+      // Scroll to CPF field
+      const cpfInput = document.querySelector('input[name="cpf"]') as HTMLElement;
+      if (cpfInput) {
+        cpfInput.focus();
+        cpfInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
@@ -465,9 +481,20 @@ function CheckoutContent() {
                     placeholder="000.000.000-00"
                     maxLength={14}
                     required
+                    aria-required="true"
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full ${
                       errors.cpf ? 'border-red-500' : ''
                     }`}
+                    onInvalid={(e) => {
+                      e.preventDefault();
+                      const target = e.target as HTMLInputElement;
+                      const cpfNumbers = target.value.replace(/\D/g, '');
+                      if (cpfNumbers.length === 0) {
+                        setErrors(prev => ({ ...prev, cpf: 'CPF é obrigatório' }));
+                      } else if (cpfNumbers.length !== 11) {
+                        setErrors(prev => ({ ...prev, cpf: 'CPF deve ter 11 dígitos' }));
+                      }
+                    }}
                   />
                   {errors.cpf && (
                     <p className="text-red-500 text-sm mt-1">{errors.cpf}</p>
