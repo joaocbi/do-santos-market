@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { cartUtils, CartItem } from '@/lib/cart';
-import { SiteConfig, Order } from '@/lib/types';
+import { SiteConfig, Order, PaymentMethod } from '@/lib/types';
 import { formatOrderNumber } from '@/lib/orderUtils';
 
 function CheckoutContent() {
@@ -16,6 +16,8 @@ function CheckoutContent() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [retryOrder, setRetryOrder] = useState<Order | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('whatsapp');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
@@ -97,6 +99,20 @@ function CheckoutContent() {
       })
       .catch(error => {
         console.error('Error loading config:', error);
+      });
+
+    // Load payment methods
+    fetch('/api/payment-methods')
+      .then(res => res.json())
+      .then(data => {
+        const activeMethods = data.filter((m: PaymentMethod) => m.active);
+        setPaymentMethods(activeMethods);
+        if (activeMethods.length > 0 && !retryOrderId) {
+          setSelectedPaymentMethod(activeMethods[0].id);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading payment methods:', error);
       });
   }, [router, retryOrderId]);
 
@@ -281,7 +297,7 @@ function CheckoutContent() {
         subtotal: subtotal,
         shippingFee: shippingFee,
         total: total,
-        paymentMethod: 'whatsapp',
+        paymentMethod: selectedPaymentMethod || 'whatsapp',
         notes: formData.notes,
       };
 
@@ -541,6 +557,46 @@ function CheckoutContent() {
                 </div>
               </div>
             </div>
+
+            {!retryOrder && paymentMethods.length > 0 && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-bold mb-4">Método de Pagamento</h2>
+                <div className="space-y-3">
+                  {paymentMethods.map((method) => (
+                    <label
+                      key={method.id}
+                      className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition ${
+                        selectedPaymentMethod === method.id
+                          ? 'border-primary bg-primary/5'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={method.id}
+                        checked={selectedPaymentMethod === method.id}
+                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        className="mr-3 w-5 h-5 text-primary focus:ring-primary"
+                      />
+                      <div className="flex-1">
+                        <div className="font-semibold">{method.name}</div>
+                        {method.type === 'credit' && method.installments && (
+                          <div className="text-sm text-gray-600">
+                            Em até {method.installments}x sem juros
+                          </div>
+                        )}
+                        {method.fee && method.fee > 0 && (
+                          <div className="text-sm text-gray-600">
+                            Taxa: {formatPrice(method.fee)}
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4">Observações</h2>
