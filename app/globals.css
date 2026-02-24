@@ -178,6 +178,31 @@ p, span, div, h1, h2, h3, h4, h5, h6, a, button {
     max-width: 100%;
     overflow: hidden;
   }
+  
+  /* Fix for checkout summary cards */
+  .sticky {
+    position: relative;
+  }
+  
+  /* Better text sizing for price cards */
+  .text-sm, .text-base, .text-lg {
+    font-size: 0.875rem;
+  }
+  
+  .text-lg {
+    font-size: 1rem;
+  }
+  
+  /* Fix flex items in summary */
+  .flex.justify-between {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .flex.justify-between > span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 }
 
 /* Very old devices (320px and below) */

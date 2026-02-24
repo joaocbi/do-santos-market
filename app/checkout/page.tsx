@@ -437,7 +437,7 @@ function CheckoutContent() {
                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-2">
                     CPF <span className="text-red-500">*</span>
                   </label>
@@ -449,7 +449,7 @@ function CheckoutContent() {
                     placeholder="000.000.000-00"
                     maxLength={14}
                     required
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent max-w-full ${
                       errors.cpf ? 'border-red-500' : ''
                     }`}
                   />
@@ -556,39 +556,39 @@ function CheckoutContent() {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-              <h2 className="text-xl font-bold mb-4">Resumo do Pedido</h2>
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 sticky top-24 max-w-full overflow-hidden">
+              <h2 className="text-lg sm:text-xl font-bold mb-4 break-words">Resumo do Pedido</h2>
               <div className="space-y-2 mb-4">
                 {retryOrder ? (
                   retryOrder.items.map((item, index) => (
-                    <div key={index} className="flex justify-between text-sm">
-                      <span>{item.quantity}x {item.productName}</span>
-                      <span>{formatPrice(item.price * item.quantity)}</span>
+                    <div key={index} className="flex justify-between text-xs sm:text-sm break-words">
+                      <span className="break-words flex-1 min-w-0 pr-2">{item.quantity}x {item.productName}</span>
+                      <span className="font-semibold break-words flex-shrink-0">{formatPrice(item.price * item.quantity)}</span>
                     </div>
                   ))
                 ) : (
                   cartItems.map((item) => (
-                    <div key={item.productId} className="flex justify-between text-sm">
-                      <span>{item.quantity}x {item.product.name}</span>
-                      <span>{formatPrice(item.product.price * item.quantity)}</span>
+                    <div key={item.productId} className="flex justify-between text-xs sm:text-sm break-words">
+                      <span className="break-words flex-1 min-w-0 pr-2">{item.quantity}x {item.product.name}</span>
+                      <span className="font-semibold break-words flex-shrink-0">{formatPrice(item.product.price * item.quantity)}</span>
                     </div>
                   ))
                 )}
               </div>
               <div className="space-y-2 mb-4 pt-3 border-t">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span className="font-semibold">{formatPrice(subtotal)}</span>
+                <div className="flex justify-between text-sm sm:text-base break-words">
+                  <span className="break-words">Subtotal:</span>
+                  <span className="font-semibold break-words ml-2">{formatPrice(subtotal)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Frete:</span>
-                  <span className="font-semibold">
+                <div className="flex justify-between text-sm sm:text-base break-words">
+                  <span className="break-words">Frete:</span>
+                  <span className="font-semibold break-words ml-2">
                     {shippingFee > 0 ? formatPrice(shippingFee) : 'Grátis'}
                   </span>
                 </div>
-                <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                  <span>Total:</span>
-                  <span className="text-primary">{formatPrice(total)}</span>
+                <div className="flex justify-between text-base sm:text-lg font-bold pt-2 border-t break-words">
+                  <span className="break-words">Total:</span>
+                  <span className="text-primary break-words ml-2">{formatPrice(total)}</span>
                 </div>
               </div>
               
