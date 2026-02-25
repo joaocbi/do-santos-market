@@ -38,7 +38,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="bg-white shadow-md sticky top-0 z-50 w-full">
       <div className="container mx-auto px-4">
         {/* Top bar */}
         <div className="flex items-center justify-between py-3 border-b">
@@ -90,46 +90,54 @@ export default function Header() {
         </div>
 
         {/* Navigation */}
-        <nav className={`${isMenuOpen ? 'block' : 'hidden'} lg:block py-4`}>
+        <nav className={`${isMenuOpen ? 'block' : 'hidden'} lg:block border-t lg:border-t-0 py-4`}>
           <ul className="list-none flex flex-col lg:flex-row gap-4 lg:gap-6">
             <li>
               <Link
                 href="/"
                 className="font-medium hover:text-primary transition"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Início
               </Link>
             </li>
-            {categories.map(category => (
-              <li key={category.id} className="relative group">
-                <Link
-                  href={`/category/${category.slug}`}
-                  className="font-medium hover:text-primary transition"
-                >
-                  {category.name}
-                </Link>
-                {category.subcategories && category.subcategories.length > 0 && (
-                  <ul className="hidden group-hover:block absolute top-full left-0 bg-white shadow-lg rounded p-4 min-w-[200px] mt-2">
-                    {category.subcategories.map(sub => (
-                      <li key={sub.id}>
-                        <Link
-                          href={`/category/${sub.slug}`}
-                          className="block py-2 hover:text-primary"
-                        >
-                          {sub.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
+            {categories.length > 0 ? (
+              categories.map(category => (
+                <li key={category.id} className="relative group">
+                  <Link
+                    href={`/category/${category.slug}`}
+                    className="font-medium hover:text-primary transition"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {category.name}
+                  </Link>
+                  {category.subcategories && category.subcategories.length > 0 && (
+                    <ul className="hidden group-hover:block absolute top-full left-0 bg-white shadow-lg rounded p-4 min-w-[200px] mt-2 z-50">
+                      {category.subcategories.map(sub => (
+                        <li key={sub.id}>
+                          <Link
+                            href={`/category/${sub.slug}`}
+                            className="block py-2 hover:text-primary"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {sub.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            ) : (
+              <li className="text-gray-400 text-sm">Carregando categorias...</li>
+            )}
             {links.map(link => (
               <li key={link.id}>
                 <Link
                   href={link.url}
                   target="_blank"
                   className="font-medium hover:text-primary transition"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {link.title}
                 </Link>
