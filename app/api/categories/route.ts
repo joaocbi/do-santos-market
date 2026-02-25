@@ -42,7 +42,8 @@ export async function GET() {
     const sorted = rootCategories.sort((a, b) => a.order - b.order);
     console.log('[Categories API] Returning', sorted.length, 'root categories');
     return NextResponse.json(sorted);
-  } catch (error: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     console.error('[Categories API] Error fetching categories:', error);
     console.error('[Categories API] Error details:', {
       message: error?.message,
@@ -55,20 +56,6 @@ export async function GET() {
     }, { status: 500 });
   }
 }
-
-const getAllDescendantIds = (parentId: string, categories: Category[]): string[] => {
-  const descendants: string[] = [];
-  const findDescendants = (id: string) => {
-    categories.forEach(cat => {
-      if (cat.parentId === id) {
-        descendants.push(cat.id);
-        findDescendants(cat.id);
-      }
-    });
-  };
-  findDescendants(parentId);
-  return descendants;
-};
 
 export async function POST(request: NextRequest) {
   try {
@@ -92,7 +79,9 @@ export async function POST(request: NextRequest) {
     };
     const created = db.categories.create(category);
     return NextResponse.json(created, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 });
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error('Error creating category:', error);
+    return NextResponse.json({ error: 'Failed to create category', details: error?.message }, { status: 500 });
   }
 }
