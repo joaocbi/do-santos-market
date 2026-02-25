@@ -4,12 +4,19 @@ import { Category } from '@/lib/types';
 
 export async function GET() {
   try {
+    const postgresAvailable = isPostgresAvailable();
+    console.log('[Categories API] Postgres available:', postgresAvailable);
+    
     let categories: Category[];
     
-    if (isPostgresAvailable()) {
+    if (postgresAvailable) {
+      console.log('[Categories API] Fetching from Postgres...');
       categories = await dbPostgres.categories.getAll();
+      console.log('[Categories API] Fetched from Postgres:', categories.length, 'categories');
     } else {
+      console.log('[Categories API] Fetching from JSON...');
       categories = db.categories.getAll();
+      console.log('[Categories API] Fetched from JSON:', categories.length, 'categories');
     }
     
     // Build tree structure
@@ -32,10 +39,20 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json(rootCategories.sort((a, b) => a.order - b.order));
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
+    const sorted = rootCategories.sort((a, b) => a.order - b.order);
+    console.log('[Categories API] Returning', sorted.length, 'root categories');
+    return NextResponse.json(sorted);
+  } catch (error: any) {
+    console.error('[Categories API] Error fetching categories:', error);
+    console.error('[Categories API] Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name
+    });
+    return NextResponse.json({ 
+      error: 'Failed to fetch categories', 
+      details: error?.message 
+    }, { status: 500 });
   }
 }
 
