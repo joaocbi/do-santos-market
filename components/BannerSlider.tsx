@@ -59,7 +59,7 @@ export default function BannerSlider() {
   if (banners.length === 0) return null;
 
   return (
-    <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-white">
       {banners.map((banner, index) => (
         <div
           key={banner.id}
@@ -72,7 +72,7 @@ export default function BannerSlider() {
               <img
                 src={normalizeImageUrl(banner.image)}
                 alt={banner.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
@@ -81,7 +81,7 @@ export default function BannerSlider() {
             <img
               src={normalizeImageUrl(banner.image)}
               alt={banner.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
