@@ -56,13 +56,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2 break-words overflow-wrap-anywhere">{product.name}</h3>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">
+          <h3 className="font-semibold text-base sm:text-lg mb-2 line-clamp-2 break-words overflow-wrap-anywhere">{product.name}</h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-lg sm:text-xl font-bold text-primary">
               {formatPrice(product.price)}
             </span>
             {product.originalPrice && (
-              <span className="text-gray-500 line-through text-sm">
+              <span className="text-gray-400 line-through text-xs sm:text-sm">
                 {formatPrice(product.originalPrice)}
               </span>
             )}
