@@ -72,7 +72,7 @@ export default function BannerSlider() {
               <img
                 src={normalizeImageUrl(banner.image)}
                 alt={banner.title}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
@@ -81,7 +81,7 @@ export default function BannerSlider() {
             <img
               src={normalizeImageUrl(banner.image)}
               alt={banner.title}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
             />
