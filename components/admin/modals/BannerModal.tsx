@@ -13,6 +13,7 @@ export default function BannerModal({ onClose }: BannerModalProps) {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [editing, setEditing] = useState<Banner | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     image: '',
@@ -87,22 +88,14 @@ export default function BannerModal({ onClose }: BannerModalProps) {
     });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    // For banners, we'll use the first image
-    const file = files[0];
-
+  const processFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Por favor, selecione um arquivo de imagem');
-      e.target.value = '';
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
       toast.error('A imagem deve ter menos de 5MB');
-      e.target.value = '';
       return;
     }
 
@@ -121,11 +114,6 @@ export default function BannerModal({ onClose }: BannerModalProps) {
       if (res.ok && data.url) {
         setFormData({ ...formData, image: data.url });
         toast.success('Imagem enviada com sucesso');
-        
-        // If multiple files selected, inform user
-        if (files.length > 1) {
-          toast(`Apenas a primeira imagem foi usada. ${files.length - 1} outra(s) foram ignorada(s).`);
-        }
       } else {
         const errorMessage = data.error || `Erro ${res.status}: ${res.statusText}`;
         toast.error(errorMessage);
@@ -136,7 +124,36 @@ export default function BannerModal({ onClose }: BannerModalProps) {
       toast.error(error?.message || 'Erro ao enviar imagem. Verifique o console para mais detalhes.');
     } finally {
       setUploading(false);
-      e.target.value = '';
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    await processFile(files[0]);
+    e.target.value = '';
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (uploading) return;
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      await processFile(files[0]);
     }
   };
 
@@ -168,32 +185,82 @@ export default function BannerModal({ onClose }: BannerModalProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Imagem</label>
+              <label className="block text-sm font-medium mb-2">Imagem do Banner</label>
               
-              {/* Upload de arquivo local */}
-              <div className="mb-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90 cursor-pointer disabled:opacity-50"
-                  required={!formData.image}
-                />
-                {uploading && <p className="text-xs text-gray-500 mt-1">Enviando...</p>}
-              </div>
-
-              {/* Preview da imagem */}
-              {formData.image && (
-                <div className="mt-2">
-                  <img src={formData.image} alt="Preview" className="w-full max-h-48 object-contain rounded bg-gray-100" />
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, image: '' })}
-                    className="mt-2 text-sm text-red-600 hover:text-red-700"
+              {!formData.image ? (
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                    dragActive
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-300 hover:border-primary'
+                  } ${uploading ? 'opacity-50' : ''}`}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    id="banner-image-upload"
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="banner-image-upload"
+                    className={`cursor-pointer flex flex-col items-center ${uploading ? 'cursor-not-allowed' : ''}`}
                   >
-                    Remover imagem
-                  </button>
+                    {uploading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-2"></div>
+                        <p className="text-sm text-gray-600">Enviando imagem...</p>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p className="text-sm font-medium text-gray-700 mb-1">
+                          {dragActive ? 'Solte a imagem aqui' : 'Clique para fazer upload ou arraste a imagem aqui'}
+                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG, GIF até 5MB</p>
+                      </>
+                    )}
+                  </label>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="relative border rounded-lg overflow-hidden bg-gray-50">
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="w-full max-h-64 object-contain mx-auto" 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: '' })}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
+                      title="Remover imagem"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>Imagem carregada com sucesso</span>
+                    <label className="text-primary hover:text-primary/80 cursor-pointer">
+                      Trocar imagem
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                 </div>
               )}
             </div>
