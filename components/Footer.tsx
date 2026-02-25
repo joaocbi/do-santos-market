@@ -61,9 +61,6 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
           <p>&copy; {new Date().getFullYear()} Do Santos Market. Todos os direitos reservados.</p>
-          <Link href="/admin" className="text-sm hover:text-white mt-2 inline-block">
-            Painel Administrativo
-          </Link>
         </div>
       </div>
     </footer>
