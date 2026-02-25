@@ -59,37 +59,41 @@ export default function BannerSlider() {
   if (banners.length === 0) return null;
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-white">
-      {banners.map((banner, index) => (
-        <div
-          key={banner.id}
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          {banner.link ? (
-            <Link href={banner.link}>
+    <div className="relative w-full overflow-hidden bg-white">
+      <div className="w-full relative">
+        {banners.map((banner, index) => (
+          <div
+            key={banner.id}
+            className={`${
+              index === currentIndex ? 'relative' : 'absolute inset-0'
+            } transition-opacity duration-500 ${
+              index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            {banner.link ? (
+              <Link href={banner.link}>
+                <img
+                  src={normalizeImageUrl(banner.image)}
+                  alt={banner.title}
+                  className="w-full h-auto block"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                />
+              </Link>
+            ) : (
               <img
                 src={normalizeImageUrl(banner.image)}
                 alt={banner.title}
-                className="w-full h-full object-contain"
+                className="w-full h-auto block"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
               />
-            </Link>
-          ) : (
-            <img
-              src={normalizeImageUrl(banner.image)}
-              alt={banner.title}
-              className="w-full h-full object-contain"
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
-            />
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        ))}
+      </div>
       {banners.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
           {banners.map((_, index) => (
             <button
               key={index}
