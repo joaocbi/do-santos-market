@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { Category } from '@/lib/types';
 
 export async function GET() {
   try {
-    const categories = db.categories.getAll();
+    let categories: Category[];
+    
+    if (isPostgresAvailable()) {
+      categories = await dbPostgres.categories.getAll();
+    } else {
+      categories = db.categories.getAll();
+    }
+    
     // Build tree structure
     const categoryMap = new Map<string, Category & { subcategories: Category[] }>();
     const rootCategories: (Category & { subcategories: Category[] })[] = [];
@@ -27,6 +34,7 @@ export async function GET() {
 
     return NextResponse.json(rootCategories.sort((a, b) => a.order - b.order));
   } catch (error) {
+    console.error('Error fetching categories:', error);
     return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
 }

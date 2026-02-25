@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { ClickableLink } from '@/lib/types';
 
 export async function GET() {
   try {
-    const links = db.links.getAll();
+    let links: ClickableLink[];
+    
+    if (isPostgresAvailable()) {
+      links = await dbPostgres.links.getAll();
+    } else {
+      links = db.links.getAll();
+    }
+    
     return NextResponse.json(links.filter(l => l.active).sort((a, b) => a.order - b.order));
   } catch (error) {
+    console.error('Error fetching links:', error);
     return NextResponse.json({ error: 'Failed to fetch links' }, { status: 500 });
   }
 }
