@@ -11,9 +11,28 @@ export default function BannerSlider() {
 
   useEffect(() => {
     fetch('/api/banners?position=home')
-      .then(res => res.json())
-      .then(data => setBanners(data))
-      .catch(console.error);
+      .then(res => {
+        if (!res.ok) {
+          console.error('Failed to fetch banners:', res.status, res.statusText);
+          return [];
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setBanners(data);
+        } else if (data?.error) {
+          console.error('Banner API error:', data.error);
+          setBanners([]);
+        } else {
+          console.error('Invalid banner data format:', data);
+          setBanners([]);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching banners:', error);
+        setBanners([]);
+      });
   }, []);
 
   useEffect(() => {
