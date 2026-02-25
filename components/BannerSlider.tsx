@@ -8,8 +8,10 @@ import { normalizeImageUrl } from '@/lib/imageUtils';
 export default function BannerSlider() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     fetch('/api/banners?position=home')
       .then(res => {
         if (!res.ok) {
@@ -32,6 +34,9 @@ export default function BannerSlider() {
       .catch(error => {
         console.error('Error fetching banners:', error);
         setBanners([]);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
@@ -42,6 +47,14 @@ export default function BannerSlider() {
     }, 5000);
     return () => clearInterval(interval);
   }, [banners.length]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-[400px] md:h-[500px] bg-gray-100 animate-pulse flex items-center justify-center">
+        <p className="text-gray-400">Carregando banner...</p>
+      </div>
+    );
+  }
 
   if (banners.length === 0) return null;
 

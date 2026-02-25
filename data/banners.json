@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "1772043212254",
+    "title": "frete gratis",
+    "image": "https://ibqa1t6zhmoif9gj.public.blob.vercel-storage.com/uploads/1772043196970-2j0bx5.jpg",
+    "link": "",
+    "order": 0,
+    "active": true,
+    "position": "home"
+  }
+]

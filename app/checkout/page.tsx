@@ -110,9 +110,16 @@ function CheckoutContent() {
       .then(res => res.json())
       .then(data => {
         const activeMethods = data.filter((m: PaymentMethod) => m.active);
-        setPaymentMethods(activeMethods);
+        // Add WhatsApp manually as a default option
+        const allMethods = [
+          ...activeMethods,
+          { id: 'whatsapp', name: 'Pagamento via WhatsApp', type: 'whatsapp', active: true }
+        ];
+        setPaymentMethods(allMethods);
         if (activeMethods.length > 0 && !retryOrderId) {
           setSelectedPaymentMethod(activeMethods[0].id);
+        } else if (!retryOrderId) {
+          setSelectedPaymentMethod('whatsapp');
         }
       })
       .catch(error => {
@@ -181,6 +188,12 @@ function CheckoutContent() {
   const handleCEPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCEP(e.target.value);
     setFormData(prev => ({ ...prev, zipCode: formatted }));
+  };
+
+  const isMercadoPagoMethod = () => {
+    if (selectedPaymentMethod === 'whatsapp') return false;
+    const method = paymentMethods.find(m => m.id === selectedPaymentMethod);
+    return method?.type === 'credit' || method?.type === 'debit' || method?.type === 'pix' || method?.type === 'ticket';
   };
 
   const validateForm = () => {
@@ -374,7 +387,39 @@ function CheckoutContent() {
 
       const order = await orderResponse.json();
 
-      // WhatsApp payment flow
+      // If Mercado Pago is selected, proceed to payment creation
+      if (isMercadoPagoMethod() && config?.mercadoPagoAccessToken) {
+        setIsCreatingPayment(true);
+        try {
+          const mpResponse = await fetch('/api/mercadopago/payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: order.id }),
+          });
+
+          if (!mpResponse.ok) {
+            const errorData = await mpResponse.json();
+            throw new Error(errorData.error || 'Falha ao criar pagamento no Mercado Pago');
+          }
+
+          const mpData = await mpResponse.json();
+          if (mpData.init_point) {
+            cartUtils.clearCart();
+            window.location.href = mpData.init_point;
+            return;
+          } else {
+            throw new Error('URL de pagamento não retornada pelo Mercado Pago');
+          }
+        } catch (mpError: any) {
+          console.error('Erro Mercado Pago:', mpError);
+          alert(`Pedido #${order.id} criado, mas houve um erro ao iniciar o pagamento: ${mpError.message}. Você será redirecionado para o WhatsApp.`);
+          // Fallback to WhatsApp below...
+        } finally {
+          setIsCreatingPayment(false);
+        }
+      }
+
+      // WhatsApp payment flow (fallback or selected)
       const orderItemsText = cartItems.map(item => 
         `${item.quantity}x ${item.product.name} (SKU: ${item.product.sku}) - ${formatPrice(item.product.price * item.quantity)}`
       ).join('\n');
@@ -661,6 +706,11 @@ function CheckoutContent() {
                             Em até {method.installments}x sem juros
                           </div>
                         )}
+                        {method.type === 'whatsapp' && (
+                          <div className="text-sm text-gray-600">
+                            Combine o pagamento diretamente pelo WhatsApp
+                          </div>
+                        )}
                         {method.fee && method.fee > 0 && (
                           <div className="text-sm text-gray-600">
                             Taxa: {formatPrice(method.fee)}
@@ -758,10 +808,14 @@ function CheckoutContent() {
               ) : (
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isCreatingPayment}
                   className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
                 >
-                  {isSubmitting ? 'Processando...' : 'Finalizar Pedido via WhatsApp'}
+                  {isSubmitting || isCreatingPayment
+                    ? 'Processando...' 
+                    : isMercadoPagoMethod()
+                      ? 'Pagar com Mercado Pago'
+                      : 'Finalizar Pedido via WhatsApp'}
                 </button>
               )}
               <Link

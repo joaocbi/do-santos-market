@@ -173,21 +173,118 @@ async function migrate() {
     `;
   });
 
-  // Migrate other tables if they exist
+  // Migrate other tables
   const otherTables = [
-    { file: 'paymentMethods.json', table: 'payment_methods' },
-    { file: 'deliveryMethods.json', table: 'delivery_methods' },
-    { file: 'banners.json', table: 'banners' },
-    { file: 'links.json', table: 'links' },
-    { file: 'gallery.json', table: 'gallery_images' },
-    { file: 'videos.json', table: 'videos' },
+    { 
+      file: 'paymentMethods.json', 
+      table: 'payment_methods',
+      migrate: async (item, sql) => {
+        await sql`
+          INSERT INTO payment_methods (id, name, type, active, installments, fee)
+          VALUES (${item.id}, ${item.name}, ${item.type}, ${item.active !== false},
+                  ${item.installments || null}, ${item.fee || null})
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            type = EXCLUDED.type,
+            active = EXCLUDED.active,
+            installments = EXCLUDED.installments,
+            fee = EXCLUDED.fee
+        `;
+      }
+    },
+    { 
+      file: 'deliveryMethods.json', 
+      table: 'delivery_methods',
+      migrate: async (item, sql) => {
+        await sql`
+          INSERT INTO delivery_methods (id, name, price, estimated_days, active, free_shipping_threshold)
+          VALUES (${item.id}, ${item.name}, ${item.price}, ${item.estimatedDays || 0},
+                  ${item.active !== false}, ${item.freeShippingThreshold || null})
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            price = EXCLUDED.price,
+            estimated_days = EXCLUDED.estimated_days,
+            active = EXCLUDED.active,
+            free_shipping_threshold = EXCLUDED.free_shipping_threshold
+        `;
+      }
+    },
+    { 
+      file: 'banners.json', 
+      table: 'banners',
+      migrate: async (item, sql) => {
+        await sql`
+          INSERT INTO banners (id, title, image, link, "order", active, position)
+          VALUES (${item.id}, ${item.title}, ${item.image}, ${item.link || null},
+                  ${item.order || 0}, ${item.active !== false}, ${item.position || 'home'})
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            image = EXCLUDED.image,
+            link = EXCLUDED.link,
+            "order" = EXCLUDED."order",
+            active = EXCLUDED.active,
+            position = EXCLUDED.position,
+            updated_at = CURRENT_TIMESTAMP
+        `;
+      }
+    },
+    { 
+      file: 'links.json', 
+      table: 'links',
+      migrate: async (item, sql) => {
+        await sql`
+          INSERT INTO links (id, title, url, icon, "order", active)
+          VALUES (${item.id}, ${item.title}, ${item.url}, ${item.icon || null},
+                  ${item.order || 0}, ${item.active !== false})
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            url = EXCLUDED.url,
+            icon = EXCLUDED.icon,
+            "order" = EXCLUDED."order",
+            active = EXCLUDED.active,
+            updated_at = CURRENT_TIMESTAMP
+        `;
+      }
+    },
+    { 
+      file: 'gallery.json', 
+      table: 'gallery_images',
+      migrate: async (item, sql) => {
+        await sql`
+          INSERT INTO gallery_images (id, url, alt, "order", category)
+          VALUES (${item.id}, ${item.url}, ${item.alt || null}, ${item.order || 0}, ${item.category || null})
+          ON CONFLICT (id) DO UPDATE SET
+            url = EXCLUDED.url,
+            alt = EXCLUDED.alt,
+            "order" = EXCLUDED."order",
+            category = EXCLUDED.category,
+            updated_at = CURRENT_TIMESTAMP
+        `;
+      }
+    },
+    { 
+      file: 'videos.json', 
+      table: 'videos',
+      migrate: async (item, sql) => {
+        await sql`
+          INSERT INTO videos (id, title, url, type, thumbnail, "order", active)
+          VALUES (${item.id}, ${item.title}, ${item.url}, ${item.type},
+                  ${item.thumbnail || null}, ${item.order || 0}, ${item.active !== false})
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            url = EXCLUDED.url,
+            type = EXCLUDED.type,
+            thumbnail = EXCLUDED.thumbnail,
+            "order" = EXCLUDED."order",
+            active = EXCLUDED.active,
+            updated_at = CURRENT_TIMESTAMP
+        `;
+      }
+    },
   ];
 
-  for (const { file, table } of otherTables) {
-    const filePath = path.join(dataPath, file);
-    if (fs.existsSync(filePath)) {
-      console.log(`ℹ️  ${file} exists but migration not implemented yet. Skipping...`);
-    }
+  for (const { file, table, migrate } of otherTables) {
+    await migrateTable(table, file, migrate);
   }
 
   console.log('\n✅ Migration completed!');

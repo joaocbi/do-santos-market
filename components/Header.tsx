@@ -13,12 +13,19 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
   useEffect(() => {
+    setIsLoadingCategories(true);
     fetch('/api/categories')
       .then(res => res.json())
-      .then(data => setCategories(data))
-      .catch(console.error);
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCategories(data);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setIsLoadingCategories(false));
 
     fetch('/api/links')
       .then(res => res.json())
@@ -101,34 +108,33 @@ export default function Header() {
                 Início
               </Link>
             </li>
-            {categories.length > 0 ? (
-              categories.map(category => (
-                <li key={category.id} className="relative group">
-                  <Link
-                    href={`/category/${category.slug}`}
-                    className="font-medium hover:text-primary transition"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {category.name}
-                  </Link>
-                  {category.subcategories && category.subcategories.length > 0 && (
-                    <ul className="hidden group-hover:block absolute top-full left-0 bg-white shadow-lg rounded p-4 min-w-[200px] mt-2 z-50">
-                      {category.subcategories.map(sub => (
-                        <li key={sub.id}>
-                          <Link
-                            href={`/category/${sub.slug}`}
-                            className="block py-2 hover:text-primary"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            {sub.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))
-            ) : (
+            {categories.map(category => (
+              <li key={category.id} className="relative group">
+                <Link
+                  href={`/category/${category.slug}`}
+                  className="font-medium hover:text-primary transition"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {category.name}
+                </Link>
+                {category.subcategories && category.subcategories.length > 0 && (
+                  <ul className="hidden group-hover:block absolute top-full left-0 bg-white shadow-lg rounded p-4 min-w-[200px] mt-2 z-50">
+                    {category.subcategories.map(sub => (
+                      <li key={sub.id}>
+                        <Link
+                          href={`/category/${sub.slug}`}
+                          className="block py-2 hover:text-primary"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {sub.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+            {isLoadingCategories && categories.length === 0 && (
               <li className="text-gray-400 text-sm">Carregando categorias...</li>
             )}
             {links.map(link => (

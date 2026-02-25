@@ -1,5 +1,6 @@
 import { SiteConfig, Order } from './types';
 import { db } from './db';
+import { formatOrderNumber } from './orderUtils';
 
 export async function sendWhatsAppNotification(message: string): Promise<void> {
   try {
@@ -59,8 +60,10 @@ export function formatOrderWhatsAppMessage(order: Order): string {
 
   const address = `${order.address.street}, ${order.address.number}${order.address.complement ? ', ' + order.address.complement : ''}\n${order.address.neighborhood}, ${order.address.city} - ${order.address.state}\nCEP: ${order.address.zipCode}`;
 
+  const orderNumber = formatOrderNumber(order.id);
+  
   return `*PAGAMENTO CONFIRMADO - Do Santos Market*\n\n` +
-    `*PEDIDO #${order.id}*\n\n` +
+    `*PEDIDO #${orderNumber}*\n\n` +
     `*DADOS DO CLIENTE:*\n` +
     `Nome: ${order.customerName}\n` +
     `Email: ${order.customerEmail}\n` +
