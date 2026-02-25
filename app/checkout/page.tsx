@@ -11,7 +11,6 @@ import { formatOrderNumber } from '@/lib/orderUtils';
 
 // Force no cache for this page
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 function CheckoutContent() {
   const router = useRouter();
