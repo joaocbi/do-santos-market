@@ -11,9 +11,11 @@ export default function CategoryPage() {
   const params = useParams();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
   useEffect(() => {
     if (params.slug) {
+      setLoadingProducts(true);
       fetch('/api/categories')
         .then(res => res.json())
         .then((categories: Category[]) => {
@@ -30,13 +32,33 @@ export default function CategoryPage() {
           const found = findCategory(categories);
           setCategory(found);
           if (found) {
-            fetch(`/api/products?categoryId=${found.id}`)
+            const categoryId = String(found.id);
+            console.log(`[CategoryPage] Fetching products for category: ${categoryId} (${found.name})`);
+            fetch(`/api/products?categoryId=${categoryId}`)
               .then(res => res.json())
-              .then(data => setProducts(data))
-              .catch(console.error);
+              .then(data => {
+                console.log(`[CategoryPage] Received ${Array.isArray(data) ? data.length : 0} products`);
+                if (Array.isArray(data)) {
+                  setProducts(data);
+                } else {
+                  console.error('[CategoryPage] Invalid response format:', data);
+                  setProducts([]);
+                }
+                setLoadingProducts(false);
+              })
+              .catch(err => {
+                console.error('[CategoryPage] Error fetching products:', err);
+                setLoadingProducts(false);
+              });
+          } else {
+            console.log(`[CategoryPage] Category not found for slug: ${params.slug}`);
+            setLoadingProducts(false);
           }
         })
-        .catch(console.error);
+        .catch(err => {
+          console.error(err);
+          setLoadingProducts(false);
+        });
     }
   }, [params.slug]);
 
@@ -53,13 +75,22 @@ export default function CategoryPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">{category.name}</h1>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-        {products.length === 0 && (
-          <p className="text-center text-gray-500 py-12">Nenhum produto encontrado nesta categoria</p>
+        
+        {loadingProducts ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            {products.length === 0 && (
+              <p className="text-center text-gray-500 py-12">Nenhum produto encontrado nesta categoria</p>
+            )}
+          </>
         )}
       </main>
       <WhatsAppButton />

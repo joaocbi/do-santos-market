@@ -61,7 +61,7 @@ export default function CategoryModal({ onClose }: CategoryModalProps) {
 
   const findCategoryInTree = (id: string, cats: Category[]): Category | null => {
     for (const cat of cats) {
-      if (cat.id === id) return cat;
+      if (String(cat.id) === String(id)) return cat;
       if (cat.subcategories) {
         const found = findCategoryInTree(id, cat.subcategories);
         if (found) return found;
@@ -71,7 +71,7 @@ export default function CategoryModal({ onClose }: CategoryModalProps) {
   };
 
   const handleDelete = async (id: string) => {
-    const category = findCategoryInTree(id, categories);
+    const category = findCategoryInTree(String(id), categories);
     const hasSubcategories = category?.subcategories && category.subcategories.length > 0;
     
     if (hasSubcategories) {
@@ -87,7 +87,7 @@ export default function CategoryModal({ onClose }: CategoryModalProps) {
       if (res.ok) {
         toast.success('Categoria excluída');
         loadCategories();
-        if (editing?.id === id) {
+        if (String(editing?.id) === String(id)) {
           resetForm();
         }
       } else {
@@ -103,7 +103,7 @@ export default function CategoryModal({ onClose }: CategoryModalProps) {
     setFormData({
       name: category.name,
       slug: category.slug,
-      parentId: category.parentId || '',
+      parentId: category.parentId ? String(category.parentId) : '',
       image: category.image || '',
       order: category.order,
     });
@@ -117,8 +117,9 @@ export default function CategoryModal({ onClose }: CategoryModalProps) {
   const flattenCategories = (cats: Category[], level = 0, excludeId?: string): Category[] => {
     let result: Category[] = [];
     cats.forEach(cat => {
-      if (cat.id === excludeId) return;
-      result.push({ ...cat, name: '  '.repeat(level) + cat.name });
+      const catId = String(cat.id);
+      if (excludeId && catId === String(excludeId)) return;
+      result.push({ ...cat, id: catId, name: '  '.repeat(level) + cat.name });
       if (cat.subcategories) {
         result = result.concat(flattenCategories(cat.subcategories, level + 1, excludeId));
       }
@@ -130,15 +131,15 @@ export default function CategoryModal({ onClose }: CategoryModalProps) {
     const descendants: string[] = [];
     const findDescendants = (parentId: string, categories: Category[]) => {
       categories.forEach(cat => {
-        if (cat.parentId === parentId) {
-          descendants.push(cat.id);
+        if (String(cat.parentId) === String(parentId)) {
+          descendants.push(String(cat.id));
           if (cat.subcategories) {
-            findDescendants(cat.id, cat.subcategories);
+            findDescendants(String(cat.id), cat.subcategories);
           }
         }
       });
     };
-    findDescendants(categoryId, cats);
+    findDescendants(String(categoryId), cats);
     return descendants;
   };
 

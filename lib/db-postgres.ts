@@ -68,6 +68,11 @@ function getSql() {
       .replace(/^["']|["']$/g, '') // Remove surrounding quotes
       .replace(/[\r\n\t]/g, '') // Remove line breaks and tabs
       .trim(); // Remove leading/trailing whitespace
+    if (!connectionString || connectionString.trim() === '') {
+      console.error('POSTGRES_URL is empty after cleaning.');
+      throw new Error('POSTGRES_URL is empty. Verifique as variáveis de ambiente na Vercel.');
+    }
+    
     sqlInstance = neon(connectionString);
   }
   return sqlInstance;
@@ -85,6 +90,8 @@ export const dbPostgres = {
       `) as any[];
       return result.map((row: any) => ({
         ...row,
+        id: String(row.id),
+        parentId: row.parentId ? String(row.parentId) : undefined,
         subcategories: [],
       })) as Category[];
     },
@@ -93,16 +100,16 @@ export const dbPostgres = {
       const result = (await sql`
         SELECT id, name, slug, parent_id as "parentId", image, "order"
         FROM categories
-        WHERE id = ${id}
+        WHERE id::text = ${String(id)}
         LIMIT 1
       `) as any[];
       if (result.length === 0) return undefined;
       const row = result[0] as any;
       return {
-        id: row.id,
+        id: String(row.id),
         name: row.name,
         slug: row.slug,
-        parentId: row.parentId,
+        parentId: row.parentId ? String(row.parentId) : undefined,
         image: row.image,
         order: row.order,
         subcategories: []
@@ -153,19 +160,35 @@ export const dbPostgres = {
         FROM products
         ORDER BY created_at DESC
       `) as any[];
-      return result as Product[];
+      return result.map((row: any) => ({
+        ...row,
+        id: String(row.id),
+        categoryId: String(row.categoryId),
+        subcategoryId: row.subcategoryId ? String(row.subcategoryId) : undefined,
+      })) as Product[];
     },
     getById: async (id: string): Promise<Product | undefined> => {
       const sql = getSql();
+      const normalizedId = String(id);
       const result = (await sql`
         SELECT id, name, description, price, original_price as "originalPrice", cost_price as "costPrice",
                images, video, category_id as "categoryId", subcategory_id as "subcategoryId",
                sku, stock, active, featured, observations, created_at as "createdAt", updated_at as "updatedAt"
         FROM products
-        WHERE id = ${id}
+        WHERE id::text = ${normalizedId}
         LIMIT 1
       `) as any[];
-      return result[0] as Product | undefined;
+      if (result.length === 0) {
+        console.log(`[Postgres] Product not found with id: ${normalizedId}`);
+        return undefined;
+      }
+      const row = result[0] as any;
+      return {
+        ...row,
+        id: String(row.id),
+        categoryId: String(row.categoryId),
+        subcategoryId: row.subcategoryId ? String(row.subcategoryId) : undefined,
+      } as Product;
     },
     create: async (product: Product): Promise<Product> => {
       const sql = getSql();
@@ -187,6 +210,7 @@ export const dbPostgres = {
 
       const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
       const sql = getSql();
+      const normalizedId = String(id);
       await sql`
         UPDATE products
         SET name = ${updated.name},
@@ -204,15 +228,16 @@ export const dbPostgres = {
             featured = ${updated.featured},
             observations = ${updated.observations || null},
             updated_at = ${updated.updatedAt}
-        WHERE id = ${id}
+        WHERE id::text = ${normalizedId}
       `;
       return updated;
     },
     delete: async (id: string): Promise<boolean> => {
       const sql = getSql();
-      await sql`DELETE FROM products WHERE id = ${id}`;
+      const normalizedId = String(id);
+      await sql`DELETE FROM products WHERE id::text = ${normalizedId}`;
       // Check if deletion was successful by trying to get the record
-      const check = (await sql`SELECT id FROM products WHERE id = ${id} LIMIT 1`) as any[];
+      const check = (await sql`SELECT id FROM products WHERE id::text = ${normalizedId} LIMIT 1`) as any[];
       return check.length === 0;
     },
   },

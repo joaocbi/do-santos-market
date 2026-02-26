@@ -21,6 +21,13 @@ export default function ProductPage() {
       fetch(`/api/products/${params.id}`)
         .then(res => res.json())
         .then(data => {
+          // Ensure price is a number
+          if (data && typeof data.price !== 'number') {
+            data.price = parseFloat(data.price) || 0;
+          }
+          if (data && data.originalPrice && typeof data.originalPrice !== 'number') {
+            data.originalPrice = parseFloat(data.originalPrice) || undefined;
+          }
           setProduct(data);
           setSelectedImage(0);
           
@@ -68,11 +75,17 @@ export default function ProductPage() {
     );
   }
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | string | undefined) => {
+    if (price === undefined || price === null) return 'R$ 0,00';
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    if (isNaN(numPrice)) {
+      console.error('[ProductPage] Invalid price:', price);
+      return 'R$ 0,00';
+    }
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    }).format(price);
+    }).format(numPrice);
   };
 
   const handleAddToCart = () => {
@@ -125,11 +138,9 @@ export default function ProductPage() {
                   />
                 )
               ) : (
-                <img
-                  src="/placeholder.jpg"
-                  alt={product.name}
-                  className="w-full h-auto rounded-lg"
-                />
+                <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-400 text-lg">Sem imagem</span>
+                </div>
               )}
             </div>
             {mediaItems.length > 1 && (

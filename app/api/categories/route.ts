@@ -23,23 +23,54 @@ export async function GET() {
     const categoryMap = new Map<string, Category & { subcategories: Category[] }>();
     const rootCategories: (Category & { subcategories: Category[] })[] = [];
 
+    // First pass: Create the map with all categories
     categories.forEach(cat => {
-      categoryMap.set(cat.id, { ...cat, subcategories: [] });
+      const idStr = String(cat.id);
+      categoryMap.set(idStr, { 
+        ...cat, 
+        id: idStr, 
+        parentId: cat.parentId ? String(cat.parentId) : undefined,
+        subcategories: [] 
+      });
     });
 
+    // Second pass: Build the tree
     categories.forEach(cat => {
-      const category = categoryMap.get(cat.id)!;
+      const idStr = String(cat.id);
+      const category = categoryMap.get(idStr);
+      
+      if (!category) return; // Should not happen
+
       if (cat.parentId) {
-        const parent = categoryMap.get(cat.parentId);
+        const parentIdStr = String(cat.parentId);
+        
+        // Circular reference check
+        if (parentIdStr === idStr) {
+          console.error(`[Categories API] Circular reference detected: category ${idStr} is its own parent.`);
+          rootCategories.push(category);
+          return;
+        }
+
+        const parent = categoryMap.get(parentIdStr);
         if (parent) {
-          parent.subcategories.push(category);
+          // Check if already added to subcategories to avoid duplicates
+          if (!parent.subcategories.some(sub => sub.id === idStr)) {
+            parent.subcategories.push(category);
+          }
+        } else {
+          // Parent not found in the list, treat as root to avoid losing the category
+          console.warn(`[Categories API] Parent ${parentIdStr} not found for category ${idStr}. Treating as root.`);
+          rootCategories.push(category);
         }
       } else {
         rootCategories.push(category);
       }
     });
 
-    const sorted = rootCategories.sort((a, b) => a.order - b.order);
+    // Remove duplicates from rootCategories (could happen if parent was not found)
+    const uniqueRootCategories = Array.from(new Map(rootCategories.map(c => [c.id, c])).values());
+
+    const sorted = uniqueRootCategories.sort((a, b) => (a.order || 0) - (b.order || 0));
     console.log('[Categories API] Returning', sorted.length, 'root categories');
     return NextResponse.json(sorted);
   } catch (err: unknown) {
@@ -51,7 +82,7 @@ export async function GET() {
       name: error?.name
     });
     return NextResponse.json({ 
-      error: 'Failed to fetch categories', 
+      error: 'Falha ao buscar categorias', 
       details: error?.message 
     }, { status: 500 });
   }
@@ -60,12 +91,25 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
+    const postgresAvailable = isPostgresAvailable();
     
-    if (data.parentId) {
-      const allCategories = db.categories.getAll();
-      const parent = allCategories.find(c => c.id === data.parentId);
+    // Clean and validate parentId
+    const parentId = (data.parentId && String(data.parentId).trim() !== '' && String(data.parentId) !== 'null' && String(data.parentId) !== 'undefined') 
+      ? String(data.parentId) 
+      : undefined;
+
+    if (parentId) {
+      let parent;
+      if (postgresAvailable) {
+        parent = await dbPostgres.categories.getById(parentId);
+      } else {
+        const allCategories = db.categories.getAll();
+        parent = allCategories.find(c => String(c.id) === parentId);
+      }
+      
       if (!parent) {
-        return NextResponse.json({ error: 'Parent category not found' }, { status: 400 });
+        console.error(`[Categories API] Parent category not found: ${parentId}`);
+        return NextResponse.json({ error: `Categoria pai não encontrada (ID: ${parentId})` }, { status: 400 });
       }
     }
     
@@ -73,15 +117,22 @@ export async function POST(request: NextRequest) {
       id: Date.now().toString(),
       name: data.name,
       slug: data.slug || data.name.toLowerCase().replace(/\s+/g, '-'),
-      parentId: data.parentId || undefined,
-      image: data.image,
+      parentId: parentId,
+      image: data.image || undefined,
       order: data.order || 0,
     };
-    const created = db.categories.create(category);
+
+    let created;
+    if (postgresAvailable) {
+      created = await dbPostgres.categories.create(category);
+    } else {
+      created = db.categories.create(category);
+    }
+    
     return NextResponse.json(created, { status: 201 });
   } catch (err: unknown) {
     const error = err as Error;
     console.error('Error creating category:', error);
-    return NextResponse.json({ error: 'Failed to create category', details: error?.message }, { status: 500 });
+    return NextResponse.json({ error: 'Falha ao criar categoria', details: error?.message }, { status: 500 });
   }
 }

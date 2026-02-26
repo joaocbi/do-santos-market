@@ -30,9 +30,17 @@ export async function POST(request: NextRequest) {
       order: data.order || 0,
       active: data.active !== false,
     };
-    const created = db.links.create(link);
+    
+    let created;
+    if (isPostgresAvailable()) {
+      created = await dbPostgres.links.create(link);
+    } else {
+      created = db.links.create(link);
+    }
+    
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
+    console.error('Error creating link:', error);
     return NextResponse.json({ error: 'Failed to create link' }, { status: 500 });
   }
 }

@@ -86,7 +86,8 @@ export const db = {
         return undefined;
       }
       const categories = readJson<Category[]>('categories.json', []);
-      return categories.find(c => c.id === id);
+      const normalizedId = String(id);
+      return categories.find(c => String(c.id) === normalizedId);
     },
     create: (category: Category): Category => {
       if (isPostgresAvailable()) {
@@ -103,7 +104,8 @@ export const db = {
         throw new Error('Use async dbPostgres.categories.update() when Postgres is available');
       }
       const categories = readJson<Category[]>('categories.json', []);
-      const index = categories.findIndex(c => c.id === id);
+      const normalizedId = String(id);
+      const index = categories.findIndex(c => String(c.id) === normalizedId);
       if (index === -1) return null;
       categories[index] = { ...categories[index], ...updates };
       writeJson('categories.json', categories);
@@ -114,7 +116,8 @@ export const db = {
         throw new Error('Use async dbPostgres.categories.delete() when Postgres is available');
       }
       const categories = readJson<Category[]>('categories.json', []);
-      const filtered = categories.filter(c => c.id !== id);
+      const normalizedId = String(id);
+      const filtered = categories.filter(c => String(c.id) !== normalizedId);
       writeJson('categories.json', filtered);
       return filtered.length < categories.length;
     },
@@ -132,7 +135,8 @@ export const db = {
         return undefined;
       }
       const products = readJson<Product[]>('products.json', []);
-      return products.find(p => p.id === id);
+      const normalizedId = String(id);
+      return products.find(p => String(p.id) === normalizedId);
     },
     create: (product: Product): Product => {
       if (isPostgresAvailable()) {
@@ -148,7 +152,8 @@ export const db = {
         throw new Error('Use async dbPostgres.products.update() when Postgres is available');
       }
       const products = readJson<Product[]>('products.json', []);
-      const index = products.findIndex(p => p.id === id);
+      const normalizedId = String(id);
+      const index = products.findIndex(p => String(p.id) === normalizedId);
       if (index === -1) return null;
       products[index] = { ...products[index], ...updates };
       writeJson('products.json', products);
@@ -159,7 +164,8 @@ export const db = {
         throw new Error('Use async dbPostgres.products.delete() when Postgres is available');
       }
       const products = readJson<Product[]>('products.json', []);
-      const filtered = products.filter(p => p.id !== id);
+      const normalizedId = String(id);
+      const filtered = products.filter(p => String(p.id) !== normalizedId);
       writeJson('products.json', filtered);
       return filtered.length < products.length;
     },

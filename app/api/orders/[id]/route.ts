@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
 import { autoCommit } from '@/lib/gitAutoCommit';
 
 export async function GET(
@@ -7,12 +7,19 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const order = db.orders.getById(params.id);
+    let order;
+    if (isPostgresAvailable()) {
+      order = await dbPostgres.orders.getById(params.id);
+    } else {
+      order = db.orders.getById(params.id);
+    }
+    
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
     return NextResponse.json(order);
   } catch (error) {
+    console.error('Error fetching order:', error);
     return NextResponse.json({ error: 'Failed to fetch order' }, { status: 500 });
   }
 }
@@ -23,25 +30,42 @@ export async function PUT(
 ) {
   try {
     const data = await request.json();
-    const order = db.orders.getById(params.id);
+    let order;
+    
+    if (isPostgresAvailable()) {
+      order = await dbPostgres.orders.getById(params.id);
+    } else {
+      order = db.orders.getById(params.id);
+    }
+    
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
     
-    const updated = db.orders.update(params.id, {
-      ...data,
-      updatedAt: new Date().toISOString(),
-    });
+    let updated;
+    if (isPostgresAvailable()) {
+      updated = await dbPostgres.orders.update(params.id, {
+        ...data,
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      updated = db.orders.update(params.id, {
+        ...data,
+        updatedAt: new Date().toISOString(),
+      });
+      // Auto-commit changes
+      if (updated) {
+        autoCommit(`Update order: ${updated.id}`, ['data/orders.json']).catch(console.error);
+      }
+    }
     
     if (!updated) {
       return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
     }
     
-    // Auto-commit changes
-    autoCommit(`Update order: ${updated.id}`, ['data/orders.json']).catch(console.error);
-    
     return NextResponse.json(updated);
   } catch (error) {
+    console.error('Error updating order:', error);
     return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
   }
 }

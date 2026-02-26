@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, dbPostgres, isPostgresAvailable } from '@/lib/db';
-import { Product } from '@/lib/types';
+import { Product, Category } from '@/lib/types';
 import { autoCommit } from '@/lib/gitAutoCommit';
+
+const getAllDescendantIds = (parentId: string, categories: Category[]): string[] => {
+  const descendants: string[] = [];
+  const findDescendants = (id: string) => {
+    categories.forEach(cat => {
+      if (String(cat.parentId) === String(id)) {
+        descendants.push(String(cat.id));
+        findDescendants(String(cat.id));
+      }
+    });
+  };
+  findDescendants(String(parentId));
+  return descendants;
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,17 +32,45 @@ export async function GET(request: NextRequest) {
     }
     
     if (categoryId) {
-      products = products.filter(p => p.categoryId === categoryId || p.subcategoryId === categoryId);
+      const normalizedCategoryId = String(categoryId);
+      
+      // Get all categories to find descendants
+      let allCategories: Category[];
+      if (isPostgresAvailable()) {
+        allCategories = await dbPostgres.categories.getAll();
+      } else {
+        allCategories = db.categories.getAll();
+      }
+      
+      // Get all descendant category IDs (subcategories)
+      const descendantIds = getAllDescendantIds(normalizedCategoryId, allCategories);
+      const allCategoryIds = [normalizedCategoryId, ...descendantIds];
+      
+      console.log(`[Products API] Filtering by categoryId: ${normalizedCategoryId}`);
+      console.log(`[Products API] Including ${descendantIds.length} subcategories:`, descendantIds);
+      
+      products = products.filter(p => {
+        const productCategoryId = String(p.categoryId);
+        const productSubcategoryId = p.subcategoryId ? String(p.subcategoryId) : null;
+        
+        return allCategoryIds.includes(productCategoryId) || 
+               (productSubcategoryId && allCategoryIds.includes(productSubcategoryId));
+      });
+      
+      console.log(`[Products API] Found ${products.length} products`);
     }
     
     if (featured === 'true') {
       products = products.filter(p => p.featured);
     }
     
+    // Filter out inactive products (unless specifically requested)
+    products = products.filter(p => p.active !== false);
+    
     return NextResponse.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    return NextResponse.json({ error: 'Falha ao buscar produtos' }, { status: 500 });
   }
 }
 
@@ -54,13 +96,13 @@ export async function POST(request: NextRequest) {
     );
     
     if (duplicateName || duplicateSku) {
-      let errorMessage = 'Duplicate product detected: ';
+      let errorMessage = 'Produto duplicado detectado: ';
       const errors: string[] = [];
       if (duplicateName) {
-        errors.push(`Name "${duplicateName.name}" already exists (ID: ${duplicateName.id})`);
+        errors.push(`Nome "${duplicateName.name}" já existe (ID: ${duplicateName.id})`);
       }
       if (duplicateSku) {
-        errors.push(`SKU "${duplicateSku.sku}" already exists (Product: ${duplicateSku.name})`);
+        errors.push(`SKU "${duplicateSku.sku}" já existe (Produto: ${duplicateSku.name})`);
       }
       return NextResponse.json({ 
         error: errorMessage + errors.join('; ') 
@@ -99,6 +141,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+    return NextResponse.json({ error: 'Falha ao criar produto' }, { status: 500 });
   }
 }
