@@ -176,34 +176,51 @@ header img {
   object-fit: contain !important;
 }
 
-/* Prevent logo from expanding too much */
+/* Prevent logo from expanding too much but ensure visibility */
 header a[href="/"] {
   max-width: calc(100% - 140px);
-  overflow: hidden;
+  overflow: visible;
+  display: flex !important;
+  align-items: center !important;
 }
 
 header a[href="/"] > div {
   flex-shrink: 0;
   max-width: 48px;
   max-height: 48px;
+  display: flex !important;
+  visibility: visible !important;
+}
+
+header a[href="/"] span {
+  display: block !important;
+  visibility: visible !important;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
 }
 
 @media screen and (max-width: 640px) {
   header a[href="/"] {
     max-width: calc(100% - 100px);
+    overflow: visible;
   }
   
   header a[href="/"] > div {
     max-width: 32px;
     max-height: 32px;
+    display: flex !important;
+    visibility: visible !important;
   }
   
   header a[href="/"] span {
     font-size: 0.75rem !important;
+    display: block !important;
+    visibility: visible !important;
   }
 }
 
-/* Ensure header doesn't overflow */
+/* Ensure header doesn't overflow but keep logo and text visible */
 header {
   width: 100%;
   max-width: 100%;
@@ -222,12 +239,31 @@ header .flex {
   width: 100%;
 }
 
-/* Fix header logo container */
+/* Fix header logo container - ensure visibility */
+header a[href="/"] {
+  display: flex !important;
+  align-items: center !important;
+  visibility: visible !important;
+}
+
+header a[href="/"] > div {
+  display: flex !important;
+  visibility: visible !important;
+}
+
 header a[href="/"] > div img {
   max-width: 100% !important;
   max-height: 100% !important;
   width: auto !important;
   height: auto !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+header a[href="/"] span {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Prevent layout shifts */
