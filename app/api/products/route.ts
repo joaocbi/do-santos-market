@@ -31,6 +31,8 @@ export async function GET(request: NextRequest) {
       products = db.products.getAll();
     }
     
+    console.log(`[Products API] Total products loaded: ${products.length}`);
+
     if (categoryId) {
       const normalizedCategoryId = String(categoryId);
       
@@ -49,25 +51,33 @@ export async function GET(request: NextRequest) {
       console.log(`[Products API] Filtering by categoryId: ${normalizedCategoryId}`);
       console.log(`[Products API] Including ${descendantIds.length} subcategories:`, descendantIds);
       
-      products = products.filter(p => {
+      const filteredByCategory = products.filter(p => {
         const productCategoryId = String(p.categoryId);
         const productSubcategoryId = p.subcategoryId ? String(p.subcategoryId) : null;
         
         return allCategoryIds.includes(productCategoryId) || 
                (productSubcategoryId && allCategoryIds.includes(productSubcategoryId));
       });
-      
-      console.log(`[Products API] Found ${products.length} products`);
+      console.log(`[Products API] Products after category filter: ${filteredByCategory.length}`);
+      products = filteredByCategory;
     }
     
     if (featured === 'true') {
-      products = products.filter(p => p.featured);
+      const filteredByFeatured = products.filter(p => p.featured);
+      console.log(`[Products API] Products after featured filter: ${filteredByFeatured.length}`);
+      products = filteredByFeatured;
     }
     
     // Filter out inactive products (unless specifically requested)
-    products = products.filter(p => p.active !== false);
+    const activeProducts = products.filter(p => p.active !== false);
+    console.log(`[Products API] Products after active filter: ${activeProducts.length}`);
     
-    return NextResponse.json(products);
+    if (products.length > 0 && activeProducts.length === 0) {
+      console.warn('[Products API] All products were filtered out because they are inactive.');
+      console.log('[Products API] Inactive products:', products.filter(p => p.active === false).map(p => ({ id: p.id, name: p.name, active: p.active })));
+    }
+
+    return NextResponse.json(activeProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json({ error: 'Falha ao buscar produtos' }, { status: 500 });

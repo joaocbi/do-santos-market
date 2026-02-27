@@ -165,6 +165,7 @@ export const dbPostgres = {
         id: String(row.id),
         categoryId: String(row.categoryId),
         subcategoryId: row.subcategoryId ? String(row.subcategoryId) : undefined,
+        images: Array.isArray(row.images) ? row.images : (typeof row.images === 'string' ? JSON.parse(row.images) : []),
       })) as Product[];
     },
     getById: async (id: string): Promise<Product | undefined> => {
@@ -188,6 +189,7 @@ export const dbPostgres = {
         id: String(row.id),
         categoryId: String(row.categoryId),
         subcategoryId: row.subcategoryId ? String(row.subcategoryId) : undefined,
+        images: Array.isArray(row.images) ? row.images : (typeof row.images === 'string' ? JSON.parse(row.images) : []),
       } as Product;
     },
     create: async (product: Product): Promise<Product> => {
@@ -576,7 +578,8 @@ export const dbPostgres = {
       const result = (await sql`
         SELECT whatsapp_number as "whatsappNumber", email, social_media as "socialMedia",
                mercado_pago_access_token as "mercadoPagoAccessToken",
-               mercado_pago_public_key as "mercadoPagoPublicKey"
+               mercado_pago_public_key as "mercadoPagoPublicKey",
+               company_name as "companyName", company_logo as "companyLogo"
         FROM site_config
         WHERE id = 'config'
         LIMIT 1
@@ -589,15 +592,22 @@ export const dbPostgres = {
           socialMedia: {},
           mercadoPagoAccessToken: '',
           mercadoPagoPublicKey: '',
+          companyName: 'Do Santos Market', // Default value
+          companyLogo: '/logo.jpeg', // Default value
         };
         const sql = getSql();
         await sql`
-          INSERT INTO site_config (id, whatsapp_number, email, social_media, mercado_pago_access_token, mercado_pago_public_key)
-          VALUES ('config', '', '', '{}'::jsonb, '', '')
+          INSERT INTO site_config (id, whatsapp_number, email, social_media, mercado_pago_access_token, mercado_pago_public_key, company_name, company_logo)
+          VALUES ('config', '', '', '{}'::jsonb, '', '', ${defaultConfig.companyName}, ${defaultConfig.companyLogo})
         `;
         return defaultConfig;
       }
-      return result[0] as SiteConfig;
+      const config = result[0] as SiteConfig;
+      // Ensure socialMedia is parsed if it comes as a string
+      if (typeof config.socialMedia === 'string') {
+        config.socialMedia = JSON.parse(config.socialMedia);
+      }
+      return config;
     },
     update: async (updates: Partial<SiteConfig>): Promise<SiteConfig> => {
       const current = await dbPostgres.config.get();
@@ -610,6 +620,8 @@ export const dbPostgres = {
             social_media = ${JSON.stringify(updated.socialMedia)}::jsonb,
             mercado_pago_access_token = ${updated.mercadoPagoAccessToken || ''},
             mercado_pago_public_key = ${updated.mercadoPagoPublicKey || ''},
+            company_name = ${updated.companyName || null},
+            company_logo = ${updated.companyLogo || null},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = 'config'
       `;

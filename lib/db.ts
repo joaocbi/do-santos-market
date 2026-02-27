@@ -454,6 +454,8 @@ export const db = {
           socialMedia: {},
           mercadoPagoAccessToken: '',
           mercadoPagoPublicKey: '',
+          companyName: 'Do Santos Market', // Default value
+          companyLogo: '/logo.jpeg', // Default value
         };
       }
       return readJson('config.json', {
@@ -462,6 +464,8 @@ export const db = {
         socialMedia: {},
         mercadoPagoAccessToken: '',
         mercadoPagoPublicKey: '',
+        companyName: 'Do Santos Market', // Default value
+        companyLogo: '/logo.jpeg', // Default value
       });
     },
     update: (updates: Partial<SiteConfig>): SiteConfig => {
@@ -474,6 +478,8 @@ export const db = {
         socialMedia: {},
         mercadoPagoAccessToken: '',
         mercadoPagoPublicKey: '',
+        companyName: 'Do Santos Market', // Default value
+        companyLogo: '/logo.jpeg', // Default value
       });
       const updated = { ...config, ...updates };
       writeJson('config.json', updated);

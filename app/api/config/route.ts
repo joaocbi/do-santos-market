@@ -10,27 +10,31 @@ export async function GET() {
       : db.config.get();
     
     // SEMPRE verifica o JSON e garante que a chave pública esteja disponível
-    const configPath = path.join(process.cwd(), 'data', 'config.json');
+    const dataDir = path.join(process.cwd(), 'data');
+    const configPath = path.join(dataDir, 'config.json');
+    
     if (fs.existsSync(configPath)) {
       try {
         const jsonConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         
         // Se a chave pública não estiver no config mas estiver no JSON, usa do JSON
-        if ((!config.mercadoPagoPublicKey || config.mercadoPagoPublicKey.trim().length === 0) &&
-            jsonConfig.mercadoPagoPublicKey && jsonConfig.mercadoPagoPublicKey.trim().length > 0) {
+        if (jsonConfig.mercadoPagoPublicKey && jsonConfig.mercadoPagoPublicKey.trim().length > 0 &&
+            (!config.mercadoPagoPublicKey || config.mercadoPagoPublicKey.trim().length === 0)) {
           console.log('✅ Chave pública encontrada no JSON. Sincronizando...');
           
           if (isPostgresAvailable()) {
             // Sincroniza para o banco
-            config = await dbPostgres.config.update({
+            await dbPostgres.config.update({
               mercadoPagoPublicKey: jsonConfig.mercadoPagoPublicKey
             });
+            config.mercadoPagoPublicKey = jsonConfig.mercadoPagoPublicKey;
             console.log('✅ Chave pública sincronizada para o banco!');
           } else {
             // Atualiza no JSON
-            config = db.config.update({
+            db.config.update({
               mercadoPagoPublicKey: jsonConfig.mercadoPagoPublicKey
             });
+            config.mercadoPagoPublicKey = jsonConfig.mercadoPagoPublicKey;
             console.log('✅ Chave pública atualizada no JSON!');
           }
         }
@@ -42,8 +46,34 @@ export async function GET() {
             config.mercadoPagoPublicKey = jsonConfig.mercadoPagoPublicKey;
           }
         }
+
+        // Sincroniza companyName e companyLogo se estiverem no JSON e não no config atual
+        if (jsonConfig.companyName && (!config.companyName || config.companyName.trim().length === 0)) {
+          config.companyName = jsonConfig.companyName;
+          if (isPostgresAvailable()) {
+            await dbPostgres.config.update({ companyName: jsonConfig.companyName });
+          } else {
+            db.config.update({ companyName: jsonConfig.companyName });
+          }
+        }
+        if (jsonConfig.companyLogo && (!config.companyLogo || config.companyLogo.trim().length === 0)) {
+          config.companyLogo = jsonConfig.companyLogo;
+          if (isPostgresAvailable()) {
+            await dbPostgres.config.update({ companyLogo: jsonConfig.companyLogo });
+          } else {
+            db.config.update({ companyLogo: jsonConfig.companyLogo });
+          }
+        }
+
       } catch (jsonError: any) {
         console.error('❌ Erro ao ler JSON:', jsonError);
+      }
+    } else {
+      // Se o JSON não existe, garante que o diretório exista para evitar erros futuros
+      if (!fs.existsSync(dataDir)) {
+        try {
+          fs.mkdirSync(dataDir, { recursive: true });
+        } catch (e) {}
       }
     }
     

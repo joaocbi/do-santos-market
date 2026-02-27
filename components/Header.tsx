@@ -14,8 +14,17 @@ export default function Header() {
   const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoError, setLogoError] = useState(false);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
 
   useEffect(() => {
+    // Fetch site configuration
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => {
+        setSiteConfig(data);
+      })
+      .catch(err => console.error('Error fetching site config:', err));
+
     setIsLoadingCategories(true);
     fetch('/api/categories')
       .then(res => res.json())
@@ -44,6 +53,8 @@ export default function Header() {
     };
   }, []);
 
+  console.log('Logo Loaded:', logoLoaded, 'Logo Error:', logoError);
+
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 w-full">
       <div className="container mx-auto px-4">
@@ -59,33 +70,35 @@ export default function Header() {
 
           <Link href="/" className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
             <div className="flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center">
-              <img 
-                src="/logo.jpeg" 
-                alt="Logo Do Santos Market" 
-                className="h-full w-full object-contain"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  width: 'auto',
-                  height: 'auto',
-                  objectFit: 'contain',
-                  display: 'block'
-                }}
-                onLoad={() => setLogoLoaded(true)}
-                onError={(e) => {
-                  setLogoError(true);
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                }}
-              />
+              {(siteConfig?.companyLogo && !logoError) ? (
+                <img 
+                  src={siteConfig.companyLogo} 
+                  alt={siteConfig?.companyName || "Logo da Empresa"} 
+                  className="h-full w-full object-contain"
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                  onLoad={() => setLogoLoaded(true)}
+                  onError={(e) => {
+                    console.error('Error loading company logo:', e);
+                    setLogoError(true);
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-sm sm:text-base md:text-lg">DS</span>
+                </div>
+              )}
             </div>
-            {logoError && (
-              <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm sm:text-base md:text-lg">DS</span>
-              </div>
-            )}
             <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent whitespace-nowrap">
-              Do Santos Market
+              {siteConfig?.companyName || "Do Santos Market"}
             </span>
           </Link>
 

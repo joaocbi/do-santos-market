@@ -115,6 +115,8 @@ export interface SiteConfig {
   };
   mercadoPagoAccessToken?: string;
   mercadoPagoPublicKey?: string;
+  companyName?: string;
+  companyLogo?: string;
 }
 
 export interface OrderItem {
