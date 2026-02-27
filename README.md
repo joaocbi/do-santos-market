@@ -34,3 +34,20 @@ npm run dev
 ## Admin Access
 
 Access the admin panel at `/admin` (no authentication required in development)
+
+## Maintenance Mode
+
+To enable maintenance mode on Vercel:
+
+1. Go to your Vercel project settings
+2. Navigate to "Environment Variables"
+3. Add a new variable:
+   - **Name**: `MAINTENANCE_MODE`
+   - **Value**: `true`
+4. Redeploy your application
+
+To disable maintenance mode, either:
+- Remove the `MAINTENANCE_MODE` environment variable, or
+- Set its value to `false`
+
+When enabled, all visitors will see a maintenance page instead of the regular site. Static files and API routes remain accessible.

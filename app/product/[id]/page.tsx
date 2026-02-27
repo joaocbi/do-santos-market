@@ -105,11 +105,31 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 768px) {
+          .product-text-content {
+            word-break: normal !important;
+            overflow-wrap: break-word !important;
+            word-wrap: break-word !important;
+            hyphens: none !important;
+            -webkit-hyphens: none !important;
+            -moz-hyphens: none !important;
+            -ms-hyphens: none !important;
+            white-space: normal !important;
+            max-width: 100% !important;
+          }
+          .product-price {
+            white-space: nowrap !important;
+            display: inline-block !important;
+            word-break: keep-all !important;
+          }
+        }
+      `}} />
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <div className="mb-4 bg-white rounded-lg flex items-center justify-center p-4">
+      <main className="container mx-auto px-2 md:px-4 py-4 md:py-8 max-w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          <div className="w-full">
+            <div className="mb-4 bg-white rounded-lg flex items-center justify-center p-2 md:p-4">
               {mediaItems.length > 0 ? (
                 mediaItems[selectedImage].type === 'video' ? (
                   <video
@@ -175,30 +195,30 @@ export default function ProductPage() {
               </div>
             )}
           </div>
-          <div>
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-            <div className="mb-4">
-              <div className="flex items-center gap-4">
-                <span className="text-3xl font-bold text-primary">
+          <div className="px-1 md:px-0 w-full min-w-0">
+            <h1 className="text-xl md:text-3xl font-bold mb-3 md:mb-4 leading-tight product-text-content">{product.name}</h1>
+            <div className="mb-3 md:mb-4">
+              <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                <span className="text-xl md:text-3xl font-bold text-primary product-price">
                   {formatPrice(product.price)}
                 </span>
                 {product.originalPrice && (
-                  <span className="text-xl text-gray-500 line-through">
+                  <span className="text-base md:text-xl text-gray-500 line-through product-price">
                     {formatPrice(product.originalPrice)}
                   </span>
                 )}
               </div>
             </div>
-            <div className="mb-6">
-              <p className="text-gray-700 whitespace-pre-line break-words overflow-wrap-anywhere">{product.description}</p>
+            <div className="mb-4 md:mb-6 w-full min-w-0">
+              <p className="text-gray-700 whitespace-pre-line text-sm md:text-base leading-relaxed product-text-content">{product.description}</p>
             </div>
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">SKU: {product.sku}</p>
+            <div className="mb-4 md:mb-6">
+              <p className="text-xs md:text-sm text-gray-600">SKU: {product.sku}</p>
             </div>
             <button
               onClick={handleAddToCart}
               disabled={product.stock === 0 || isAdding}
-              className={`w-full py-3 rounded-lg font-semibold transition ${
+              className={`w-full py-2.5 md:py-3 rounded-lg font-semibold text-sm md:text-base transition ${
                 product.stock > 0 && !isAdding
                   ? 'bg-primary text-white hover:bg-primary/90'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
