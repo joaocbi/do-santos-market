@@ -48,37 +48,48 @@ export default function Header() {
     <header className="bg-white shadow-md sticky top-0 z-50 w-full">
       <div className="container mx-auto px-4">
         {/* Top bar */}
-        <div className="flex items-center justify-between py-3 border-b">
+        <div className="flex items-center justify-between py-2 sm:py-3 border-b gap-2">
           <button
-            className="lg:hidden"
+            className="lg:hidden flex-shrink-0"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Menu"
           >
-            {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            {isMenuOpen ? <FiX size={20} className="sm:w-6 sm:h-6" /> : <FiMenu size={20} className="sm:w-6 sm:h-6" />}
           </button>
 
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <img 
-              src="/logo.jpeg" 
-              alt="Logo" 
-              className="h-10 sm:h-12 md:h-14 w-auto object-contain flex-shrink-0 max-w-full"
-              onLoad={() => setLogoLoaded(true)}
-              onError={(e) => {
-                setLogoError(true);
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
+          <Link href="/" className="flex items-center gap-1.5 sm:gap-2 md:gap-3 min-w-0 flex-1 max-w-full overflow-hidden">
+            <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 flex items-center justify-center overflow-hidden">
+              <img 
+                src="/logo.jpeg" 
+                alt="Logo" 
+                className="h-full w-full object-contain"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  width: 'auto',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                onLoad={() => setLogoLoaded(true)}
+                onError={(e) => {
+                  setLogoError(true);
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+            </div>
             {logoError && (
-              <div className="h-10 sm:h-12 md:h-14 w-10 sm:w-12 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm sm:text-lg">DS</span>
+              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-xs sm:text-sm md:text-base">DS</span>
               </div>
             )}
-            <span className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent break-words overflow-wrap-anywhere min-w-0">
+            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent truncate min-w-0">
               Do Santos Market
             </span>
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0">
             <button className="hidden md:block" aria-label="Buscar">
               <FiSearch size={20} />
             </button>

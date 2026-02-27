@@ -3,7 +3,10 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   // Check if maintenance mode is enabled via environment variable
-  const maintenanceMode = process.env.MAINTENANCE_MODE === 'true';
+  // In Vercel Edge Runtime, use request.headers for environment variables
+  const maintenanceMode = 
+    process.env.MAINTENANCE_MODE === 'true' ||
+    request.headers.get('x-maintenance-mode') === 'true';
   
   // If maintenance mode is disabled, continue normally
   if (!maintenanceMode) {
