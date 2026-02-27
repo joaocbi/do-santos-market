@@ -57,8 +57,8 @@ export default function Header() {
             {isMenuOpen ? <FiX size={20} className="sm:w-6 sm:h-6" /> : <FiMenu size={20} className="sm:w-6 sm:h-6" />}
           </button>
 
-          <Link href="/" className="flex items-center gap-1.5 sm:gap-2 md:gap-3 min-w-0 flex-1 max-w-full">
-            <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 flex items-center justify-center">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+            <div className="flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center">
               <img 
                 src="/logo.jpeg" 
                 alt="Logo Do Santos Market" 
@@ -80,11 +80,11 @@ export default function Header() {
               />
             </div>
             {logoError && (
-              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xs sm:text-sm md:text-base">DS</span>
+              <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 bg-gradient-to-r from-gold to-gold-light rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm sm:text-base md:text-lg">DS</span>
               </div>
             )}
-            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent whitespace-nowrap">
               Do Santos Market
             </span>
           </Link>

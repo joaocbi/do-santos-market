@@ -176,47 +176,43 @@ header img {
   object-fit: contain !important;
 }
 
-/* Prevent logo from expanding too much but ensure visibility */
+/* Ensure logo and text are always visible */
 header a[href="/"] {
-  max-width: calc(100% - 140px);
-  overflow: visible;
   display: flex !important;
   align-items: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex: 1;
+  min-width: 0;
 }
 
 header a[href="/"] > div {
   flex-shrink: 0;
-  max-width: 48px;
-  max-height: 48px;
   display: flex !important;
   visibility: visible !important;
+  opacity: 1 !important;
+}
+
+header a[href="/"] > div img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 header a[href="/"] span {
-  display: block !important;
+  display: inline-block !important;
   visibility: visible !important;
+  opacity: 1 !important;
   white-space: nowrap;
-  overflow: visible;
-  text-overflow: ellipsis;
 }
 
 @media screen and (max-width: 640px) {
   header a[href="/"] {
     max-width: calc(100% - 100px);
-    overflow: visible;
-  }
-  
-  header a[href="/"] > div {
-    max-width: 32px;
-    max-height: 32px;
-    display: flex !important;
-    visibility: visible !important;
   }
   
   header a[href="/"] span {
-    font-size: 0.75rem !important;
-    display: block !important;
-    visibility: visible !important;
+    font-size: 0.875rem !important;
   }
 }
 
